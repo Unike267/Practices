@@ -1,0 +1,22 @@
+name: Pipeline
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+
+  Acceler_test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v3
+
+      - name: 'Run vunit test benchs'
+        uses: docker://gcr.io/hdl-containers/sim/osvb
+        with:
+          args: ./acceler/vunit_run.py -v
