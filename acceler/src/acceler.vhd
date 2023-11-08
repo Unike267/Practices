@@ -56,10 +56,6 @@ component fifo is
         );
 end component;
 
-for fifo_IN : fifo use entity work.fifo;
-
-for fifo_OUT : fifo use entity work.fifo;
-
 -- Declaration of mult component
 component mult is
 generic (  
@@ -74,8 +70,6 @@ port (
         mult_out : out std_logic_vector(N_bits-1 downto 0)
      );
 end component;
-
-for mult_0 : mult use entity work.mult;
 
 -- Declaration of signals
 signal in_pre_mult : std_logic_vector(N_bits-1 downto 0) := (others => '0');

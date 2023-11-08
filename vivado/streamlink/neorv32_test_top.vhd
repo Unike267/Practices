@@ -39,7 +39,7 @@ use ieee.numeric_std.all;
 library neorv32;
 use neorv32.neorv32_package.all;
 
-entity neorv32_test_setup_bootloader is
+entity neorv32_test_top is
   generic (
     -- adapt these for your setup --
     CLOCK_FREQUENCY   : natural := 100000000; -- clock frequency of clk_i in Hz
@@ -58,7 +58,7 @@ entity neorv32_test_setup_bootloader is
   );
 end entity;
 
-architecture neorv32_test_setup_bootloader_rtl of neorv32_test_setup_bootloader is
+architecture neorv32_test_top_rtl of neorv32_test_top is
 
   signal con_gpio_o : std_ulogic_vector(63 downto 0);
 
@@ -117,26 +117,9 @@ signal m_data_u : std_ulogic_vector(31 downto 0);
 signal m_valid_u : std_ulogic;
 
 signal s_ready_b : bit;
-signal s_valid_b : bit;
-signal m_ready_b : bit;
 signal m_valid_b : bit;
 
-
 begin
-
--- Convert to u logic
-
-s_ready_b <= to_bit(s_ready);
-s_valid_b <= to_bit(s_valid);
-m_ready_b <= to_bit(m_ready);
-m_valid_b <= to_bit(m_valid);
-
-s_ready_u <= To_StdULogic(s_ready_b);
-s_data_u <= To_StdULogicVector(s_data);
-s_valid_u <= To_StdULogic(s_valid_b);
-m_ready_u <= To_StdULogic(m_ready_b);
-m_data_u <= To_StdULogicVector(m_data);
-m_valid_u <= To_StdULogic(m_valid_b);
 
 -- Acceler axi buffer instantation
 
@@ -158,7 +141,6 @@ acceler_axi_buffer_0 : acceler_axi_buffer
   m_axis_data => m_data,
   m_axis_rdy => m_ready
 );
-
 
   -- The Core Of The Problem ----------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -205,8 +187,32 @@ acceler_axi_buffer_0 : acceler_axi_buffer
     
   );
 
-  -- GPIO output --
-  gpio_o <= con_gpio_o(7 downto 0);
+-- GPIO output --
+gpio_o <= con_gpio_o(7 downto 0);
 
+-- Adjust with ulogic:
+
+--TX (Master NEORV32 CPU; Slave acceler)
+
+s_data <= To_StdLogicVector(s_data_u);
+
+    --There isn't to_stdlogic direct function to make s_valid <= to_stdlogic(s_valid_u);
+    with s_valid_u select
+         s_valid <= '1' when '1',
+                    '0' when others;
+
+s_ready_b <= to_bit(s_ready);
+s_ready_u <= To_StdULogic(s_ready_b);
+
+--RX (Master acceler; Slave NEORV32 CPU)
+m_data_u <= To_StdULogicVector(m_data);
+
+m_valid_b <= to_bit(m_valid);
+m_valid_u <= To_StdULogic(m_valid_b);
+
+    --There isn't to_stdlogic direct function to make m_ready <= to_stdlogic(m_ready_u);
+    with m_ready_u select
+         m_ready <= '1' when '1',
+                    '0' when others;
 
 end architecture;
