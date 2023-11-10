@@ -62,35 +62,6 @@ architecture neorv32_test_top_rtl of neorv32_test_top is
 
   signal con_gpio_o : std_ulogic_vector(63 downto 0);
 
--- Add acceler axi buffer component
-
-component acceler_axi_buffer is
-generic (  
-        -- Number of bits that the input/output data has
-        N_bits : in natural;
-        -- Log2 of number of elements that the FIFOs have; Both the same size; Number of FIFO elements has to be a power of two
-        Log2_elements : in natural
-        );
-port (
-    -- Clk mult
-    clk_mult : in std_logic;    
-
-    -- Slave signals
-    s_axis_clk   : in  std_logic;
-    s_axis_rstn  : in  std_logic;
-    s_axis_rdy   : out std_logic;
-    s_axis_data  : in  std_logic_vector(N_bits-1 downto 0);
-    s_axis_valid : in  std_logic;
-
-    -- Master signals
-    m_axis_clk   : in  std_logic;
-    m_axis_rstn  : in  std_logic;
-    m_axis_valid : out std_logic;
-    m_axis_data  : out std_logic_vector(N_bits-1 downto 0);
-    m_axis_rdy   : in  std_logic
-    );
-end component;
-
 -- Declaration of acceler axi buffer constants
 
 constant N_bits : natural := 32; -- 32 bits (16 bits plus 16 bits)
@@ -123,24 +94,20 @@ begin
 
 -- Acceler axi buffer instantation
 
-acceler_axi_buffer_0 : acceler_axi_buffer
- generic map (
-  N_bits => N_bits,
-  Log2_elements => Log2_elements
- )
- port map (
-  clk_mult => clk_i,
-  s_axis_clk => clk_i,
-  s_axis_rstn => rstn_i,
-  s_axis_rdy => s_ready,
-  s_axis_data => s_data,
-  s_axis_valid => s_valid,
-  m_axis_clk => clk_i,
-  m_axis_rstn => rstn_i,
-  m_axis_valid => m_valid,
-  m_axis_data => m_data,
-  m_axis_rdy => m_ready
-);
+ acceler_axi_buffer_0 : entity work.acceler_axi_buffer
+                            generic map (N_bits => N_bits,
+                                         Log2_elements => Log2_elements)
+                            port map (clk_mult => clk_i,
+                                      s_axis_clk => clk_i,
+                                      s_axis_rstn => rstn_i,
+                                      s_axis_rdy => s_ready,
+                                      s_axis_data => s_data,
+                                      s_axis_valid => s_valid,
+                                      m_axis_clk => clk_i,
+                                      m_axis_rstn => rstn_i,
+                                      m_axis_valid => m_valid,
+                                      m_axis_data => m_data,
+                                      m_axis_rdy => m_ready);
 
   -- The Core Of The Problem ----------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------

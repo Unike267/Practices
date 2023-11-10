@@ -31,46 +31,6 @@ end acceler;
 
 architecture rtl of acceler is
 
--- Declaration of fifo component
-component fifo is
-    generic (  
-        -- Number of bits per element 
-        N_bits : in natural;
-        -- Log2 of number of elements that the FIFO has; Number of FIFO elements has to be a power of two.
-        Log2_elements : in natural
-        );
-    port(
-        -- Fifo clocks/reset signals        
-        clk_wr : in std_logic;
-        clk_rd : in std_logic;
-        rst : in std_logic;
-        -- Fifo in/out signals
-        fifo_in : in std_logic_vector (N_bits-1 downto 0);
-        fifo_out : out std_logic_vector(N_bits-1 downto 0);
-        -- Fifo write/read signals
-        wr : in std_logic;
-        rd : in std_logic;
-        -- Fifo control signals
-        full_o : out std_logic;
-        empty_o : out std_logic
-        );
-end component;
-
--- Declaration of mult component
-component mult is
-generic (  
-        -- Number of bits that the input/output data has. 
-        N_bits : in natural
-        );
-port (
-        -- Clock signal
-        clk : in std_logic;
-        -- Mult in/out signals
-        mult_in : in std_logic_vector (N_bits-1 downto 0);
-        mult_out : out std_logic_vector(N_bits-1 downto 0)
-     );
-end component;
-
 -- Declaration of signals
 signal in_pre_mult : std_logic_vector(N_bits-1 downto 0) := (others => '0');
 signal in_post_mult : std_logic_vector(N_bits-1 downto 0) := (others => '0');
@@ -88,18 +48,41 @@ begin
 
 -- Fifo IN instantiation
 
-fifo_IN : fifo   generic map (N_bits => N_bits, Log2_elements => Log2_elements)
-                port map (clk_wr => clk_wr, clk_rd => clk_mult, rst => rst, fifo_in => acceler_in, fifo_out => in_pre_mult, wr => wr_acceler, rd => rd_inter, full_o => full_acceler, empty_o => empty_inter);
+fifo_IN : entity work.fifo  
+                generic map (N_bits => N_bits,
+                             Log2_elements => Log2_elements)
+                port map (clk_wr => clk_wr, 
+                          clk_rd => clk_mult, 
+                          rst => rst, 
+                          fifo_in => acceler_in, 
+                          fifo_out => in_pre_mult,
+                          wr => wr_acceler, 
+                          rd => rd_inter, 
+                          full_o => full_acceler, 
+                          empty_o => empty_inter);
 
 -- mult instantiation
 
-mult_0 : mult   generic map (N_bits => N_bits)
-                port map (clk => clk_mult, mult_in => in_pre_mult, mult_out => in_post_mult);
+mult_0 : entity  work.mult   
+                generic map (N_bits => N_bits)
+                port map (clk => clk_mult, 
+                          mult_in => in_pre_mult, 
+                          mult_out => in_post_mult);
 
 -- Fifo OUT instantiation
 
-fifo_OUT : fifo   generic map (N_bits => N_bits, Log2_elements => Log2_elements)
-                port map (clk_wr => clk_mult, clk_rd => clk_rd, rst => rst, fifo_in => in_post_mult, fifo_out => acceler_out, wr => wr_inter, rd => rd_acceler, full_o => full_inter, empty_o => empty_acceler);
+fifo_OUT : entity work.fifo   
+                generic map (N_bits => N_bits, 
+                             Log2_elements => Log2_elements)
+                port map (clk_wr => clk_mult,
+                          clk_rd => clk_rd, 
+                          rst => rst, 
+                          fifo_in => in_post_mult, 
+                          fifo_out => acceler_out, 
+                          wr => wr_inter, 
+                          rd => rd_acceler, 
+                          full_o => full_inter, 
+                          empty_o => empty_acceler);
 
 -- State machine
 
