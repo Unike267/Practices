@@ -80,15 +80,8 @@ signal m_ready : std_logic;
 signal m_data : std_logic_vector(31 downto 0);
 signal m_valid : std_logic;
 
-signal s_ready_u : std_ulogic;
 signal s_data_u : std_ulogic_vector(31 downto 0);
-signal s_valid_u : std_ulogic;
-signal m_ready_u : std_ulogic;
 signal m_data_u : std_ulogic_vector(31 downto 0);
-signal m_valid_u : std_ulogic;
-
-signal s_ready_b : bit;
-signal m_valid_b : bit;
 
 begin
 
@@ -146,11 +139,11 @@ begin
     uart0_rxd_i => uart0_rxd_i,  -- UART0 receive data
     -- Stream Link Interface (available if IO_SLINK_EN = true) --
     slink_rx_dat_i => m_data_u,          -- RX input data
-    slink_rx_val_i => m_valid_u,          -- RX valid input
-    slink_rx_rdy_o => m_ready_u,          -- RX ready to receive
+    slink_rx_val_i => m_valid,          -- RX valid input
+    slink_rx_rdy_o => m_ready,          -- RX ready to receive
     slink_tx_dat_o => s_data_u,          -- TX output data
-    slink_tx_val_o => s_valid_u,          -- TX valid output
-    slink_tx_rdy_i => s_ready_u          -- TX ready to send
+    slink_tx_val_o => s_valid,          -- TX valid output
+    slink_tx_rdy_i => s_ready         -- TX ready to send
     
   );
 
@@ -163,23 +156,8 @@ gpio_o <= con_gpio_o(7 downto 0);
 
 s_data <= To_StdLogicVector(s_data_u);
 
-    --There isn't to_stdlogic direct function to make s_valid <= to_stdlogic(s_valid_u);
-    with s_valid_u select
-         s_valid <= '1' when '1',
-                    '0' when others;
-
-s_ready_b <= to_bit(s_ready);
-s_ready_u <= To_StdULogic(s_ready_b);
-
 --RX (Master acceler; Slave NEORV32 CPU)
+
 m_data_u <= To_StdULogicVector(m_data);
-
-m_valid_b <= to_bit(m_valid);
-m_valid_u <= To_StdULogic(m_valid_b);
-
-    --There isn't to_stdlogic direct function to make m_ready <= to_stdlogic(m_ready_u);
-    with m_ready_u select
-         m_ready <= '1' when '1',
-                    '0' when others;
 
 end architecture;
