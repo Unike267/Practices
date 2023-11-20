@@ -40,4 +40,24 @@ jobs:
           path: |
             ./synth/all_design.vhd
             ./synth/neorv32_test_top.json
+
+  Synth_CFU:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v3
+
+      - uses: docker://gcr.io/hdl-containers/impl/icestorm
+        with:
+          args: ./synth/synth_with_mult_cfu.sh
+       
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Synth_CFU
+          path: |
+            ./synth/all_design_cfu.vhd
+            ./synth/neorv32_test_top_cfu.json
             
