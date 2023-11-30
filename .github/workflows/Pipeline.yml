@@ -61,3 +61,22 @@ jobs:
             ./synth/all_design_cfu.vhd
             ./synth/neorv32_test_top_cfu.json
             
+  Synth_CFS:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v3
+
+      - uses: docker://gcr.io/hdl-containers/impl/icestorm
+        with:
+          args: ./synth/synth_with_acceler_cfs.sh
+       
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Synth_CFU
+          path: |
+            ./synth/all_design_cfs.vhd
+            ./synth/neorv32_test_top_cfs.json

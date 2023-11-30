@@ -163,9 +163,6 @@ begin
   -- that can be handled by the application software. Note that the current privilege level should not be exposed to software to
   -- maintain full virtualization. Hence, CFS-based "privilege escalation" should trigger a bus access exception (e.g. by setting 'err_o').
 
-  bus_rsp_o.err <= '0'; -- Tie to zero if not explicitly used.
-
-
   -- Host access example: Read and write access to the interface registers + bus transfer acknowledge. This example only
   -- implements four physical r/w register (the four lowest CFS registers). The remaining addresses of the CFS are not associated
   -- with any physical registers - any access to those is simply ignored but still acknowledged. Only full-word write accesses are
