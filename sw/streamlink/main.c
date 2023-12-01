@@ -75,7 +75,7 @@ int main() {
 
 
   // intro
-  neorv32_uart0_printf("\n<<< ACCELER via Slink demo program >>>\n\n");
+  neorv32_uart0_printf("\n<<< MULT_WRAPPER via Slink demo program >>>\n\n");
 
   // check if SLINK is implemented at all
   if (neorv32_slink_available() == 0) {
@@ -94,9 +94,9 @@ int main() {
   neorv32_slink_setup(0);
 
   // TX demo
-  neorv32_uart0_printf("-------- Write data to acceler --------\n");
+  neorv32_uart0_printf("-------- Write data to mult_wrapper --------\n");
 
-  //Acceler Fifos have 4 elements
+  //Mult_wrapper Fifos have 4 elements
   for (i=0; i<4 ; i++) {
     if(i==0){
             static uint32_t pri = 65537;
@@ -164,7 +164,7 @@ int main() {
 
 
   // RX demo
-  neorv32_uart0_printf("\n-------- Read data from acceler --------\n");
+  neorv32_uart0_printf("\n-------- Read data from mult_wrapper --------\n");
 
   for (i=0; i<4; i++) {
     neorv32_uart0_printf("[%i] Reading RX data... ", i);
@@ -182,4 +182,3 @@ int main() {
   neorv32_uart0_printf("\nProgram execution completed.\n");
   return 0;
 }
-

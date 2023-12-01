@@ -83,7 +83,7 @@ int main() {
   // intro
   neorv32_uart0_printf("\n<<< NEORV32 Custom Functions Unit (CFU) >>>\n\n");
 
-  neorv32_uart0_printf(" This program works with the multiplier of the acceler integrate as a CFU \n\n");
+  neorv32_uart0_printf(" This program works with the multiplier of the mult_wrapper integrate as a CFU \n\n");
 
   // ----------------------------------------------------------
   // R3-type instructions (up to 1024 custom instructions)

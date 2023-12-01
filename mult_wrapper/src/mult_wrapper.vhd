@@ -1,10 +1,10 @@
--- RTL of Accelerator
+-- RTL of Mult_wrapper
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity acceler is
+entity mult_wrapper is
 generic (  
         -- Number of bits that the input/output data has
         N_bits : in natural;
@@ -12,24 +12,24 @@ generic (
         Log2_elements : in natural
         );
 port (
-        -- Acceler clocks and reset signals        
+        -- Mult_wrapper clocks and reset signals        
         clk_wr : in std_logic;
         clk_mult : in std_logic;
         clk_rd : in std_logic;
         rst : in std_logic;
-        -- Acceler input/output data
-        acceler_in : in std_logic_vector (N_bits-1 downto 0);
-        acceler_out : out std_logic_vector (N_bits-1 downto 0);     
-        -- Acceler write and read signals; 
-        wr_acceler : in std_logic;
-        rd_acceler : in std_logic;
-        -- Acceler status signals
-        full_acceler : out std_logic;
-        empty_acceler : out std_logic
+        -- Mult_wrapper input/output data
+        mult_wrapper_in : in std_logic_vector (N_bits-1 downto 0);
+        mult_wrapper_out : out std_logic_vector (N_bits-1 downto 0);     
+        -- Mult_wrapper write and read signals; 
+        wr_mult_wrapper : in std_logic;
+        rd_mult_wrapper : in std_logic;
+        -- Mult_wrapper status signals
+        full_mult_wrapper : out std_logic;
+        empty_mult_wrapper : out std_logic
 );
-end acceler;
+end mult_wrapper;
 
-architecture rtl of acceler is
+architecture rtl of mult_wrapper is
 
 -- Declaration of signals
 signal in_pre_mult : std_logic_vector(N_bits-1 downto 0) := (others => '0');
@@ -54,11 +54,11 @@ fifo_IN : entity work.fifo
                 port map (clk_wr => clk_wr, 
                           clk_rd => clk_mult, 
                           rst => rst, 
-                          fifo_in => acceler_in, 
+                          fifo_in => mult_wrapper_in, 
                           fifo_out => in_pre_mult,
-                          wr => wr_acceler, 
+                          wr => wr_mult_wrapper, 
                           rd => rd_inter, 
-                          full_o => full_acceler, 
+                          full_o => full_mult_wrapper, 
                           empty_o => empty_inter);
 
 -- mult instantiation
@@ -78,11 +78,11 @@ fifo_OUT : entity work.fifo
                           clk_rd => clk_rd, 
                           rst => rst, 
                           fifo_in => in_post_mult, 
-                          fifo_out => acceler_out, 
+                          fifo_out => mult_wrapper_out, 
                           wr => wr_inter, 
-                          rd => rd_acceler, 
+                          rd => rd_mult_wrapper, 
                           full_o => full_inter, 
-                          empty_o => empty_acceler);
+                          empty_o => empty_mult_wrapper);
 
 -- State machine
 

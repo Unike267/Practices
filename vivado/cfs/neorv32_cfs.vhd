@@ -68,9 +68,9 @@ end neorv32_cfs;
 architecture neorv32_cfs_rtl of neorv32_cfs is
 
   -- default CFS interface registers --
-  signal cfs_acceler_data : std_ulogic_vector(31 downto 0);
-  signal cfs_acceler_control : std_ulogic_vector(31 downto 0);
-  signal cfs_acceler_res : std_ulogic_vector(31 downto 0);
+  signal cfs_mult_wrapper_data : std_ulogic_vector(31 downto 0);
+  signal cfs_mult_wrapper_control : std_ulogic_vector(31 downto 0);
+  signal cfs_mult_wrapper_res : std_ulogic_vector(31 downto 0);
 
 begin
 
@@ -172,8 +172,8 @@ begin
 bus_access: process(rstn_i, clk_i)
   begin
     if (rstn_i = '0') then
-      cfs_acceler_data <= (others => '0');
-      cfs_acceler_control <= (others => '0');
+      cfs_mult_wrapper_data <= (others => '0');
+      cfs_mult_wrapper_control <= (others => '0');
       --
       bus_rsp_o.ack  <= '0';
       bus_rsp_o.err  <= '0';
@@ -194,16 +194,16 @@ bus_access: process(rstn_i, clk_i)
         -- write access --
         if (bus_req_i.rw = '1') then
           if (bus_req_i.addr(7 downto 2) = "000000") then -- address size is fixed!
-            cfs_acceler_data <= bus_req_i.data; -- write to CFS memory-mapped register 0; Acceler inputs
+            cfs_mult_wrapper_data <= bus_req_i.data; -- write to CFS memory-mapped register 0; Mult_wrapper inputs
           end if;
           if (bus_req_i.addr(7 downto 2) = "000001") then
-            cfs_acceler_control <= bus_req_i.data; -- write to CFS memory-mapped register 1; Acceler control
+            cfs_mult_wrapper_control <= bus_req_i.data; -- write to CFS memory-mapped register 1; Mult_wrapper control
           end if;
 
         -- read access --
         else
           case bus_req_i.addr(7 downto 2) is -- address size is fixed!
-            when "000000" => bus_rsp_o.data <= cfs_acceler_res; -- read from CFS memory-mapped register 0; Acceler outputs
+            when "000000" => bus_rsp_o.data <= cfs_mult_wrapper_res; -- read from CFS memory-mapped register 0; Mult_wrapper outputs
             when others   => bus_rsp_o.data <= (others => '0');
           end case;
         end if;
@@ -212,12 +212,12 @@ bus_access: process(rstn_i, clk_i)
   end process bus_access;
 
 -- cfs_out_o 34 bits.
--- cfs_acceler_control(1) => read_acceler; cfs_acceler_control(0) => write_acceler
+-- cfs_mult_wrapper_control(1) => read_mult_wrapper; cfs_mult_wrapper_control(0) => write_mult_wrapper
 
- cfs_out_o <= cfs_acceler_control(1) & cfs_acceler_control(0) & cfs_acceler_data; 
+ cfs_out_o <= cfs_mult_wrapper_control(1) & cfs_mult_wrapper_control(0) & cfs_mult_wrapper_data; 
 
--- cfs_in_i 32 bits. Acceler output (16 bits x 16 bits).
+-- cfs_in_i 32 bits. Mult_wrapper output (16 bits x 16 bits).
 
- cfs_acceler_res <= cfs_in_i;
+ cfs_mult_wrapper_res <= cfs_in_i;
 
 end neorv32_cfs_rtl;

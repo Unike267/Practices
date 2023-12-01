@@ -62,16 +62,16 @@ architecture neorv32_test_top_cfs_rtl of neorv32_test_top_cfs is
 
   signal con_gpio_o : std_ulogic_vector(63 downto 0);
 
-  -- Acceler constants:
+  -- Mult_wrapper constants:
   constant N_bits : natural := 32; -- 32 bits (16 bits plus 16 bits)
   constant Log2_elements : natural := 2; -- Log2 is 2 ergo FIFO has 4 elements
-  -- Acceler signals
+  -- Mult_wrapper signals
   signal reset : std_logic;
-  signal acceler_input : std_logic_vector(31 downto 0);
-  signal acceler_control : std_logic_vector(1 downto 0);
-  signal acceler_output : std_logic_vector(31 downto 0);
-  signal acceler_write : std_logic;
-  signal acceler_read : std_logic;
+  signal mult_wrapper_input : std_logic_vector(31 downto 0);
+  signal mult_wrapper_control : std_logic_vector(1 downto 0);
+  signal mult_wrapper_output : std_logic_vector(31 downto 0);
+  signal mult_wrapper_write : std_logic;
+  signal mult_wrapper_read : std_logic;
   signal full_buffer : std_logic;
   signal empty_buffer : std_logic;
 
@@ -79,28 +79,28 @@ architecture neorv32_test_top_cfs_rtl of neorv32_test_top_cfs is
   signal aux_read : std_logic;
   
   signal cfs_o_buffer : std_ulogic_vector(33 downto 0);
-  signal acceler_input_u : std_ulogic_vector(31 downto 0);
-  signal acceler_control_u : std_ulogic_vector(1 downto 0);
-  signal acceler_output_u : std_ulogic_vector(31 downto 0); 
+  signal mult_wrapper_input_u : std_ulogic_vector(31 downto 0);
+  signal mult_wrapper_control_u : std_ulogic_vector(1 downto 0);
+  signal mult_wrapper_output_u : std_ulogic_vector(31 downto 0); 
 
 
 begin
   
-  -- Acceler instantation
+  -- Mult_wrapper instantation
 
-  acceler_0 : entity work.acceler
+  mult_wrapper_0 : entity work.mult_wrapper
                 generic map (N_bits => N_bits,
                              Log2_elements => Log2_elements)
                 port map (clk_wr => clk_i,
                           clk_mult => clk_i,
                           clk_rd => clk_i,
                           rst => reset,
-                          acceler_in => acceler_input,
-                          acceler_out => acceler_output,
-                          wr_acceler => acceler_write,
-                          rd_acceler => acceler_read,
-                          full_acceler => full_buffer,
-                          empty_acceler => empty_buffer);
+                          mult_wrapper_in => mult_wrapper_input,
+                          mult_wrapper_out => mult_wrapper_output,
+                          wr_mult_wrapper => mult_wrapper_write,
+                          rd_mult_wrapper => mult_wrapper_read,
+                          full_mult_wrapper => full_buffer,
+                          empty_mult_wrapper => empty_buffer);
 
   -- The Core Of The Problem ----------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ begin
     clk_i       => clk_i,       -- global clock, rising edge
     rstn_i      => rstn_i,      -- global reset, low-active, async
     -- Custom Functions Subsystem IO (available if IO_CFS_EN = true) --
-    cfs_in_i    => acceler_output_u, -- custom CFS inputs conduit
+    cfs_in_i    => mult_wrapper_output_u, -- custom CFS inputs conduit
     cfs_out_o   => cfs_o_buffer, -- custom CFS outputs conduit
     -- GPIO (available if IO_GPIO_EN = true) --
     gpio_o      => con_gpio_o,  -- parallel output
@@ -143,57 +143,57 @@ begin
     uart0_rxd_i => uart0_rxd_i  -- UART0 receive data
   );
 
-    -- Acceler connection
+    -- Mult_wrapper connection
     -- Reset (NEORV32 rst is low-active)
     reset <= not(rstn_i);
 
-    acceler_input_u <= cfs_o_buffer(31 downto 0);
-    acceler_control_u <= cfs_o_buffer(33 downto 32);
+    mult_wrapper_input_u <= cfs_o_buffer(31 downto 0);
+    mult_wrapper_control_u <= cfs_o_buffer(33 downto 32);
     
-    acceler_input <= To_StdLogicVector(acceler_input_u);
-    acceler_control <= To_StdLogicVector(acceler_control_u);
+    mult_wrapper_input <= To_StdLogicVector(mult_wrapper_input_u);
+    mult_wrapper_control <= To_StdLogicVector(mult_wrapper_control_u);
 
-    acceler_output_u <= To_StdULogicVector(acceler_output);
+    mult_wrapper_output_u <= To_StdULogicVector(mult_wrapper_output);
 
-    -- Make acceler write and read signals; Make sure that the write and read signals only last one cycle.
+    -- Make mult_wrapper write and read signals; Make sure that the write and read signals only last one cycle.
     
-    Make_acceler_write : process (clk_i,reset)
+    Make_mult_wrapper_write : process (clk_i,reset)
         begin   
             if(reset = '1') then
-                acceler_write <= '0';
+                mult_wrapper_write <= '0';
                 aux_write <= '0';            
             elsif( rising_edge(clk_i) ) then
-                if(acceler_control(0) = '0' and aux_write = '1') then
+                if(mult_wrapper_control(0) = '0' and aux_write = '1') then
                     aux_write <= '0';            
-                elsif(acceler_control(0) = '1' and aux_write = '0') then
+                elsif(mult_wrapper_control(0) = '1' and aux_write = '0') then
                     if (full_buffer = '0') then                   
-                        acceler_write <= '1'; -- Write in the acceler
+                        mult_wrapper_write <= '1'; -- Write in the mult_wrapper
                         aux_write <= '1';
                     end if;
-                elsif(acceler_control(0) = '1' and aux_write = '1') then
-                    acceler_write <= '0'; -- The write signal only lasts one cycle
+                elsif(mult_wrapper_control(0) = '1' and aux_write = '1') then
+                    mult_wrapper_write <= '0'; -- The write signal only lasts one cycle
                 end if;
             end if;
-        end process Make_acceler_write;
+        end process Make_mult_wrapper_write;
 
-    Make_acceler_read : process (clk_i,reset)
+    Make_mult_wrapper_read : process (clk_i,reset)
         begin   
             if(reset = '1') then
-                acceler_read <= '0';
+                mult_wrapper_read <= '0';
                 aux_read <= '0';            
             elsif( rising_edge(clk_i) ) then
-                if(acceler_control(1) = '0' and aux_read = '1') then
+                if(mult_wrapper_control(1) = '0' and aux_read = '1') then
                     aux_read <= '0';            
-                elsif(acceler_control(1) = '1' and aux_read = '0') then
+                elsif(mult_wrapper_control(1) = '1' and aux_read = '0') then
                     if (empty_buffer = '0') then                   
-                        acceler_read <= '1'; -- Read from the acceler
+                        mult_wrapper_read <= '1'; -- Read from the mult_wrapper
                         aux_read <= '1';
                     end if;
-                elsif(acceler_control(1) = '1' and aux_read = '1') then
-                    acceler_read <= '0'; -- The read signal only lasts one cycle
+                elsif(mult_wrapper_control(1) = '1' and aux_read = '1') then
+                    mult_wrapper_read <= '0'; -- The read signal only lasts one cycle
                 end if;
             end if;
-        end process Make_acceler_read;
+        end process Make_mult_wrapper_read;
 
     -- GPIO output --
     gpio_o <= con_gpio_o(7 downto 0);

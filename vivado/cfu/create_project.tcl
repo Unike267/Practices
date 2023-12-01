@@ -28,10 +28,10 @@ set_property target_language VHDL [current_project]
 # Define filesets
 
 ## Core: NEORV32 (Multiplier via CFU included)
-add_files ./../../acceler/src/mult.vhd [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+add_files ./../../mult_wrapper/src/mult.vhd [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
 set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd]]
 set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_*mem.default.vhd]]
-set_property library neorv32 [get_files ./../../acceler/src/mult.vhd]
+set_property library neorv32 [get_files ./../../mult_wrapper/src/mult.vhd]
 
 ## Design: processor subsystem template, and (optionally) BoardTop and/or other additional sources 
 set fileset_design ./neorv32_test_top_cfu.vhd

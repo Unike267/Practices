@@ -79,11 +79,11 @@ int main() {
   // intro
   neorv32_uart0_printf("\n<<< NEORV32 Custom Functions Subsystem (CFS) >>>\n\n");
 
-  neorv32_uart0_printf(" This program works with the acceler integrate as a CFS \n\n");
+  neorv32_uart0_printf(" This program works with the mult_wrapper integrate as a CFS \n\n");
 
   neorv32_uart0_printf("CFS memory-mapped registers:\n"
-                       " * NEORV32_CFS->REG[0] (r/w): throw inputs to the acceler/read output from the acceler\n"
-                       " * NEORV32_CFS->REG[1] (w): Set write/read control signal to the acceler\n\n");
+                       " * NEORV32_CFS->REG[0] (r/w): throw inputs to the mult_wrapper/read output from the mult_wrapper\n"
+                       " * NEORV32_CFS->REG[1] (w): Set write/read control signal to the mult_wrapper\n\n");
 
   for (i=0; i<4; i++) {
     if(i==0){
@@ -91,9 +91,9 @@ int main() {
             //0000000000000001 x 0000000000000001
             NEORV32_CFS->REG[0] = pri; // write to CFS memory-mapped register 0
             //00000000000000000000000000000001
-            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write pri to acceler
+            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write pri to mult_wrapper
             //00000000000000000000000000000010
-            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read pri from acceler
+            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read pri from mult_wrapper
             //00000000000000000000000000000000
             NEORV32_CFS->REG[1] = 0; // write to CFS memory-mapped register 1; Clean the control signals
 
@@ -104,9 +104,9 @@ int main() {
             //0000000000000010 x 0000000000000010
             NEORV32_CFS->REG[0] = sec; // write to CFS memory-mapped register 0
             //00000000000000000000000000000001
-            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write sec to acceler
+            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write sec to mult_wrapper
             //00000000000000000000000000000010
-            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read sec from acceler
+            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read sec from mult_wrapper
             //00000000000000000000000000000000
             NEORV32_CFS->REG[1] = 0; // write to CFS memory-mapped register 1; Clean the control signals
 
@@ -117,9 +117,9 @@ int main() {
             //0000000000000100 x 0000000000000100
             NEORV32_CFS->REG[0] = ter; // write to CFS memory-mapped register 0
             //00000000000000000000000000000001
-            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write ter to acceler
+            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write ter to mult_wrapper
             //00000000000000000000000000000010
-            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read ter from acceler
+            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read ter from mult_wrapper
             //00000000000000000000000000000000
             NEORV32_CFS->REG[1] = 0; // write to CFS memory-mapped register 1; Clean the control signals
 
@@ -130,9 +130,9 @@ int main() {
             //0000000000001000 x 0000000000001000
             NEORV32_CFS->REG[0] = cua; // write to CFS memory-mapped register 0
             //00000000000000000000000000000001
-            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write cua to acceler
+            NEORV32_CFS->REG[1] = 1; // write to CFS memory-mapped register 1; Write cua to mult_wrapper
             //00000000000000000000000000000010
-            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read cua from acceler
+            NEORV32_CFS->REG[1] = 2; // write to CFS memory-mapped register 1; Read cua from mult_wrapper
             //00000000000000000000000000000000
             NEORV32_CFS->REG[1] = 0; // write to CFS memory-mapped register 1; Clean the control signals
 
@@ -144,4 +144,3 @@ int main() {
 
   return 0;
 }
-

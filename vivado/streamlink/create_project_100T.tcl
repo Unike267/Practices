@@ -1,4 +1,4 @@
-set board "arty-a7-35"
+set board "arty-a7-100"
 
 # Create and clear output directory
 set outputdir work
@@ -13,8 +13,8 @@ if {[llength $files] != 0} {
 }
 
 switch $board {
-  "arty-a7-35" {
-    set a7part "xc7a35ticsg324-1L"
+  "arty-a7-100" {
+    set a7part "xc7a100tcsg324-1"
     set a7prj ${board}-test-setup
   }
 }
@@ -27,13 +27,13 @@ set_property target_language VHDL [current_project]
 
 # Define filesets
 
-## Core: NEORV32 + mult_wrapper via cfs
-add_files ./../../mult_wrapper/src/mult_wrapper.vhd ./../../mult_wrapper/src/mult.vhd ./../../mult_wrapper/src/fifo.vhd [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+## Core: NEORV32
+add_files [glob ./../../mult_wrapper/src/*.vhd] [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
 set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd]]
 set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_*mem.default.vhd]]
 
-## Design: processor subsystem template, and (optionally) BoardTop and/or other additional sources; Mult_wrapper via cfs
-set fileset_design ./neorv32_test_top_cfs.vhd
+## Design: processor subsystem template, and (optionally) BoardTop and/or other additional sources (Mult_wrapper axi buffer is included)
+set fileset_design ./neorv32_test_top_slink.vhd
 
 ## Constraints
 set fileset_constraints [glob ./*.xdc]
@@ -55,3 +55,4 @@ add_files -fileset sim_1 $fileset_sim
 # Run synthesis, implementation and bitstream generation
 launch_runs impl_1 -to_step write_bitstream -jobs 4
 wait_on_run impl_1
+    

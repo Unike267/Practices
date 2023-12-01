@@ -39,7 +39,7 @@ use ieee.numeric_std.all;
 library neorv32;
 use neorv32.neorv32_package.all;
 
-entity neorv32_test_top is
+entity neorv32_test_top_slink is
   generic (
     -- adapt these for your setup --
     CLOCK_FREQUENCY   : natural := 100000000; -- clock frequency of clk_i in Hz
@@ -58,16 +58,16 @@ entity neorv32_test_top is
   );
 end entity;
 
-architecture neorv32_test_top_rtl of neorv32_test_top is
+architecture neorv32_test_top_slink_rtl of neorv32_test_top_slink is
 
   signal con_gpio_o : std_ulogic_vector(63 downto 0);
 
--- Declaration of acceler axi buffer constants
+-- Declaration of mult_wrapper axi buffer constants
 
 constant N_bits : natural := 32; -- 32 bits (16 bits plus 16 bits)
 constant Log2_elements : natural := 2; -- Log2 is 2 ergo FIFO has 4 elements
 
--- Declaration of acceler internal clock signals (Make with MMCM)
+-- Declaration of mult_wrapper internal clock signals (Make with MMCM)
 
 --signal clk_mult : std_logic := '0';
 
@@ -85,9 +85,9 @@ signal m_data_u : std_ulogic_vector(31 downto 0);
 
 begin
 
--- Acceler axi buffer instantation
+-- Mult_wrapper axi buffer instantation
 
- acceler_axi_buffer_0 : entity work.acceler_axi_buffer
+ mult_wrapper_axi_buffer_0 : entity work.mult_wrapper_axi_buffer
                             generic map (N_bits => N_bits,
                                          Log2_elements => Log2_elements)
                             port map (clk_mult => clk_i,
@@ -152,11 +152,11 @@ gpio_o <= con_gpio_o(7 downto 0);
 
 -- Adjust with ulogic:
 
---TX (Master NEORV32 CPU; Slave acceler)
+--TX (Master NEORV32 CPU; Slave mult_wrapper)
 
 s_data <= To_StdLogicVector(s_data_u);
 
---RX (Master acceler; Slave NEORV32 CPU)
+--RX (Master mult_wrapper; Slave NEORV32 CPU)
 
 m_data_u <= To_StdULogicVector(m_data);
 
