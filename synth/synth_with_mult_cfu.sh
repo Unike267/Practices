@@ -29,7 +29,7 @@ echo "Analyze all of design. NEORV32 CPU with multiplier added via cfu"
 ghdl -i --workdir=build --work=neorv32  ../neorv32-setups/neorv32/rtl/core/*.vhd
 ghdl -i --workdir=build --work=neorv32  ../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd
 ghdl -i --workdir=build --work=neorv32  ../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
-ghdl -i --workdir=build --work=neorv32 ../acceler/src/mult.vhd
+ghdl -i --workdir=build --work=neorv32 ../mult_wrapper/src/mult.vhd
 ghdl -i --workdir=build --work=neorv32 ../vivado/cfu/neorv32_test_top_cfu.vhd
 ghdl -m --workdir=build --work=neorv32 neorv32_test_top_cfu
 

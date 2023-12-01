@@ -16,7 +16,7 @@ echo "Copy the app_image with compiled program"
 
 cp vivado/cfs/neorv32_application_image.vhd neorv32-setups/neorv32/rtl/core
 
-echo "Copy the cfs with acceler added via cfs"
+echo "Copy the cfs with mult_wrapper added via cfs"
 
 cp vivado/cfs/neorv32_cfs.vhd neorv32-setups/neorv32/rtl/core
 
@@ -24,14 +24,14 @@ cd synth
 
 mkdir -p build
 
-echo "Analyze all of design. NEORV32 CPU + Acceler via CFS"
+echo "Analyze all of design. NEORV32 CPU + Mult_wrapper via CFS"
 
 ghdl -i --workdir=build --work=neorv32  ../neorv32-setups/neorv32/rtl/core/*.vhd
 ghdl -i --workdir=build --work=neorv32  ../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd
 ghdl -i --workdir=build --work=neorv32  ../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
-ghdl -i --workdir=build --work=neorv32 ../acceler/src/acceler.vhd
-ghdl -i --workdir=build --work=neorv32 ../acceler/src/mult.vhd
-ghdl -i --workdir=build --work=neorv32 ../acceler/src/fifo.vhd
+ghdl -i --workdir=build --work=neorv32 ../mult_wrapper/src/mult_wrapper.vhd
+ghdl -i --workdir=build --work=neorv32 ../mult_wrapper/src/mult.vhd
+ghdl -i --workdir=build --work=neorv32 ../mult_wrapper/src/fifo.vhd
 ghdl -i --workdir=build --work=neorv32 ../vivado/cfs/neorv32_test_top_cfs.vhd
 ghdl -m --workdir=build --work=neorv32 neorv32_test_top_cfs
 

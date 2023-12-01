@@ -8,7 +8,7 @@ on:
 jobs:
 
 
-  Acceler_test:
+  Mult_wrapper_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: 'Run vunit test benchs'
         uses: docker://gcr.io/hdl-containers/sim/osvb
         with:
-          args: ./acceler/vunit_run.py -v
+          args: ./mult_wrapper/vunit_run.py -v
   
   Synth_Slink:
     runs-on: ubuntu-latest
@@ -31,15 +31,15 @@ jobs:
 
       - uses: docker://gcr.io/hdl-containers/impl/icestorm
         with:
-          args: ./synth/synth_with_acceler_slink.sh
+          args: ./synth/synth_with_mult_wrapper_slink.sh
        
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v3
         with:
           name: Synth_Slink
           path: |
-            ./synth/all_design.vhd
-            ./synth/neorv32_test_top.json
+            ./synth/all_design_slink.vhd
+            ./synth/neorv32_test_top_slink.json
 
   Synth_CFU:
     runs-on: ubuntu-latest
@@ -71,12 +71,12 @@ jobs:
 
       - uses: docker://gcr.io/hdl-containers/impl/icestorm
         with:
-          args: ./synth/synth_with_acceler_cfs.sh
+          args: ./synth/synth_with_mult_wrapper_cfs.sh
        
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v3
         with:
-          name: Synth_CFU
+          name: Synth_CFS
           path: |
             ./synth/all_design_cfs.vhd
             ./synth/neorv32_test_top_cfs.json
