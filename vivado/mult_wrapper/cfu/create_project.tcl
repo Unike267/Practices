@@ -1,4 +1,4 @@
-set board "arty-a7-100"
+set board "arty-a7-35"
 
 # Create and clear output directory
 set outputdir work
@@ -13,8 +13,8 @@ if {[llength $files] != 0} {
 }
 
 switch $board {
-  "arty-a7-100" {
-    set a7part "xc7a100tcsg324-1"
+  "arty-a7-35" {
+    set a7part "xc7a35ticsg324-1L"
     set a7prj ${board}-test-setup
   }
 }
@@ -28,19 +28,19 @@ set_property target_language VHDL [current_project]
 # Define filesets
 
 ## Core: NEORV32 (Multiplier via CFU included)
-add_files ./../../mult_wrapper/src/mult.vhd [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
-set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd]]
-set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_*mem.default.vhd]]
-set_property library neorv32 [get_files ./../../mult_wrapper/src/mult.vhd]
+add_files ./../../../rtl/mult_wrapper/src/mult.vhd [glob ./../../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+set_property library neorv32 [get_files [glob ./../../../neorv32-setups/neorv32/rtl/core/*.vhd]]
+set_property library neorv32 [get_files [glob ./../../../neorv32-setups/neorv32/rtl/core/mem/neorv32_*mem.default.vhd]]
+set_property library neorv32 [get_files ./../../../rtl/mult_wrapper/src/mult.vhd]
 
 ## Design: processor subsystem template, and (optionally) BoardTop and/or other additional sources 
-set fileset_design ./neorv32_test_top_cfu.vhd
+set fileset_design ./../../../rtl/mult_wrapper/cfu/neorv32_test_top_cfu.vhd
 
 ## Constraints
 set fileset_constraints [glob ./*.xdc]
 
 ## Simulation-only sources
-set fileset_sim [list ./../../neorv32-setups/neorv32/sim/simple/neorv32_tb.simple.vhd ./../../neorv32-setups/neorv32/sim/simple/uart_rx.simple.vhd]
+set fileset_sim [list ./../../../neorv32-setups/neorv32/sim/simple/neorv32_tb.simple.vhd ./../../../neorv32-setups/neorv32/sim/simple/uart_rx.simple.vhd]
 
 # Add source files
 

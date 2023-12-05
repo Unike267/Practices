@@ -27,19 +27,19 @@ set_property target_language VHDL [current_project]
 
 # Define filesets
 
-## Core: NEORV32
-add_files [glob ./../../mult_wrapper/src/*.vhd] [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
-set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/*.vhd]]
-set_property library neorv32 [get_files [glob ./../../neorv32-setups/neorv32/rtl/core/mem/neorv32_*mem.default.vhd]]
+## Core: NEORV32 + mult_wrapper
+add_files [glob ./../../../rtl/mult_wrapper/src/*.vhd] [glob ./../../../neorv32-setups/neorv32/rtl/core/*.vhd] ./../../../neorv32-setups/neorv32/rtl/core/mem/neorv32_dmem.default.vhd ./../../../neorv32-setups/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+set_property library neorv32 [get_files [glob ./../../../neorv32-setups/neorv32/rtl/core/*.vhd]]
+set_property library neorv32 [get_files [glob ./../../../neorv32-setups/neorv32/rtl/core/mem/neorv32_*mem.default.vhd]]
 
 ## Design: processor subsystem template, and (optionally) BoardTop and/or other additional sources (Mult_wrapper axi buffer is included)
-set fileset_design ./neorv32_test_top_slink.vhd
+set fileset_design ./../../../rtl/mult_wrapper/streamlink/neorv32_test_top_slink.vhd
 
 ## Constraints
 set fileset_constraints [glob ./*.xdc]
 
 ## Simulation-only sources
-set fileset_sim [list ./../../neorv32-setups/neorv32/sim/simple/neorv32_tb.simple.vhd ./../../neorv32-setups/neorv32/sim/simple/uart_rx.simple.vhd]
+set fileset_sim [list ./../../../neorv32-setups/neorv32/sim/simple/neorv32_tb.simple.vhd ./../../../neorv32-setups/neorv32/sim/simple/uart_rx.simple.vhd]
 
 # Add source files
 
