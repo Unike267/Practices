@@ -19,7 +19,7 @@ jobs:
       - name: 'Run vunit test benchs'
         uses: docker://gcr.io/hdl-containers/sim/osvb
         with:
-          args: ./mult_wrapper/vunit_run.py -v
+          args: ./sim/mult_wrapper/test/vunit_run.py -v
   
   Synth_Slink:
     runs-on: ubuntu-latest
