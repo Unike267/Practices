@@ -2,6 +2,8 @@
 
 cd $(dirname "$0")
 
+apt update -qq
+
 set +e
 latexmk -pdf -f -interaction=nonstopmode main.tex > log.log 2>&1
 set -e
