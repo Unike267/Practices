@@ -1,0 +1,7 @@
+*.aux
+/log.log
+/main-blx.bib
+/main.bbl
+/main.pdf
+*.run.xml
+
