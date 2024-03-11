@@ -1,13 +1,14 @@
 -- #################################################################################################
 -- # << NEORV32 CPU - Co-Processor: Custom (Instructions) Functions Unit >>                        #
 -- # ********************************************************************************************* #
--- # For user-defined custom RISC-V instructions (R3-type, R4-type and R5-type formats).           #
--- # See the CPU's documentation for more information.                                             #
--- # Also take a look at the "software-counterpart" of this CFU example in 'sw/example/demo_cfu'.  #
+-- # For custom/user-defined RISC-V instructions (R3-type, R4-type and R5-type formats). See the   #
+-- # CPU's documentation for more information. Also take a look at the "software-counterpart" of   #
+-- # this default CFU hardware in 'sw/example/demo_cfu'.                                           #
 -- # ********************************************************************************************* #
 -- # BSD 3-Clause License                                                                          #
 -- #                                                                                               #
--- # Copyright (c) 2023, Stephan Nolting. All rights reserved.                                     #
+-- # The NEORV32 RISC-V Processor, https://github.com/stnolting/neorv32                            #
+-- # Copyright (c) 2024, Stephan Nolting. All rights reserved.                                     #
 -- #                                                                                               #
 -- # Redistribution and use in source and binary forms, with or without modification, are          #
 -- # permitted provided that the following conditions are met:                                     #
@@ -32,8 +33,6 @@
 -- # AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     #
 -- # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED  #
 -- # OF THE POSSIBILITY OF SUCH DAMAGE.                                                            #
--- # ********************************************************************************************* #
--- # The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32       (c) Stephan Nolting #
 -- #################################################################################################
 
 library ieee;
@@ -51,18 +50,18 @@ entity neorv32_cpu_cp_cfu is
     ctrl_i      : in  ctrl_bus_t; -- main control bus
     start_i     : in  std_ulogic; -- trigger operation
     -- CSR interface --
-    csr_we_i    : in  std_ulogic; -- global write enable
-    csr_addr_i  : in  std_ulogic_vector(11 downto 0); -- address
+    csr_we_i    : in  std_ulogic; -- write enable
+    csr_addr_i  : in  std_ulogic_vector(1 downto 0); -- address
     csr_wdata_i : in  std_ulogic_vector(XLEN-1 downto 0); -- write data
-    csr_rdata_o : out std_ulogic_vector(XLEN-1 downto 0); -- read data
+    csr_rdata_o : out std_ulogic_vector(XLEN-1 downto 0) := (others => '0'); -- read data
     -- data input --
     rs1_i       : in  std_ulogic_vector(XLEN-1 downto 0); -- rf source 1
     rs2_i       : in  std_ulogic_vector(XLEN-1 downto 0); -- rf source 2
     rs3_i       : in  std_ulogic_vector(XLEN-1 downto 0); -- rf source 3
     rs4_i       : in  std_ulogic_vector(XLEN-1 downto 0); -- rf source 4
     -- result and status --
-    res_o       : out std_ulogic_vector(XLEN-1 downto 0); -- operation result
-    valid_o     : out std_ulogic -- data output valid
+    res_o       : out std_ulogic_vector(XLEN-1 downto 0) := (others => '0'); -- operation result
+    valid_o     : out std_ulogic := '0' -- data output valid
   );
 end neorv32_cpu_cp_cfu;
 
@@ -85,20 +84,10 @@ architecture neorv32_cpu_cp_cfu_rtl of neorv32_cpu_cp_cfu is
   constant r4type_c  : std_ulogic_vector(1 downto 0) := "01"; -- R4-type instructions (custom-1 opcode)
   constant r5typeA_c : std_ulogic_vector(1 downto 0) := "10"; -- R5-type instruction A (custom-2 opcode)
   constant r5typeB_c : std_ulogic_vector(1 downto 0) := "11"; -- R5-type instruction B (custom-3 opcode)
-  
 
-  -- valid CSR access --
-  signal cfu_csr : std_ulogic;
 
-  -- control and status register interface --
-  type csr_t is record
-    we    : std_ulogic;
-    addr  : std_ulogic_vector(1 downto 0);
-    wdata : std_ulogic_vector(XLEN-1 downto 0);
-    rdata : std_ulogic_vector(XLEN-1 downto 0);
-  end record;
-  signal csr : csr_t;
-
+  -- User-Defined Logic --------------------------------------
+  -- ------------------------------------------------------------
   -- Mult logic
   constant N_bits : natural := 32; -- 32 bits (16 bits plus 16 bits)
  
@@ -112,11 +101,14 @@ architecture neorv32_cpu_cp_cfu_rtl of neorv32_cpu_cp_cfu is
   end record;
   signal multi : multi_t;
 
+  -- custom control and status registers (CSRs) --
+  signal cfu_csr_0, cfu_csr_1 : std_ulogic_vector(XLEN-1 downto 0);
+
 begin
 
--- ****************************************************************************************************************************
--- This controller / proxy-logic is required to handle the CFU <-> CPU interface. Do not modify!
--- ****************************************************************************************************************************
+  -- **************************************************************************************************************************
+  -- This controller is required to handle the CFU <-> CPU interface. Do not modify!
+  -- **************************************************************************************************************************
 
   -- CFU Controller -------------------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -149,17 +141,10 @@ begin
   control.funct3 <= ctrl_i.ir_funct3;
   control.funct7 <= ctrl_i.ir_funct12(11 downto 5);
 
-  -- CSR proxy logic --
-  cfu_csr     <= '1' when (csr_addr_i(11 downto 2) = csr_cfureg0_c(11 downto 2)) else '0';
-  csr.we      <= cfu_csr and csr_we_i;
-  csr.addr    <= csr_addr_i(1 downto 0);
-  csr.wdata   <= csr_wdata_i;
-  csr_rdata_o <= csr.rdata when (cfu_csr = '1') else (others => '0');
 
-
--- ****************************************************************************************************************************
--- CFU Hardware Documentation
--- ****************************************************************************************************************************
+  -- **************************************************************************************************************************
+  -- CFU Interface Documentation
+  -- **************************************************************************************************************************
 
   -- ----------------------------------------------------------------------------------------
   -- CFU Instruction Formats
@@ -172,7 +157,7 @@ begin
   --
   -- Up to 8 RISC-V R4-Type Instructions (RISC-V standard):
   -- This format consists of three source registers ('rs1', 'rs2', 'rs3'), a destination register ('rd') and one "immediate"
-  -- bit-field ('funct7').
+  -- bit-field ('funct3').
   --
   -- Two individual RISC-V R5-Type Instructions (NEORV32-specific):
   -- This format consists of four source registers ('rs1', 'rs2', 'rs3', 'rs4') and a destination register ('rd'). There are
@@ -241,25 +226,25 @@ begin
   -- ----------------------------------------------------------------------------------------
   -- CFU-Internal Control and Status Registers (CFU-CSRs)
   -- ----------------------------------------------------------------------------------------
-  -- > csr.we    (input,   1-bit): set to indicate a valid CFU CSR write access
-  -- > csr.addr  (input,   2-bit): CSR address
-  -- > csr.wdata (input,  32-bit): CSR write data, valid when <csr.we> is set
-  -- > csr.rdata (output, 32-bit): CSR read data, hardwire to all-zero if no CSRs are used
+  -- > csr_we_i    (input,   1-bit): set to indicate a valid CFU CSR write access
+  -- > csr_addr_i  (input,   2-bit): CSR address
+  -- > csr_wdata_i (input,  32-bit): CSR write data
+  -- > csr_rdata_i (output, 32-bit): CSR read data
   --
   -- The NEORV32 provides four directly accessible CSRs for custom use inside the CFU. These registers can be used to pass
   -- further operands, to check the unit's status or to configure operation modes. For instance, a 128-bit wide key could be
-  -- passed to an encryption system. These CFU-CSRs are accessed via an _indirect access mechanism_ from the CPU.
+  -- passed to an encryption system.
   --
   -- If more than four CFU-internal CSRs are required the designer can implement an "indirect access mechanism" based on just
-  -- two of the default CSRs: one CSR is used to configure the index while the other is used as alias to exchange data with
+  -- two of the default CSRs: one CSR is used to configure the index while the other is used as an alias to exchange data with
   -- the indexed CFU-internal CSR - this concept is similar to the RISC-V Indirect CSR Access Extension Specification (Smcsrind).
 
 
--- ****************************************************************************************************************************
--- Actual CFU User Logic Example - replace this with your custom logic
--- ****************************************************************************************************************************
-    
-    mult_0 : entity  work.mult   
+  -- **************************************************************************************************************************
+  -- Actual CFU User Logic Example - replace this with your custom logic
+  -- **************************************************************************************************************************
+
+  mult_0 : entity  work.mult   
                 generic map (N_bits => N_bits)
                 port map (clk => clk_i, 
                           mult_in => multi.multi_i, 
