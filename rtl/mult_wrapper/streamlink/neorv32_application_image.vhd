@@ -1,8 +1,8 @@
 -- The NEORV32 RISC-V Processor: https://github.com/stnolting/neorv32
--- Auto-generated memory initialization file (for APPLICATION) from source file <mult_slink/main.bin>
+-- Auto-generated memory initialization file (for APPLICATION) from source file <mult_via_slink/main.bin>
 -- Size: 5372 bytes
 -- MARCH: default
--- Built: 11.03.2024 11:32:20
+-- Built: 18.03.2024 18:37:06
 
 -- prototype defined in 'neorv32_package.vhd'
 package body neorv32_application_image is
@@ -671,7 +671,7 @@ x"00412483",
 x"01010113",
 x"00008067",
 x"e0802503",
-x"00d55513",
+x"01d55513",
 x"00157513",
 x"00008067",
 x"00ff0737",
