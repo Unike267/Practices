@@ -8,75 +8,257 @@ on:
 jobs:
 
 
-  Mult_wrapper_test:
+  Mult_wfifos_test:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: '🧰 Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: 'Run vunit test benchs'
+      - name: 'Run Mult_wfifos vunit test benchs'
         uses: docker://gcr.io/hdl-containers/sim/osvb
         with:
-          args: ./sim/mult_wrapper/test/vunit_run.py -v
-  
-  Synth_Slink:
+          args: ./sim/run.py -v
+
+  Slink_VC:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: '🧰 Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: docker://gcr.io/hdl-containers/impl/icestorm
+      - name: 'Run slink Verification Components test'
+        uses: docker://gcr.io/hdl-containers/sim/osvb
         with:
-          args: ./synth/synth_with_mult_wrapper_slink.sh
-       
-      - name: '📤 Upload artifact'
-        uses: actions/upload-artifact@v3
-        with:
-          name: Synth_Slink
-          path: |
-            ./synth/all_design_slink.vhd
-            ./synth/neorv32_test_top_slink.json
+          args: ./test/test_slink_VC.sh
 
-  Synth_CFU:
+  Slink_Complex_Latency:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: '🧰 Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: docker://gcr.io/hdl-containers/impl/icestorm
+      - name: 'Run slink Complex Latency test'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./synth/synth_with_mult_cfu.sh
-       
+          args: ./test/test_slink_Complex_Latency.sh
+
       - name: '📤 Upload artifact'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Synth_CFU
+          name: Slink_Complex_Latency_waves
           path: |
-            ./synth/all_design_cfu.vhd
-            ./synth/neorv32_test_top_cfu.json
-            
-  Synth_CFS:
+            ./wave_complex_mult_wfifos_slink.vcd
+            ./wave_complex_multp_wfifos_slink.vcd
+            ./wave_complex_multp_slink.vcd
+
+  Slink_Complex_Throughput:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: '🧰 Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: docker://gcr.io/hdl-containers/impl/icestorm
+      - name: 'Run slink Complex Throughput test'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./synth/synth_with_mult_wrapper_cfs.sh
-       
+          args: ./test/test_slink_Complex_Throughput.sh
+
       - name: '📤 Upload artifact'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Synth_CFS
+          name: Slink_Complex_Throughput_waves
           path: |
-            ./synth/all_design_cfs.vhd
-            ./synth/neorv32_test_top_cfs.json
+            ./wave_complex_mult_wfifos_slink.vcd
+            ./wave_complex_multp_wfifos_slink.vcd
+            ./wave_complex_multp_slink.vcd
+
+  Wishbone_VC:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run wishbone Verification Components test'
+        uses: docker://gcr.io/hdl-containers/sim/osvb
+        with:
+          args: ./test/test_wishbone_VC.sh
+
+  Wishbone_Complex_Latency:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run wishbone Complex Latency test'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_wishbone_Complex_Latency.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wishbone_Complex_Latency_waves
+          path: |
+            ./wave_complex_mult_wfifos_wishbone.vcd
+            ./wave_complex_multp_wfifos_wishbone.vcd
+            ./wave_complex_multp_wishbone.vcd
+
+  Wishbone_Complex_Throughput:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run wishbone Complex Throughput test'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_wishbone_Complex_Throughput.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wishbone_Complex_Throughput_waves
+          path: |
+            ./wave_complex_mult_wfifos_wishbone.vcd
+            ./wave_complex_multp_wfifos_wishbone.vcd
+
+  CFU_Complex_Latency_Mult_wfifos:
+    runs-on: ubuntu-latest
+    env:
+      Design: mult
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run CFU Complex Latency test for mult_wfifos'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_CFU_Complex_Latency.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CFU_Complex_Latency_waves_mult_wfifos
+          path: ./wave_complex_mults_cfu.vcd
+
+  CFU_Complex_Latency_Multp_wfifos:
+    runs-on: ubuntu-latest
+    env:
+      Design: multp_wfifos
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run CFU Complex Latency test for multp_wfifos'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_CFU_Complex_Latency.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CFU_Complex_Latency_waves_multp_wfifos
+          path: ./wave_complex_mults_cfu.vcd
+
+  CFU_Complex_Latency_Multp:
+    runs-on: ubuntu-latest
+    env:
+      Design: multp
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run CFU Complex Latency test for multp'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_CFU_Complex_Latency.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CFU_Complex_Latency_waves_multp
+          path: ./wave_complex_mults_cfu.vcd
+
+  CFS_Complex_Latency_buffering:
+    runs-on: ubuntu-latest
+    env:
+      Fifos: yes
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run CFS Complex Latency test for buffering multipliers'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_CFS_Complex_Latency.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CFS_Complex_Latency_waves_buffering
+          path: |
+            ./wave_complex_mult_wfifos_cfs.vcd
+            ./wave_complex_multp_wfifos_cfs.vcd
+
+  CFS_Complex_Latency_not_buffering:
+    runs-on: ubuntu-latest
+    env:
+      Fifos: no
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run CFS Complex Latency test for not buffering multipliers'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_CFS_Complex_Latency.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CFS_Complex_Latency_waves_not_buffering
+          path: ./wave_complex_multp_cfs.vcd
+
+  CFS_Complex_Throughput_buffering:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Run CFS Complex Throughput test for buffering multipliers'
+        uses: docker://docker.io/ghdl/vunit:mcode-master
+        with:
+          args: ./test/test_CFS_Complex_Throughput.sh
+
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CFS_Complex_Throughput_waves_buffering
+          path: |
+            ./wave_complex_mult_wfifos_cfs.vcd
+            ./wave_complex_multp_wfifos_cfs.vcd
+
