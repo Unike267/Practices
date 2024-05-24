@@ -1,11 +1,11 @@
--- RTL of mult_wrapper axi buffer
+-- RTL of mult_axis
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity mult_wrapper_axi_buffer is
-generic (  
+entity mult_wfifos_axis is
+generic (
         -- Number of bits that the input/output data has
         N_bits : in natural;
         -- Log2 of number of elements that the FIFOs have; Both the same size; Number of FIFO elements has to be a power of two
@@ -13,7 +13,7 @@ generic (
         );
 port (
     -- Clk mult
-    clk_mult : in std_logic;    
+    clk_mult : in std_logic;
 
     -- Slave signals
     s_axis_clk   : in  std_logic;
@@ -29,29 +29,29 @@ port (
     m_axis_data  : out std_logic_vector(N_bits-1 downto 0);
     m_axis_rdy   : in  std_logic
     );
-end mult_wrapper_axi_buffer;
+end mult_wfifos_axis;
 
-architecture rtl of mult_wrapper_axi_buffer is
+architecture rtl of mult_wfifos_axis is
 
 signal reset, write, read, valid, empty, full : std_logic;
 
 begin
 
--- Mult_wrapper instantation
+-- Mult_wfifos instantation
 
-mult_wrapper_0 : entity work.mult_wrapper
+mult_wfifos_0 : entity work.mult_wfifos
                 generic map (N_bits => N_bits,
                              Log2_elements => Log2_elements)
                 port map (clk_wr => s_axis_clk,
                           clk_mult => clk_mult,
                           clk_rd => m_axis_clk,
                           rst => reset,
-                          mult_wrapper_in => s_axis_data,
-                          mult_wrapper_out => m_axis_data,
-                          wr_mult_wrapper => write,
-                          rd_mult_wrapper => read,
-                          full_mult_wrapper => full,
-                          empty_mult_wrapper => empty);
+                          din => s_axis_data,
+                          dout => m_axis_data,
+                          wr => write,
+                          rd => read,
+                          full => full,
+                          empty => empty);
 
 -- Reset (NEORV32 rst is low-active)
 
