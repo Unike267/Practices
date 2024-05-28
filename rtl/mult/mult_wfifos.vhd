@@ -40,7 +40,7 @@ signal empty_inter : std_logic := '0';
 signal full_inter : std_logic := '0';
 
 type t_states is (CHECK,READ,MULTI,WRITE);
-signal state : t_states;
+signal state : t_states := CHECK;
 signal next_state : t_states;
 
 
@@ -85,7 +85,6 @@ fifo_OUT : entity work.fifo
                           empty_o => empty);
 
 -- State machine
-
     -- Combinational
 
     Combinational_of_state_machine : process (state, empty_inter, full_inter)
@@ -93,40 +92,42 @@ fifo_OUT : entity work.fifo
         next_state <= state;
         case state is
             when CHECK =>
-                wr_inter <= '0';
-                rd_inter <= '0';
-                if empty_inter = '0' and full_inter = '0' then
+                if (empty_inter = '0' and full_inter = '0') then
                     next_state <= READ;
+                else
+                    next_state <= CHECK;
                 end if;
             when READ =>
-                wr_inter <= '0';
-                rd_inter <= '1';
                 next_state <= MULTI;
             when MULTI =>
-                wr_inter <= '0';
-                rd_inter <= '0';
                 next_state <= WRITE;
             when WRITE =>
-                wr_inter <= '1';
-                rd_inter <= '0';
                 next_state <= CHECK;
             when others =>
                 next_state <= CHECK;
         end case;
     end process Combinational_of_state_machine;
 
+    -- Outputs
+
+    with state select
+        wr_inter <= '1' when WRITE,
+                    '0' when others;
+    with state select
+        rd_inter <= '1' when READ,
+                    '0' when others;
+
     -- Sequential
 
     state_machine_state_reg : process ( clk_mult )
     begin
         if( rising_edge(clk_mult) ) then
-            if( rst ='1' ) then
+            if( rst = '1' ) then
                 state <= CHECK;
             else
                 state <= next_state;
             end if;
         end if;
     end process state_machine_state_reg;
-
 
 end rtl;
