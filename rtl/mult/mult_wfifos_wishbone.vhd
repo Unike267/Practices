@@ -30,14 +30,13 @@ end mult_wfifos_wishbone;
 architecture rtl of mult_wfifos_wishbone is
 
 signal reset, write, read, empty, full : std_logic;
-signal ack_wr, ack_rd : std_logic;
+signal ack : std_logic;
 signal stall : std_logic;
 signal input : std_logic_vector(31 downto 0);
 signal output : std_logic_vector(31 downto 0);
-
-type state_t is (wait_in,ack_write,ack_read);
-signal state : state_t;
-signal next_state : state_t;
+signal transfer_in : std_logic;
+signal transfer_out : std_logic;
+signal output_window : std_logic := '0';
 
 begin
 
@@ -67,60 +66,68 @@ err_o <= '0'; --tie to zero if not explicitly used
 
 -- Make stall signal
 
-stall <= full  when we_i = '1' else
-         empty when we_i = '0';
+with we_i select 
+     stall <= full  when '1',
+              empty when others;
 
 stall_o <= stall;
 
---State machine
-    --Sequential:
-state_reg: process (clk_i,rst_i)
-           begin
-             if (rst_i = '0') then
-                state <= wait_in;
-             elsif (rising_edge(clk_i)) then
-                state <= next_state;
-             end if;
-           end process state_reg;
-    -- Combinatorial:
-        -- Next states & outputs:
-next_states : process (state,stb_i,cyc_i,we_i,adr_i,stall)
-              begin
-              next_state <= state;
-                case state is
-                    when wait_in =>
-                        if((stb_i and cyc_i and we_i) = '1' and stall = '0' and adr_i = "10010000000000000000000000000000") then --In our case the address is 0x90000000; See main.c
-                            input <= dat_i; 
-                            write <= '1'; 
-                            ack_wr <= '0';                          
-                            next_state <= ack_write;
-                        elsif(stb_i = '1' and cyc_i = '1' and we_i = '0' and stall = '0' and adr_i = "10010000000000000000000000000000") then 
-                            dat_o <= (others => '0'); 
-                            ack_rd <= '0';                           
-                            read <= '1';
-                            next_state <= ack_read;
-                        else
-                            input <= (others => '0'); 
-                            write <= '0'; 
-                            ack_wr <= '0';
-                            dat_o <= (others => '0');  
-                            read <= '0'; 
-                            ack_rd <= '0';  
-                            next_state <= wait_in;
-                        end if;
-                    when ack_write =>
-                        input <= (others => '0'); 
-                        write <= '0'; 
-                        next_state <= wait_in;
-                        ack_wr <= '1';
-                    when ack_read =>
-                        dat_o <= output;
-                        read <= '0'; 
-                        ack_rd <= '1';
-                        next_state <= wait_in;
-                end case;
-              end process next_states;
+-- Make transfer in/out signals
 
-ack_o <= ack_wr or ack_rd;
+transfer_in  <= (stb_i and cyc_i and we_i and not(stall)) when adr_i = x"90000000" else  -- The address is 0x90000000; See main.c in sw/EMEM
+                '0';
+
+transfer_out <= (stb_i and cyc_i and not(we_i) and not(stall)) when adr_i = x"90000000" else
+                '0';
+
+-- Manage input/output and write/read signals
+
+with transfer_in select
+     input <= dat_i when '1',
+              (others => '0') when others;
+
+with transfer_in select
+     write <= '1' when '1',
+              '0' when others;
+
+with transfer_out select
+     read  <= '1' when '1',
+              '0' when others;
+
+with output_window select
+     dat_o <= output when '1',
+              (others => '0') when others;
+
+-- Manage output_window
+
+process (clk_i) begin
+    if rising_edge(clk_i) then
+      if reset = '1' then
+        output_window <= '0';
+      elsif transfer_out = '1' then
+        output_window <= '1';
+      else
+        output_window <= '0';
+      end if;
+    end if;
+end process;
+
+-- Manage ack signal
+
+process (clk_i) begin
+    if rising_edge(clk_i) then
+      if reset = '1' then
+        ack <= '0';
+      else
+        if transfer_in or transfer_out then
+          ack <= '1';
+        else
+          ack <= '0';
+        end if;
+      end if;
+    end if;
+  end process;
+                
+ack_o <= ack;
 
 end rtl;

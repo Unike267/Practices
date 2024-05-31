@@ -1,4 +1,4 @@
--- RTL of multp_wfifos_wishbone
+-- RTL of multp
 
 library ieee;
 context ieee.ieee_std_context;
@@ -56,10 +56,10 @@ stall_o <= '0';
 
 -- Make transfer in/out signals
 
-transfer_in  <= (stb_i and cyc_i and we_i) when adr_i = "10010000000000000000000000000000" else
+transfer_in  <= (stb_i and cyc_i and we_i) when adr_i = x"90000000" else -- The address is 0x90000000; See main.c in sw/EMEM
                 '0';
 
-transfer_out <= (stb_i and cyc_i and not(we_i)) when adr_i = "10010000000000000000000000000000" else
+transfer_out <= (stb_i and cyc_i and not(we_i)) when adr_i = x"90000000" else
                 '0';
 
 -- Manage inputs/outputs
