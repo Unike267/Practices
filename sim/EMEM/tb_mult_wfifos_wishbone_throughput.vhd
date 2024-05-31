@@ -109,7 +109,7 @@ begin
     for x in 0 to test_items-1 loop
       wait_until_idle(net, bus_handle);
       read_bus(net, bus_handle, x"90000000", tmp); -- Read from 0x90000000 address
-      check_equal(to_signed(test_data(x,2), data_width),signed(tmp),"This is a failure!");
+      check_equal(signed(tmp),to_signed(test_data(x,2), data_width),"This is a failure!");
     end loop;
 
     wait until rising_edge(clk);

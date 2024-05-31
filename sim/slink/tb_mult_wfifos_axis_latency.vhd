@@ -114,7 +114,7 @@ begin
       word(data_width/2-1 downto 0) := std_logic_vector(to_signed(test_data(x, 1), data_width/2));
       push_axi_stream(net, master_axi_stream, word);
       pop_axi_stream(net, slave_axi_stream, tdata => o, tlast => last);
-      check_equal(to_signed(test_data(x,2), data_width),signed(o),"This is a failure!");
+      check_equal(signed(o),to_signed(test_data(x,2), data_width),"This is a failure!");
     end loop;
 
     wait until rising_edge(clk);

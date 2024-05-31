@@ -128,7 +128,7 @@ begin
 
     for x in 0 to test_items-1 loop
       pop_axi_stream(net, slave_axi_stream, tdata => o, tlast => last);
-      check_equal(to_signed(test_data(x,2), data_width),signed(o),"This is a failure!");
+      check_equal(signed(o),to_signed(test_data(x,2), data_width),"This is a failure!");
     end loop;
 
     wait until rising_edge(clk);
