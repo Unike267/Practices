@@ -4,7 +4,7 @@ set -ex
 
 cd $(dirname "$0")
 
-cd ../sim/EMEM
+cd ../EMEM
 
 echo "Start test"
 

@@ -8,13 +8,13 @@ apt update -qq
 
 apt install -y git
 
-cd ..
+cd ../..
 
 git clone --recursive https://github.com/stnolting/neorv32-setups
 
-mv rtl/mult/slink/sim/THROUGHPUT/neorv32_application_image.vhd neorv32-setups/neorv32/rtl/core
+mv rtl/mult/slink/sim/LATENCY/neorv32_application_image.vhd neorv32-setups/neorv32/rtl/core
 
-cd sim/slink/complex-thr
+cd sim/slink/complex-lat
 
 echo "Start test"
 

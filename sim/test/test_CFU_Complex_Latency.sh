@@ -8,7 +8,7 @@ apt update -qq
 
 apt install -y git
 
-cd ..
+cd ../..
 
 git clone --recursive https://github.com/stnolting/neorv32-setups
 

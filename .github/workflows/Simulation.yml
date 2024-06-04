@@ -1,4 +1,4 @@
-name: Pipeline
+name: Simulation
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       - name: 'Run slink Verification Components test'
         uses: docker://gcr.io/hdl-containers/sim/osvb
         with:
-          args: ./test/test_slink_VC.sh
+          args: ./sim/test/test_slink_VC.sh
 
   Slink_Complex_Latency:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
       - name: 'Run slink Complex Latency test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_slink_Complex_Latency.sh
+          args: ./sim/test/test_slink_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -67,7 +67,7 @@ jobs:
       - name: 'Run slink Complex Throughput test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_slink_Complex_Throughput.sh
+          args: ./sim/test/test_slink_Complex_Throughput.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -89,7 +89,7 @@ jobs:
       - name: 'Run wishbone Verification Components test'
         uses: docker://gcr.io/hdl-containers/sim/osvb
         with:
-          args: ./test/test_wishbone_VC.sh
+          args: ./sim/test/test_wishbone_VC.sh
 
   Wishbone_Complex_Latency:
     runs-on: ubuntu-latest
@@ -102,7 +102,7 @@ jobs:
       - name: 'Run wishbone Complex Latency test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_wishbone_Complex_Latency.sh
+          args: ./sim/test/test_wishbone_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -124,7 +124,7 @@ jobs:
       - name: 'Run wishbone Complex Throughput test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_wishbone_Complex_Throughput.sh
+          args: ./sim/test/test_wishbone_Complex_Throughput.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -147,7 +147,7 @@ jobs:
       - name: 'Run CFU Complex Latency test for mult_wfifos'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_CFU_Complex_Latency.sh
+          args: ./sim/test/test_CFU_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -168,7 +168,7 @@ jobs:
       - name: 'Run CFU Complex Latency test for multp_wfifos'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_CFU_Complex_Latency.sh
+          args: ./sim/test/test_CFU_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -189,7 +189,7 @@ jobs:
       - name: 'Run CFU Complex Latency test for multp'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_CFU_Complex_Latency.sh
+          args: ./sim/test/test_CFU_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -210,7 +210,7 @@ jobs:
       - name: 'Run CFS Complex Latency test for buffering multipliers'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_CFS_Complex_Latency.sh
+          args: ./sim/test/test_CFS_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -233,7 +233,7 @@ jobs:
       - name: 'Run CFS Complex Latency test for not buffering multipliers'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_CFS_Complex_Latency.sh
+          args: ./sim/test/test_CFS_Complex_Latency.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
@@ -252,7 +252,7 @@ jobs:
       - name: 'Run CFS Complex Throughput test for buffering multipliers'
         uses: docker://docker.io/ghdl/vunit:mcode-master
         with:
-          args: ./test/test_CFS_Complex_Throughput.sh
+          args: ./sim/test/test_CFS_Complex_Throughput.sh
 
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
