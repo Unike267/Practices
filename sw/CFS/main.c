@@ -2,7 +2,7 @@
 
 #define BAUD_RATE 19200
 
-// This defines is used to bypass the intermediate print functions between wishbone functions (for latency and throughput measurements)
+// This defines is used to bypass the intermediate print functions between cfs functions (for latency and throughput measurements)
 // Comment these defines to perform a normal execution
 // Uncomment latency to perform latency measurements
 // Uncomment throughput to perform throughput measurements
