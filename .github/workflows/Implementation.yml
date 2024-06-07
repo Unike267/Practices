@@ -208,3 +208,43 @@ jobs:
           name: multp_wfifos_wishbone_100t
           path: ./neorv32_multp_wfifos_wishbone_100t.bit
 
+  impl_mults_cfu_35t:
+    runs-on: ubuntu-latest
+    env:
+      Board: 35t
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - uses: docker://ghcr.io/unike267/containers/impl-arty:latest
+        with:
+          args: ./impl/nextpnr/impl_mults_cfu.sh
+      
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mults_cfu_35t
+          path: ./neorv32_mults_cfu_35t.bit
+
+  impl_mults_cfu_100t:
+    runs-on: ubuntu-latest
+    env:
+      Board: 100t
+
+    steps:
+
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+
+      - uses: docker://ghcr.io/unike267/containers/impl-arty:latest
+        with:
+          args: ./impl/nextpnr/impl_mults_cfu.sh
+      
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mults_cfu_100t
+          path: ./neorv32_mults_cfu_100t.bit
+
