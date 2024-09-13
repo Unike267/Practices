@@ -5,7 +5,7 @@ cd $(dirname "$0")
 apt update -qq
 
 set +e
-latexmk -pdf -f -interaction=nonstopmode main.tex > log.log 2>&1
+latexmk --shell-escape -pdf -f -interaction=nonstopmode main.tex > log.log 2>&1
 set -e
 latexmk -c
 

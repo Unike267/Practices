@@ -15,7 +15,7 @@ jobs:
       - name: '🧰 Checkout'
         uses: actions/checkout@v3
 
-      - uses: docker://btdi/latex
+      - uses: docker://ghcr.io/unike267/containers/latex-pygments:latest
         with:
           args: ./make.sh
        

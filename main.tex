@@ -43,11 +43,14 @@ headsepline, % Uncomment to get a line under the header
 
 \usepackage{mathpazo} % Use the Palatino font by default
 
-\usepackage[backend=bibtex,style=authoryear,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
+\usepackage[backend=bibtex,style=ieee,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
 
-\addbibresource{example.bib} % The filename of the bibliography
+\addbibresource{references.bib} % The filename of the bibliography
 
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+\usepackage[skip=4pt plus1pt, indent=15pt]{parskip}
+\usepackage{pdfpages}
+\usepackage{amsmath}
 
 %----------------------------------------------------------------------------------------
 %	MARGIN SETTINGS
@@ -67,8 +70,8 @@ headsepline, % Uncomment to get a line under the header
 %	THESIS INFORMATION
 %----------------------------------------------------------------------------------------
 
-\thesistitle{Título TFM} % Your thesis title, this is used in the title and abstract, print it elsewhere with \ttitle
-\supervisor{Dr. James \textsc{Smith}} % Your supervisor's name, this is used in the title page, print it elsewhere with \supname
+\thesistitle{Integración y caracterización del rendimiento de unidades coprocesadoras en núcleo RISC-V para aplicaciones de IA} % Your thesis title, this is used in the title and abstract, print it elsewhere with \ttitle
+\supervisor{Dr. Koldo \textsc{Basterretxea Oyarzabal}} % Your supervisor's name, this is used in the title page, print it elsewhere with \supname
 \examiner{} % Your examiner's name, this is not currently used anywhere in the template, print it elsewhere with \examname
 \degree{Master en Sistemas Electrónicos Avanzados} % Your degree name, this is used in the title page and abstract, print it elsewhere with \degreename
 \author{Unai \textsc{Sainz Estebanez}} % Your name, this is used in the title page and abstract, print it elsewhere with \authorname
@@ -90,6 +93,7 @@ headsepline, % Uncomment to get a line under the header
 \begin{document}
 
 \renewcommand{\listtablename}{Índice de Tablas}
+\renewcommand{\tablename}{Tabla}
 
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the pre-content pages
 
@@ -104,7 +108,7 @@ headsepline, % Uncomment to get a line under the header
 
 \vspace*{.06\textheight}
 {\scshape\LARGE \univname\par}\vspace{1.5cm} % University name
-\textsc{\Large Trabajo Fin de Master}\\[0.5cm] % Thesis type
+\textsc{\Large Trabajo Fin de Máster}\\[0.5cm] % Thesis type
 
 \HRule \\[0.4cm] % Horizontal line
 {\huge \bfseries \ttitle\par}\vspace{0.4cm} % Thesis title
@@ -119,13 +123,13 @@ headsepline, % Uncomment to get a line under the header
 \begin{minipage}[t]{0.4\textwidth}
 \begin{flushright} \large
 \emph{Director:} \\
-\href{https://www.ehu.eus}{\supname} % Supervisor name - remove the \href bracket to remove the link  
+\href{https://www.ehu.eus/es/web/gded/koldo}{\supname} % Supervisor name - remove the \href bracket to remove the link  
 \end{flushright}
 \end{minipage}\\[3cm]
  
 \vfill
 
-\large \textit{El presente trabajo fin de master}\\[0.3cm] % University requirement text
+\large \textit{El presente Trabajo Fin de Máster}\\[0.3cm] % University requirement text
 \textit{se ha realizado en el}\\[0.4cm]
 \groupname\\[2cm] % Research group name and department name
  
@@ -146,9 +150,9 @@ headsepline, % Uncomment to get a line under the header
 
 \vspace*{0.2\textheight}
 
-\noindent\enquote{\itshape Frase celebre}\bigbreak
+\noindent\enquote{\itshape L'umanità è a un bivio. O torna a credere di avere una natura diversa rispetto alle macchine o sarà ridotta a macchina tra le macchine.}\bigbreak
 
-\hfill Autor frase celebre
+\hfill Federico Faggin
 
 %----------------------------------------------------------------------------------------
 %	RESUMEN CASTELLANO
@@ -193,8 +197,37 @@ Aqui iria el resumen propio en ingles\ldots
 
 \begin{abbreviations}{ll} % Include a list of abbreviations (a table of two columns)
 \addchaptertocentry{\abbrevname} % Add the list of abbreviations to the table of contents
-\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere\\
-\textbf{WSF} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or\\
+\textbf{IA} & \textbf{I}nteligencia \textbf{A}rtificial\\
+\textbf{AI} & \textbf{A}rtificial \textbf{I}ntelligence\\
+\textbf{FPGA} & \textbf{F}ield \textbf{P}rogrammable \textbf{G}ate \textbf{A}rrays\\
+\textbf{ALU} & \textbf{A}rithmetic \textbf{L}ogic \textbf{U}nit\\
+\textbf{VHDL} & \textbf{VHSIC} \textbf{H}ardware \textbf{D}escription \textbf{L}anguage\\
+\textbf{VHSIC} & \textbf{V}ery \textbf{H}igh \textbf{S}peed \textbf{I}ntegrated \textbf{C}ircuit\\
+\textbf{CI} & \textbf{C}ontinuous \textbf{I}ntegration\\
+\textbf{HDL} & \textbf{H}ardware  \textbf{D}escription \textbf{L}anguage\\
+\textbf{ISA} & \textbf{I}nstruction  \textbf{S}et \textbf{A}rchitecture\\
+\textbf{CPU} & \textbf{C}entral  \textbf{P}rocessing \textbf{U}nit\\ 
+\textbf{ESA} & \textbf{E}uropean  \textbf{S}pace \textbf{A}gency\\ 
+\textbf{SPARC} & \textbf{S}calable  \textbf{P}rocessor \textbf{ARC}hitecture\\ 
+\textbf{POWER} & \textbf{P}erformance \textbf{O}ptimization \textbf{W}ith \textbf{E}nhanced \textbf{R}ISC\\   
+\textbf{SoC} & \textbf{S}ystem  \textbf{o}n a \textbf{C}hip\\ 
+\textbf{CFU} & \textbf{C}ustom  \textbf{F}unction \textbf{U}nit\\ 
+\textbf{CXU} & \textbf{C}omposable  e\textbf{X}tension \textbf{U}nit\\ 
+\textbf{AXI} & \textbf{A}dvanced  e\textbf{X}tensible \textbf{I}nterface\\ 
+\textbf{SLINK} & \textbf{S}tream   \textbf{LINK}  Interface\\ 
+\textbf{XBUS} & Processor-E\textbf{X}ternal  \textbf{BUS}  Interface\\ 
+\textbf{CFS} & \textbf{C}ustom  \textbf{F}unction \textbf{S}ubsystem\\ 
+\textbf{FIFO} & \textbf{F}irst  \textbf{I}n \textbf{F}irst \textbf{O}ut\\ 
+\textbf{CRI} & \textbf{C}entered \textbf{R}ecursive \textbf{I}nterpolation\\ 
+\textbf{MLO} & \textbf{M}odified \textbf{L}attice \textbf{O}perators\\ 
+\textbf{RNA} & \textbf{R}edes \textbf{N}euronales \textbf{A}rtificiales\\ 
+\textbf{FA} & \textbf{F}unción de \textbf{A}ctivación\\ 
+\textbf{ReLU} & \textbf{Re}ctified \textbf{L}inear \textbf{U}nit\\ 
+\textbf{FOSS} & \textbf{F}ree and \textbf{O}pen \textbf{S}ource \textbf{S}oftware\\
+\textbf{ODS} & \textbf{O}bjetivos de \textbf{D}esarrollo \textbf{S}ostenible\\ 
+\textbf{DRAM} & \textbf{D}ynamic \textbf{R}andom \textbf{A}ccess \textbf{M}emory\\ 
+\textbf{PCI} & \textbf{P}eripheral \textbf{C}omponent \textbf{I}nterconnect\\ 
+\textbf{SATA} & \textbf{S}erial \textbf{A}dvanced \textbf{T}echnology \textbf{A}ttachment\\ 
 
 \end{abbreviations}
 
@@ -213,6 +246,7 @@ Aqui iria el resumen propio en ingles\ldots
 \pagestyle{thesis} % Return the page headers back to the "thesis" style
 
 \include{Capitulos/Memoria}
+\include{Capitulos/Desarrollo}
 \include{Capitulos/Metodologia} 
 \include{Capitulos/Aspectos_Economicos}
 \include{Capitulos/Conclusiones}  
@@ -229,6 +263,7 @@ Aqui iria el resumen propio en ingles\ldots
 \include{Anexos/Pliego}
 \include{Anexos/Planos}
 \include{Anexos/Codigo}
+\include{Anexos/Articulo}
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY

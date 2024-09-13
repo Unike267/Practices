@@ -1,0 +1,44 @@
+\chapter{Desarrollo} % Título del capítulo
+
+\label{Desarrollo}
+
+\section{Selección del microcontrolador}
+
+\label{Selec}
+
+Resulta imprescindible que el microcontrolador seleccionado para este proyecto de investigación cumpla con los siguientes requisitos:
+
+%cambiar-listo!
+\begin{itemize}
+    \item Estar basado en una ISA RISC-V, ya que el contexto del proyecto está orientado a acoplar coprocesadores en núcleos RISC-V.
+    \item Estar descrito en el lenguaje de descripción de hardware VHDL, ya que los coprocesadores embebidos para aplicaciones de IA que se pretenden acoplar están descritos en este lenguaje.
+    \item Contar con extensión de instrucciones para conectar coprocesadores mediante CFU, además de con soporte para comunicaciones \textit{memory-mapped} e interfaces \textit{stream}, ya que se necesita una variedad de métodos de conexión para realizar la caracterización del rendimiento mediante diferentes modos.
+\end{itemize} 
+
+En este sentido, el NEORV32 \cite{gh:neorv32} cumple con todos estos requerimientos. 
+Además, en la plataforma de desarrollo colaborativo donde está alojado, cuenta con una comunidad muy activa.
+Es por ello que se encuentra bajo una revisión constante de \textit{bugs} (fallos), tanto por parte del autor como de los usuarios.
+De esta manera, se asegura en gran medida la correcta operatividad del mismo.
+Además, el autor se dedica a realizar actualizaciones periódicas de sus funcionalidades.
+Por si fuera poco, tanto el autor como la comunidad tienen una gran disponibilidad para responder dudas sobre temas relacionados con el proyecto, lo que resulta de gran ayuda.
+Con respecto a la compilación de lenguajes de alto nivel, el proyecto ofrece \textit{toolchains} precompiladas de RISC-V para GCC.  
+Estas herramientas permiten hacer compilación cruzada de C/C++ a instrucciones de RISC-V  en un entorno Linux \cite{gh:neorv32-tool}.
+Cabe destacar que también se facilita un contenedor para realizar esta tarea \cite{gh:sim-conatiner}. 
+Además, cuenta con un soporte de librerías para compilar funciones software específicas de NEORV32. 
+Asimismo, el repositorio ofrece una variedad de ejemplos de aplicación software de todos los recursos con los que cuenta el micro.
+En adición a todo lo mencionado, este microcontrolador cuenta con un \textit{datasheet} \cite{neorv32-ds} y una \textit{user guide} \cite{neorv32-ug} realizadas por el autor y actualizadas a la par que el código del proyecto, las cuales destacan por su calidad.
+Teniendo en cuenta todas estas consideraciones, el NEORV32 es el procesador seleccionado para este proyecto.
+
+\section{Workflow}
+
+\label{Workf}
+
+\section{Caracterización del rendimiento}
+
+\label{Carac}
+
+\section{Integración de coprocesador para aplicaciones de IA}
+
+\label{Integ}
+
+
