@@ -372,7 +372,7 @@ La información relativa a este congreso, así como el propio artículo, se prop
 Puesto que dicho artículo ha sido aceptado, se publicará en el IEEEXplore.
 Se considera un beneficio aportado por este trabajo la contribución en dicha base de datos.  
 
-También, se considera un beneficio aportado por este trabajo la publicación del contenedor \cite{gh:conatiner-implarty} desarrollado para realizar la síntesis, implementación y generación de bitstream para las FPGAs Arty A7 35t y 100t mediante las herramientas \textit{Open Source}: GHDL + yosys + GHDL yosys plugin + nextpnr-xilinx + prjxray.
+También, se considera un beneficio aportado por este trabajo la publicación del contenedor \cite{gh:conatiner-implarty} desarrollado para realizar la síntesis, implementación y generación de \textit{bitstream} para las FPGAs Arty A7 35T y 100T mediante las herramientas \textit{Open Source}: GHDL + yosys + GHDL yosys plugin + nextpnr-xilinx + prjxray.
 
 En lo que respecta a los Objetivos de Desarrollo Sostenible (ODS), este trabajo de investigación pretende aportar beneficios en el marco del objetivo \textit{Industria, innovación e infraestructura} (ODS 9) y del objetivo \textit{Reducción de las desigualdades} (ODS 10). 
 Respecto al ODS 9, se considera que la investigación entorno al enfoque distribuido para realizar IA en el borde supone fomentar la innovación en lo que respecta a este ámbito.
@@ -380,7 +380,24 @@ Respecto al ODS 10, se considera que distribuir contenedores para facilitar el u
 
 \section{Análisis del estado del arte}
 
-Aqui irá un análisis del estado del arte.
+Haciendo un repaso por las principales bases de datos de ámbito electrónico, se observan varios proyectos con una filosofía similar a la presentada en este trabajo de investigación.
+Un ejemplo muy interesante es el encontrado en una publicación titulada \textit{Tiny Neuron Network System based on RISC-V Processor: A Decentralized Approach for IoT Applications} \cite{9942990}.
+En dicho \textit{paper}, se presenta una investigación sobre un pequeño acelerador de redes neuronales en un SoC basado en RISC-V para acelerar una IA empleada en aplicaciones de IoT. 
+Este coprocesador implementa una MAC (multiplicador y acumulador) de precisión variable en bits o una MAC estocástica para reducir el área de hardware y el consumo de energía. 
+Es curioso el hecho de que se emplea la misma tecnología FPGA que en el presente proyecto, una Arty A7 100T.
+Los resultados presentados en este trabajo son destacables, consiguiendo realizar con precisión de 8 bits redes neuronales convolucionales (CNN) con una precisión del 98,55\%.
+En su caso, el método optado para acoplar los aceleradores ha sido una interfaz AXI.
+
+Otro ejemplo muy interesante es el expuesto en una publicación titulada \textit{CNN Specific ISA Extensions Based on RISC-V Processors} \cite{9802445}.
+En ella, se presenta una extensión de instrucciones basada en la ISA RISC-V destinada a aumentar la eficiencia computacional de las CNN en dispositivos en el borde. 
+En su caso emplean el core RISC-V \textit{Open Source} Zero-riscy \cite{8106976} \cite{gh:zero-riscy}.
+Con objeto de evaluar el efecto de la extensión de instrucciones propuesta, se realiza una serie de cargas de trabajo en el núcleo de referencia y en el ampliado. 
+Se obtinen un ratio de aceleración de 1,5× cuando se ejecuta una CNN, y alcanza 2,48×-2,82× cuando sólo se realizan los cálculos de convolución. 
+Los resultados obtenidos en este  \textit{paper} demuestran que las extensiones de ISA propuestas pueden mejorar eficazmente el rendimiento de las CNN.
+
+Los casos mencionados, así como otros de gran interés, se encuentran recogidos en una publicación titulada \textit{A Review of Edge Intelligence Applications Based on RISC-V} \cite{10336594}.
+En ella se resume el uso de RISC-V en aplicaciones de IA en el borde desde un punto de vista hardware y software. 
+Además, a lo largo de la \textit{review} se analizan varios aceleradores, coprocesadores, compiladores y \textit{toolchains} basados en RISC-V, así como las principales aplicaciones software de la IA en el borde. 
 
 \section{Análisis de alternativas}
 
@@ -402,7 +419,11 @@ Cabe destacar que la lógica digital de los complementos que ofrece LiteX están
 Este hecho no impide integrar en él código en otros HDLs.
 De igual modo, es común generar diseños de LiteX en HDLs más tradicionales, como verilog.
 
-%Quizá otra alternativa más 
+Por último, se encuentra la alternativa de comenzar la aproximación de IA a en el borde mediante la externalización a hardware específico de otro cálculo relativo a las RNAs.
+Esta alternativa es bastante diversa y podría ir desde acelerar la activación mediante otra función disponible en el coprocesador configurable y programable basado en CRI hasta elegir otra operación para ser acelerada.
+Un ejemplo de esta última propuesta es la detallada en una publicación titulada \textit{A Soft RISC-V Vector Processor for Edge-AI} \cite{9885953}.
+En ella se presenta una unidad vectorial basada en un \textit{array} sistólico que está estrechamente integrada en el pipeline de un núcleo RISC-V de 32 bits. 
+Tras evaluar el rendimiento de este enfoque distribuido en una FPGA Xilinx Virtex 7, se concluye un aumento de velocidad de hasta 40,7 veces con respecto al núcleo escalar RISC-V en tareas de reconocimiento de imágenes, a costa de un aumento en el consumo energético y en los recursos hardaware de 1,2 y 1,8 veces respectivamente. 
 
 \section{Descripción de la solución propuesta}
 
@@ -412,7 +433,7 @@ La principal tesis que defiende este TFM es externalizar la computación referen
 Este hecho tiene como objetivo simplificar la gestión computacional en pos de implementar un primera aproximación de IA en el borde.
 En este sentido, se propone utilizar un coprocesador basado en la método CRI y acoplarlo a un procesador RISC-V.
 Mediante los argumentos descritos en la sección \ref{Selec} se elige el microcontrolador NEORV32. 
-Con objeto de generar un criterio de selección de modo de acoplamiento, se propone realizar una caracterización del rendimiento de los principales métodos de conexión con los que cuenta este microcontrolador.
+Con objeto de generar un criterio de selección del modo de acoplamiento, se propone realizar una caracterización del rendimiento de los principales métodos de conexión con los que cuenta este microcontrolador.
 Esta caracterización se detalla en la sección \ref{Carac}.
 Por último, se acopla el coprocesador encargado de acelerar el cálculo de la FA sigmoide basado en CRI al NEORV32. 
 Además, se verifica el beneficio de emplear este tipo de enfoque distribuido comparándolo con realizar los mismos cálculos utilizando únicamente el microcontrolador.
