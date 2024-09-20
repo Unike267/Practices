@@ -72,13 +72,13 @@ Esta funcionalidad se ha utilizado, por ejemplo, para testear la correcta operat
 El conjunto de herramientas descritas en la explicación de este flujo de trabajo no solo se utilizan a nivel local, también se utilizan, todas o parte de ellas, en \textbf{integración continua (CI)} en repositorios \textit{online}, tanto en el GitLab del grupo de investigación como en el GitHub propio.
 Para ello, se utilizan varios \textbf{contenedores}.
 Para la generación de \textit{bitstream} mediante herramientas FLOS, se utiliza el contenedor mencionado en la sección \ref{ben}, el cual es generado a su vez en CI.
-Este contenedor se utiliza en la integración continua tanto del repositorio ubicado en GitLab como del ubicado en GitHub.
+Este contenedor se utiliza en la integración continua tanto del repositorio de GitLab como de GitHub.
 Para la generación de \textit{bitstream} mediante Vivado, se utiliza una contenedor que solamente es accesible por los ordenadores del laboratorio del grupo de investigación, el cual está alojado en nuestro servidor Orion.
-Esto es debido a que al ser un software privativo el contenedor no puede ser accesible sin licencia, es por ello que la generación de \textit{bitstream} mediante esta vía solo está disponible en la integración continua del repositorio del grupo (GitLab).
+Esto es debido a que al ser un programa privativo no se pueden distribuir publicamente contenedores con este software. A consecuencia de ello, la generación de \textit{bitstream} mediante esta vía solo está disponible en la integración continua del repositorio del grupo (GitLab).
 Para realizar los ensayos en simulación, se utilizan principalmente dos contenedores de VUnit.
 El \href{https://console.cloud.google.com/gcr/images/hdl-containers/global/sim/osvb}{gcr.io/hdl-containers/sim/osvb:latest} con GHDL compilado con llvm como \textit{backend} y el \href{https://hub.docker.com/layers/ghdl/vunit/mcode-master/images/sha256-e32029c5be70a5fa0fc94bffd15d72fa8b84ad8aaf2dc7cfa8ab8324ef733ed0?context=explore}{docker.io/ghdl/vunit:mcode-master} con GHDL compilado con mcode como \textit{backend}.
 Esto se debe a que la funcionalidad \href{https://github.com/stnolting/neorv32/discussions/886}{\textit{external names}}, para capturar señales de jerarquías inferiores, solo es soportada en GHDL si este está compilado con el \textit{backend} mcode.
-En definitiva, haciendo uso de estos contenedores mediante la metodología de integración continua, se consigue generar de forma automatizada los resultados de todas las simulaciones, así como la generación de todos los \textit{bitstreams}, cada vez que se hace un \textit{push} al repositorio.
+En definitiva, haciendo uso de estos recursos mediante la metodología de integración continua, se consigue automatizar todas las simulaciones, visualizando y gestionando sus resultados, así como la generación de todos los \textit{bitstreams}, cada vez que se hace un \textit{push} al repositorio.
 Cabe destacar que la compilación de software solo se realiza en local, aunque también se utiliza un contenedor \cite{gh:sim-conatiner}, no está automatizada en integración continua.
 
 \subsection{Cargar software en el NEORV32}
@@ -103,7 +103,7 @@ No obstante, cada una de ellas puede utilizarse para cargar el software en la IM
     \item El archivo .hex se lee durante la síntesis, por lo que es equivalente a la solución de la app\_image, pero no requiere modificar las fuentes RTL cada vez que se actualiza el software a cargar.
 \end{itemize} 
 
-Estas opciones se resumen en la siguiente tabla:
+Estas opciones se resumen en la tabla \ref{tab:2}.
 
 \begin{table}[h!]
 \centering
@@ -131,11 +131,11 @@ En este sentido, hay tres formas posibles de proceder:
         \end{itemize} 
     \item Habilitar el \textit{bootloader} y cargar/iniciar un programa a través del \textit{Autoboot}.
         \begin{itemize}
-            \item Después del \textit{reset}, cuando el \textit{bootloader} está habilitado, la primera secuencia que ocurre es el \textit{Autoboot}.
-            \item La secuencia de \textit{Autoboot} intenta obtener una imagen de arranque válida desde la flash SPI externa.
-            \item Si se encuentra una imagen de arranque válida que se pueda transferir correctamente a la IMEM (memoria de instrucciones), se inicia automáticamente la aplicación.
-            \item Si han pasado 8 segundos y no se ha detectado ninguna flash SPI o no se encuentra ninguna imagen de arranque válida, se mostrará el código de error \say{ERR EXE}, bloqueando la ejecución del \textit{bootloader}.
-            \item Durante esos 8 segundos, se puede detener la secuencia del \textit{Autoboot} pulsando cualquier tecla. 
+            \item Después del \textit{reset}, cuando el \textit{bootloader} está habilitado, la primera secuencia que ocurre es el \textit{Autoboot}. 
+Esta secuencia intenta obtener una imagen de arranque válida desde la flash SPI externa.
+Si se encuentra una imagen válida que se pueda transferir correctamente a la IMEM (memoria de instrucciones), se inicia automáticamente la aplicación.
+No obstante, si han pasado 8 segundos y no se ha detectado ninguna flash SPI o no se encuentra ninguna imagen de arranque válida, se mostrará el código de error \say{ERR EXE}, bloqueando la ejecución.
+Sin embargo, durante esos 8 segundos, se puede detener la secuencia del \textit{Autoboot} pulsando cualquier tecla. 
 De esta manera, se pone a disposición una CMD lista para recibir comandos.
         \end{itemize} 
     \item Habilitar el \textit{bootloader} y cargar/iniciar un programa a través de comandos en la CMD.
@@ -160,8 +160,8 @@ Este es el caso de las FPGAs con SPRAM, como la Lattice ICE40 (UP3K, UP5K).
         \item Múltiples programas deben ser cargados/arrancados durante el desarrollo, sin resintetizar el diseño.
     \end{itemize} 
 
-En la figura \ref{fig:boot} se muestra como cargar/iniciar un programa ejecutable (.exe) al NEORV32 mediante el \textit{bootloader}. 
-Concretamente, en ese caso se utiliza la terminal CuteCom \footnote {En CuteCom, el archivo que se carga a la terminal debe ser de tipo \textit{Plain} (como se muestra en la figura \ref{fig:boot}), de lo contrario se dará el error \say{ERR EXE}.}, empleando sucesivamente los comandos \say{u} (\textit{upload} - cargar) y \say{e} (\textit{execute} - ejecutar).
+En la figura \ref{fig:boot} se muestra como cargar/iniciar un programa ejecutable (.exe) al NEORV32 mediante la CMD proporcionada por el \textit{bootloader}. 
+Concretamente, se utiliza la terminal CuteCom \footnote {En CuteCom, el archivo que se carga a la terminal debe ser de tipo \textit{Plain} (como se muestra en la figura \ref{fig:boot}), de lo contrario se dará el error \say{ERR EXE}.}, en ella se emplean sucesivamente los comandos \say{u} (\textit{upload} - cargar) y \say{e} (\textit{execute} - ejecutar).
 
 \begin{figure}[h!]
     \centering
@@ -170,7 +170,6 @@ Concretamente, en ese caso se utiliza la terminal CuteCom \footnote {En CuteCom,
     \label{fig:boot}
 \end{figure}
 
-
 \subsubsection{Habilitar/Deshabilitar el \textit{Bootloader}}
 
 Si el \textit{bootloader} no es útil/necesario para nuestra aplicación tendremos que considerar lo siguiente.
@@ -178,7 +177,7 @@ La IMEM se puede implementar de dos formas, como una RAM vacía o como una ROM i
 Con el genérico \mintinline[breaklines]{vhdl}{IMEM_AS_IROM} se selecciona la implementación de la IMEM mediante una de estas dos opciones. 
 Este genérico es
  
-\hspace{35mm} {\mintinline[breaklines]{vhdl}{IMEM_AS_IROM => imem_as_rom_c} }
+\hspace{35mm} \mintinline[breaklines]{vhdl}{IMEM_AS_IROM => imem_as_rom_c} 
 
 \noindent y se define como 
 
@@ -191,7 +190,7 @@ Por lo tanto, la carga del \textit{bootloader} se requeriría de todos modos.}
 
 El proceso para deshabilitar el \textit{bootloader} es sencillo, en el TOP del diseño del NEORV32, se debe cambiar la constante \mintinline[breaklines]{vhdl}{INT_BOOTLOADER_EN} de \textit{true} a \textit{false}, como se muestra en el extracto de código \ref{code:1}.
 
-\begin{listing}[h!]
+\begin{code}
 \begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize]{vhdl}
 neorv32_top_inst : neorv32_top
 generic map(
@@ -202,7 +201,7 @@ INT_BOOTLOADER_EN         => false,
 \end{minted}
 \caption{Constante para deshabilitar el \textit{bootloader}.}
 \label{code:1}
-\end{listing}
+\end{code}
 
 \subsubsection{Cargar un programa compilado desde un archivo hexadecimal}
 
@@ -212,7 +211,7 @@ En particular, se debe añadir una nueva función en el paquete \textit{neorve32
 Esta función se encargará de leer el archivo hexadecimal usando la librería \textit{std.textio.all}. \footnote{Esta librería está soportada desde la versión VHDL 2008.}
 La función en cuestión es la descrita en el extracto de código \ref{code:2}.
 
-\begin{listing}[h!]
+\begin{code}
 \begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize]{vhdl}
 -- Initialize mem32_t from hex
 -- MEMORY_SIZE is IMEM_SIZE/4, see neorv32_imem.default.vhd
@@ -235,25 +234,25 @@ end function;
 \end{minted}
 \caption{Función a añadir al \textit{neorve32\_package.vhd} para leer un software compilado en formato hexadecimal.}
 \label{code:2}
-\end{listing}
+\end{code}
 
-Además, el archivo \textit{neorv32\_imem.default.vhd} \footnote{En el archivo \textit{neorv32\_imem.default.vhd} el código relacionado con cargar la ROM desde la app\_image debe ser comentado.} se debe modificar para cargar el contenido del archivo hexadecimal a la memoria de instrucciones, usando la función definida en el extracto de código \ref{code:2}.
+Además, se debe modificar el archivo \textit{neorv32\_imem.default.vhd} \footnote{En el archivo \textit{neorv32\_imem.default.vhd} se debe comentar el código relacionado con cargar la ROM desde la app\_image.} para cargar el contenido del archivo hexadecimal (\textit{neorv32\_raw\_exe.hex}) a la memoria de instrucciones, usando la función definida en el extracto de código \ref{code:2}.
 Para ello se debe añadir el extracto de código \ref{code:3}.
 
-\begin{listing}[h!]
+\begin{code}
 \begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize]{vhdl}
 constant ROM_INIT_FILE : string := "neorv32_raw_exe.hex";
 -- ROM - initialized with hex code --
-constant mem_rom_c : mem32_t(0 to IMEM_SIZE/4-1) := mem32_init_hex(ROM_INIT_FILE, IMEM_SIZE/4);
+constant mem_rom_c : mem32_t(0 to IMEM_SIZE/4-1) := mem32_init_hex(ROM_INIT_FILE, 
+IMEM_SIZE/4);
 \end{minted}
 \caption{Modificación del archivo \textit{neorv32\_imem.default.vhd} para cargar la IMEM mediante la función descrita en el extracto de código \ref{code:2}.}
 \label{code:3}
-\end{listing}
+\end{code}
 
-En conclusión, este método propone leer desde un formato hexadecimal, el cual es una salida nativa del compilador, 
-a través de código VHDL, en lugar de autogenerar código HDL con el programa compilado. 
+Este método propone leer desde VHDL un formato hexadecimal, el cual es una salida nativa del compilador, en lugar de autogenerar código HDL con el programa compilado como pasa cuando utilizamos la opción de la app\_image. 
 Ambas opciones cargan la IMEM cuando se sintetiza el diseño, pero la opción de lectura del archivo .hex no modifica el código HDL del diseño. 
-Es decir, con esta opción conseguimos dos cosas, no autogenerar código en otro lenguaje y no modificar el código HDL cada vez que se actualiza el software a cargar.
+En conclusión, con esta opción conseguimos dos cosas, no autogenerar código HDL tras la compilación y no modificar el código HDL existente cada vez que se actualiza el software a cargar.
 
 Por último, cabe destacar que a lo largo del desarrollo de este proyecto se ha cargado software compilado al NEORV32 mediante los tres formatos expuestos.
 No obstante, mayoritariamente se ha utilizado el formato .vhd generando una \textit{neorv32   \_application\_image.vhd} para cada software empleado.
@@ -261,6 +260,473 @@ No obstante, mayoritariamente se ha utilizado el formato .vhd generando una \tex
 \section{Caracterización del rendimiento}
 
 \label{Carac}
+
+%Se han hecho x ensayos relatarlos, x implementaciones. 
+
+Para caracterizar el rendimiento de los diferentes modos de conexión con los que cuenta el NEORV32, se propone acoplarle 3 tipos de multiplicadores con diferentes características.
+Además, se decide realizar dos tipos de ensayos, con objeto de caracterizar los métodos de conexión en términos de latencia y \textit{throughput}.
+Cabe destacar que para el caso de los métodos \textit{Stream Link Interface} (SLINK) y \textit{Processor-External Bus Interface} (XBUS), se realiza una caracterización adicional acoplando los 3 multiplicadores a \textit{Verification Components}\footnote{Herramienta de verificación funcional que ofrece el \textit{framework} VUnit.} de AXI-Stream y Wishbone respectivamente.
+De esta manera, se realiza por cada multiplicador acoplado mediante cada método de conexión un ensayo de latencia y si es posible de \textit{throughput}.
+Esto es debido a que para realizar una caracterización de \textit{throughput} el acelerador o el modo de conexión debe disponer de un \textit{buffer} de datos.
+Teniendo en cuenta estas consideraciones, se han llevado a cabo con exito un total de 29 ensayos de simulación, todos ellos realizados mediante el \textit{framework} VUnit.
+Dichos ensayos se resumen en la tabla \ref{tab:3}, en ella, se debe de tener en cuenta que \say{ambos} se refiere a que se han realizado los ensayos tanto de latencia como de \textit{throughput}.
+Asimismo, se han implementado en FPGA todos los diseños realizados referentes al conjunto NEORV32 más multiplicador, con objeto de verificar en placa su correcta operatividad.
+
+\begin{table}[h!]
+\centering
+\caption{Ensayos de latencia y \textit{throughput} realizados: VC, el multiplicador solo acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
+\label{tab:3}
+\begin{tabular}{|cl|cc|cc|c|c|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{\diagbox[]{\textbf{Tipo}}{\textbf{Modo}}}} & \multicolumn{2}{c|}{\textbf{SLINK}}           & \multicolumn{2}{c|}{\textbf{XBUS}}            & \textbf{CFU} & \textbf{CFS} \\ \cline{3-8} 
+\multicolumn{2}{|c|}{}                                                          & \multicolumn{1}{c|}{\textbf{VC}} & \textbf{C} & \multicolumn{1}{c|}{\textbf{VC}} & \textbf{C} & \textbf{C}   & \textbf{C}   \\ \hline
+\multicolumn{2}{|c|}{\textbf{Mult-B}}                                           & \multicolumn{1}{c|}{Ambos}       & Ambos      & \multicolumn{1}{c|}{Ambos}       & Ambos      & Latencia     & Ambos        \\ \hline
+\multicolumn{2}{|c|}{\textbf{Mult-BP}}                                          & \multicolumn{1}{c|}{Ambos}       & Ambos      & \multicolumn{1}{c|}{Ambos}       & Ambos      & Latencia     & Ambos        \\ \hline
+\multicolumn{2}{|c|}{\textbf{Mult-UBP}}                                         & \multicolumn{1}{c|}{Latencia}    & Ambos      & \multicolumn{1}{c|}{Latencia}    & Latencia   & Latencia     & Latencia     \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Descripción y conexión de los multiplicadores}
+
+\label{decrip}
+
+%descripcion de los multiplicadores las funciones utilizadas
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{Figuras/scheme.pdf}
+    \caption{Esquema del diseño SoC personalizado.}
+    \label{fig:soc}
+\end{figure}
+
+La figura \ref{fig:soc} ilustra las posibles combinaciones de acoplamiento de los 3 diferentes multiplicadores mediante los modos de conexión SLINK, XBUS, CFU y CFS.
+Las características que definen a cada tipo de multiplicador son las siguientes:
+
+\begin{itemize}
+    \item \textbf{Mult-B} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered}), en el código HDL del proyecto referido como \textit{Mult\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida, además las señales internas se gestionan mediante una máquina de estados. 
+Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 bits y 4 bits respectivamente.
+Puede recibir hasta tres relojes diferentes, uno en la FIFO de entrada, otro en el multiplicador y otro en la FIFO de salida, aunque comúnmente se han ajustado los tres la misma frecuencia.
+Su topología interna se puede observar en el apéndice \ref{Planos}, plano \ref{fig:mult-b}.
+Además, su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:3}.
+\item \textbf{Mult-BP} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida, pero al contrario que Mult-B, las señales internas se gestionan \textit{pipelaineadas}.
+Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 bits y 4 bits respectivamente.
+Puede recibir hasta tres relojes diferentes, uno en la FIFO de entrada, otro en el multiplicador y otro en la FIFO de salida, aunque comúnmente se han ajustado a la misma frecuencia.
+Cabe destacar que su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:7}.
+\item \textbf{Mult-UBP} (\textbf{Mult}iplicador\textit{\textbf{-U}n\textbf{B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp}, es un multiplicador sin \textit{buffers} de entrada/salida, además las señales internas se gestionan \textit{pipelaineadas}.
+Es configurable en número de bits de entrada/salida, aunque normalmente se ha configurado en 32 bits.
+Cabe destacar que su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:6}.
+\end{itemize}
+
+Para realizar el acoplamiento de los multiplicadores con las interfaces SLINK (AXI-Stream) y XBUS (Wishbone), se han realizado \textit{wrappers} definidos en el apéndice \ref{Codigo}.
+En concreto, para el caso del Mult-B la descripción HDL del \textit{wrapper} se encuentra en el código \ref{ap-cod:4} y \ref{ap-cod:5}, para AXI y Wishbone respectivamente.
+Para el caso del Mult-BP, en el código \ref{ap-cod:8} y \ref{ap-cod:9}, para AXI y Wishbone respectivamente.
+Para el caso del Mult-UBP las señales AXI estan autocontenidas en la descripción de su diseño \ref{ap-cod:6}, así como el \textit{wrapper} para Wishbone está descrito en \ref{ap-cod:10}.
+
+En lo que respecta al software, se han empleado funciones de C propias del NEORV32 para interactuar con cada uno de los modos de conexión.
+Mediante las librerías aportadas por Stephan, tras compilarse, estas funciones se transforman a instrucciones interpretables por RISC-V.
+Dichas funciones son las siguientes:
+\begin{itemize}
+    \item SLINK:
+        \begin{itemize}
+            \item Para enviar datos del NEORV32 al coprocesador: \mintinline[bgcolor=pink,breaklines]{c}{neorv32_slink_put(dato)} 
+            \item Para recibir datos del coprocesador al NEORV32: \mintinline[bgcolor=pink,breaklines]{c}{neorv32_slink_get()} 
+        \end{itemize}
+    \item XBUS:
+        \begin{itemize}
+            \item Para enviar datos del NEORV32 al coprocesador: \mintinline[bgcolor=pink,breaklines]{c}{neorv32_cpu_store_}    \mintinline[bgcolor=pink,breaklines]{c}{unsigned_word(dirección,dato)} 
+            \item Para recibir datos del coprocesador al NEORV32: \mintinline[bgcolor=pink,breaklines]{c}{neorv32_cpu_load_}   \mintinline[bgcolor=pink,breaklines]{c}{unsigned_word(dirección)} 
+        \end{itemize}
+    \item CFU:
+        \begin{itemize}
+            \item Para enviar datos del NEORV32 al coprocesador y recibir, en función de dichos datos, la salida del coprocesador en la misma ejecución de la instrucción: \mintinline[bgcolor=pink,breaklines]{c}{neorv32_cfu_r3_instr(funct7,funct3, rs1, rs2)} 
+        \end{itemize}
+    \item CFS:
+        \begin{itemize}
+            \item Para enviar datos del NEORV32 al registro mapeado en memoria con el coprocesador: \mintinline[bgcolor=pink,breaklines]{c}{NEORV32_CFS->REG[0] = dato_de_salida;} \footnote{Los registros disponibles asociados a CFS son del REG[0] al REG[63].}
+            \item Para recibir datos del registro mapeado en memoria con el coprocesador al NEORV32: \mintinline[bgcolor=pink,breaklines]{c}{dato_de_entrada = NEORV32_CFS->REG[0];} 
+        \end{itemize}
+\end{itemize}
+
+En este sentido, en el apéndice \ref{Codigo} se muestran los programas en C realizados para llevar a cabo los diferentes métodos de conexión.
+Se observa que en todos ellos se emplea un \mintinline[breaklines]{c}{#ifdef}.
+El objetivo de esto es separar la compilación de software orientado a ser simulado, con muy pocos \mintinline[breaklines]{c}{printf} para agilizar la simulación y la del software orientado a ser implementado en FPGA.
+En concreto, en el código \ref{ap-cod:11} se muestra el main.c para SLINK, en \ref{ap-cod:12} para XBUS, en \ref{ap-cod:13} para CFU y en \ref{ap-cod:14} y \ref{ap-cod:15} para CFS.
+Respecto a este último, se realiza esta división porque el primer programa está orientado a multiplicadores \textit{buffered} y el segundo al \textit{unbuffered}.
+Esto es debido a que para el primer caso se destina un registro mapeado en memoria para gestionar las señales de lectura/escritura, además de otro registro para las entradas/salidas. No obstante, para el caso del multiplicador \textit{unbuffered} solo se necesita un registro para gestionar las entradas/salidas, por lo que el software varía.
+Cabe destacar que se genera una app\_image por cada programa compilado, teniendo en cuenta que los \mintinline[breaklines]{c}{#define} se van comentando para obtener un programa destinado a simulación, de latencia o throughput o a implementación.
+
+Con respecto a la CFU, se realiza una instrucción \textit{custom} para operar cada multiplicador.
+En concreto, se utilizan tres instrucciones \textit{R3-Type} de la extensión Zxcfu.
+Se emplea el registro \textit{rs1} para la entrada de la multiplicación, los 16 primeros bits para el primer factor y los 16 últimos para el segundo.
+El segundo registro fuente \textit{rs2} no se utiliza y el resultado de la multiplicación se guarda en el registro de destino \textit{rd}.
+El campo \textit{funct7} no se tiene en cuenta y el campo \textit{funct3} especifica la instrucción para cada multiplicador. 
+En concreto \mintinline[breaklines]{c}{funct3=000} se asocia a Mult-B, \mintinline[breaklines]{c}{funct3=001} a Mult-BP y \mintinline[breaklines]{c}{funct3=010} a Mult-UBP.
+En el código \ref{ap-cod:16}, se observa como están integrados los multiplicadores en el \textit{core} del NEORV32.
+Además, se aprecia como se evalúa el campo \textit{funct3} para dirigir la información de entrada/salida a uno de los multiplicadores, así como se observan los recursos lógicos empleados para iniciar las operaciones e indicar cuando estas han terminado.
+
+Con respecto al subsistema CFS, como se ha mencionado, se distinguen dos casos. 
+Por un lado, para el caso de los multiplicadores \textit{buffered}, se mapean 2 de los 64 registros asociados, el registro REG[0] para los datos de entrada/salida y el registro REG[1] para las señales de control.
+Además, puesto que las señales de entrada/salida del subsistema CFS son ajustables, se emplean 34 bits para su salida.
+En concreto, se utilizan los 2 bits MSB para realizar el control del multiplicador, es decir, gestionar sus señales de lectura/escritura.
+Los otros 32 bits se emplean para representar el dato de entrada al multiplicador.
+En lo que respecta a la entrada al subsistema CFS, se emplean 32 bits, es decir, el tamaño de la salida del multiplicador.
+En el código \ref{ap-cod:17}, se muestra el subsistema CFS para el caso de los multiplicadores \textit{buffered}.
+Por otro lado, para el multiplicador \textit{unbuffered}, tan solo se mapea el registro REG[0] con objeto de gestionar los datos de entrada/salida.
+En este caso, las señales del subsistema CFS se ajustan a 32 bits tanto para la entrada como para la salida, ya que no es necesario administrar señales de control.
+En el código \ref{ap-cod:18}, se muestra el subsistema CFS para el caso del multiplicador \textit{unbuffered}.
+
+Cabe destacar que para los casos de SLINK y XBUS, simplemente se enlazan los \textit{wrappers} con el NEORV32 en el TOP del diseño. 
+Es decir, no es necesario modificar archivos internos del NEORV32, como en el caso de CFU/CFS.
+En el caso de XBUS, es de interés señalar que se asocia la dirección de memoria \textit{0x90000000} con dicha interfaz. 
+
+\subsection{Metodología de medición mediante el registro CSR(mcycle)}
+
+\label{met}
+
+%Activada la extensión Zicntr 
+
+%Nombrar issue k se aumenta un ciclo, quizá alguna foto de ello
+
+La metodología de medición seguida para caracterizar procesos referentes al NEO-RV32 o al conjunto NEORV32 más coprocesador, se ha generalizado para todos los ensayos de simulación.
+A continuación, se procede a explicar dicha metodología.
+
+Cada operación realizada por el NEORV32 está asociada a una o varias instrucciones de RISC-V.
+Con objeto de caracterizar una operación, se propone medir el tiempo de ejecución dedicado a computar las instrucciones que conllevan aplicar dicha operación.
+Para ello, se decide emplear el registro CSR \textit{mcycle}.
+Este registro se incrementa con cada ciclo de reloj activo de la CPU.
+El acceso de este registro es tanto de lectura como de escritura.
+Este hecho permite inicializar el CSR \textit{mcycle} a cero justo antes de comenzar el proceso a medir y leerlo en el momento que este finalice.
+De esta manera, se caracteriza de forma precisa los ciclos de reloj que emplea la CPU para llevar a cabo un proceso concreto.
+A pesar de que este método podría emplearse a nivel ensamblador, existen funciones en C que permiten la lectura y escritura de este registro desde un programa de alto nivel.
+Estas funciones son \mintinline[breaklines]{c}{neorv32_cpu_csr_write(CSR_MCYCLE, 0)} para inicializar a cero el registro y \mintinline[breaklines]{c}{neorv32_cpu_csr_read(CSR_MCYCLE)} para leer su contenido.
+De esta manera, se da la posibilidad de generar un programa en C que permita caracterizar el tiempo de ejecución de una función o funciones en C, simplemente aplicando el esquema mostrado en el extracto de código \ref{code:4}.
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize]{c}
+neorv32_cpu_csr_write(CSR_MCYCLE, 0)
+//Ubicar aquí la función (o funciones) a caracterizar
+neorv32_cpu_csr_read(CSR_MCYCLE)
+\end{minted}
+\caption{Esquema para caracterizar el tiempo de ejecución de una función (o funciones) en C.}
+\label{code:4}
+\end{code}
+
+De este modo, si tenemos un programa que utilice este esquema, compilado y cargado dentro de la IMEM de un NEORV32 corriendo en una simulación, se puede extraer el valor de la medición (contenido en el registro \textit{mcycle}) y visualizarlo como resultado de la misma.
+Para ello, se propone añadir el extracto de código VHDL \ref{code:5} en un test bench de VUnit.
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{vhdl}
+for x in 0 to test_items-1 loop
+    wait until rising_edge(clk) and csr_we = '0' and csr_valid = '1' and csr_addr = x"B00" and csr_rdata_o /= x"00000000"; -- CSR MCYCLE ADDR IS 0xB00
+    info(logger, "Data " & to_string(x+1) & "/" & to_string(test_items) & " latency is " & to_string(to_integer(unsigned(csr_rdata_o))-1) & " cycles");
+end loop;
+\end{minted}
+\caption{Código VHDL para extraer en simulación el contenido del CSR(\textit{mcycle}).}
+\label{code:5}
+\end{code}
+
+Atendiendo al código \ref{code:5}, se observa que al extraer el valor del registro \textit{mcycle}, se le resta un ciclo.
+Esto es debido aque la ejecución de la instrucción de lectura del CSR (\textit{csrr} en ensamblador), añade un ciclo a la medida.
+Esta situación se discutió con Stephan en una \textit{issue} titulada \href{https://github.com/stnolting/neorv32/issues/897}{\textit{Latency measurement through CSR(MCYCLE) adds one extra cycle \#897}}.
+Además, el hecho de utilizar la función de VUnit \mintinline[breaklines]{vhdl}{info()} permite exportar los resultados en formato csv para su posterior procesamiento.
+Cabe destacar que para emplear esta metodología debe estar activada la extensión Zicntr:
+
+\hspace{32mm} \mintinline[breaklines]{vhdl}{CPU_EXTENSION_RISCV_Zicntr => true} 
+
+Para ejemplificar esta metodología en el apéndice \ref{Codigo} se dispone de un \textit{test bench} codificado para correr en VUnit \ref{ap-cod:19}.
+En él se puede observar como se utiliza el recurso \textit{external names} para acceder a las señales de jerarquía inferior con objeto de realizar su evaluación.
+En concreto, este código esta diseñado para caracterizar en términos de latencia el rendimiento del método de conexión CFU.
+No obstante, todos los \textit{test bench} utilizados siguen este esquema propuesto.
+
+%Extraer este dato en simulación y visualizarlo en los resultados de la misma.
+%Para ello se añade el codigo VHDL al test bench.
+%
+%
+%En concreto, para realizar una transmisión cada método de conexión esta asociada a una función en C, como se ha descrito en la subsección \ref{decrip}.
+%En este sentido, se propone medir el tiempo involucrado en computar las instrucciones RISC-V implicadas tras compilar dichas funciones.
+
+\subsubsection{Caracterización de latencia y throughput de los métodos de conexión}
+
+El objetivo de esta sección \ref{Carac} es caracterizar el rendimiento de los cuatro métodos principales de conexión que ofrece el NEORV32.
+Todos estos métodos están asociados a una o varias funciones en C para realizar una transmisión, como se ha descrito en la subsección \ref{decrip}.
+Haciendo uso de esta metodología descrita en \ref{met}, se proponen dos tipos de ensayos.
+El primero de ellos es un ensayo de latencia.
+En él se realizan 4 operaciones consecutivas de envío/recepción de datos entre el NEORV32 y el multiplicador mediante cada método de conexión y se mide el tiempo de ejecución de cada una de estas operaciones en ciclos de reloj del sistema.
+El segundo ensayo propuesto es de \textit{throughput}.
+En él se realizan 4 operaciones de envío de datos consecutivas del NEORV32 al multiplicador, después se realizan 4 operaciones de recepción consecutivas desde el multiplicador al NEORV32 y se mide cuantos datos por ciclo de reloj se reciben.
+Con objeto de almacenar los primeros 4 datos enviados, el multiplicador o el método de conexión debe contar con un \textit{buffer} de datos.
+Es por ello que para el multiplicador Mult-UBP solo se puede realizar el ensayo de \textit{throughput} para el método SLINK, debido a que esta interfaz cuenta con FIFOs asociadas.
+Para el caso del método CFU, solo se puede realizar la medición de latencia, ya que según las características internas de la instrucción personalizada, la operación de envío y recepción se realiza en un único paso.
+En la figura \ref{fig:lat-thr} se resume gráficamente lo explicado.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=14cm]{Figuras/wave_process.pdf}
+    \caption{Proceso de medición de latencia y \textit{throughput}.}
+    \label{fig:lat-thr}
+\end{figure}
+
+A este respecto, la parte de código destinada a simulación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12} para SLINK, XBUS, CFU Y CFS respectivamente, así como los respectivos \textit{test bench} de VUnit, emplean la metodología explicada en \ref{met} para realizar la caracterización mediante ensayos de latencia y si es posible de \textit{throughput}.
+
+Por último, cabe destacar que la evaluación mediante este método solo es posible para los ensayos del SoC completo, NEORV32 más multiplicador.
+Para los ensayos mediante \textit{Verification Componets} se han empleado simulaciones de VUnit en conjunto con programas de Python encargados de gestionar los csv de salida producidos por la función \mintinline[breaklines]{vhdl}{info()} y así hacer los cálculos necesarios para obtener la latencia/\textit{throughput}.
+En concreto, en el apéndice \ref{Codigo} se ejemplifica este proceso para la latencia de Mult-B acoplado mediante AXI-Stream.
+Para ello se muestra el archivo que importa los VCs y extrae la información \ref{ap-cod:20}, el \textit{test bench} de VUnit \ref{ap-cod:21} y el \textit{script} de Python \ref{ap-cod:22}.
+
+\subsection{Resultados de los ensayos de simulación}
+
+%Tabla & Imagenes de integración continua
+%Codigo de algun test bench de VUnit
+%Se muestran los resultados en simulación obtenidos en integración continua en las imágenes.
+
+Como se ha comentado en el apartado \ref{Workf}, la realización de las simulaciones está automatizada mediante la integración continua del repositorio.
+En este sentido los 29 ensayos de simulación recogidos en la tabla \ref{tab:3} se han realizado con éxito y sus resultados se muestran de la figura \ref{fig:lat1} a la \ref{fig:thr9}.
+Además, con objeto de facilitar la visualización de los resultados de simulación, estos se recogen en la tabla \ref{tab:4}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat1.png}
+    \caption{Resultados del ensayo de latencia para Mult-B, Mult-BP y Mult-UBP acoplados mediante \textit{AXI-Stream Verification Componets}.}
+    \label{fig:lat1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat2.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante SLINK.}
+    \label{fig:lat2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat3.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante SLINK.}
+    \label{fig:lat3}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat4.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante SLINK.}
+    \label{fig:lat4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr1.png}
+    \caption{Resultados del ensayo de \textit{throughput} para Mult-B, Mult-BP acoplados mediante \textit{AXI-Stream Verification Componets}.}
+    \label{fig:thr1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr2.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-B, acoplado mediante SLINK.}
+    \label{fig:thr2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr3.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-BP, acoplado mediante SLINK.}
+    \label{fig:thr3}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr4.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-UBP, acoplado mediante SLINK.}
+    \label{fig:thr4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat5.png}
+    \caption{Resultados del ensayo de latencia para Mult-B, Mult-BP y Mult-UBP acoplados mediante \textit{Wishbone Verification Componets}.}
+    \label{fig:lat5}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat6.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante XBUS.}
+    \label{fig:lat6}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat7.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante XBUS.}
+    \label{fig:lat7}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat8.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante XBUS.}
+    \label{fig:lat8}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr5.png}
+    \caption{Resultados del ensayo de \textit{throughput} para Mult-B, Mult-BP acoplados mediante \textit{Wishbone Verification Componets}.}
+    \label{fig:thr5}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr6.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-B, acoplado mediante XBUS.}
+    \label{fig:thr6}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr7.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-BP, acoplado mediante XBUS.}
+    \label{fig:thr7}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat9.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante CFU.}
+    \label{fig:lat9}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat10.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante CFU.}
+    \label{fig:lat10}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat11.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante CFU.}
+    \label{fig:lat11}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat12.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante CFS.}
+    \label{fig:lat12}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat13.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante CFS.}
+    \label{fig:lat13}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/lat14.png}
+    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante CFS.}
+    \label{fig:lat14}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr8.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-B, acoplado mediante CFS.}
+    \label{fig:thr8}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/result/thr9.png}
+    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-BP, acoplado mediante CFS.}
+    \label{fig:thr9}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\caption{Resultados de los ensayos de latencia y \textit{throughput}: VC, el multiplicador solo acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
+\label{tab:4}
+\begin{tabular}{|cc|cc|cc|c|c|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{\textbf{Mult}}}                                    & \multicolumn{2}{c|}{\textbf{SLINK}}           & \multicolumn{2}{c|}{\textbf{XBUS}}            & \textbf{CFU} & \textbf{CFS} \\ \cline{3-8} 
+\multicolumn{2}{|c|}{}                                                                  & \multicolumn{1}{c|}{\textbf{VC}} & \textbf{C} & \multicolumn{1}{c|}{\textbf{VC}} & \textbf{C} & \textbf{C}   & \textbf{C}   \\ \hline
+\multicolumn{1}{|c|}{\multirow{3}{*}{\textbf{Latencia}}}            & \textbf{Mult-B}   & \multicolumn{1}{c|}{6}           & 45         & \multicolumn{1}{c|}{5}           & 16         & 13           & 37           \\ \cline{2-8} 
+\multicolumn{1}{|c|}{}                                              & \textbf{Mult-BP}  & \multicolumn{1}{c|}{4}           & 45         & \multicolumn{1}{c|}{3}           & 16         & 11           & 37           \\ \cline{2-8} 
+\multicolumn{1}{|c|}{}                                              & \textbf{Mult-UBP} & \multicolumn{1}{c|}{1}           & 45         & \multicolumn{1}{c|}{2}           & 16         & 8            & 18           \\ \hline
+\multicolumn{1}{|c|}{\multirow{3}{*}{\textit{\textbf{Throughput}}}} & \textbf{Mult-B}   & \multicolumn{1}{c|}{1/4}         & 1/20       & \multicolumn{1}{c|}{1/2}         & 1/5        & X            & 1/15         \\ \cline{2-8} 
+\multicolumn{1}{|c|}{}                                              & \textbf{Mult-BP}  & \multicolumn{1}{c|}{1}           & 1/20       & \multicolumn{1}{c|}{1/2}         & 1/5        & X            & 1/15         \\ \cline{2-8} 
+\multicolumn{1}{|c|}{}                                              & \textbf{Mult-UBP} & \multicolumn{1}{c|}{X}           & 1/20       & \multicolumn{1}{c|}{X}           & X          & X            & X            \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{3cm}
+
+Cabe destacar que por cada ensayo de simulación se ha producido un archivo .vcd que contiene las \textit{waveforms} producidas.
+En este sentido, la integración continua se encarga de gestionar estos archivos y subirlos como \textit{artifacts}.
+En el apéndice \ref{wave}, se expone la forma de onda referente al ensayo de \textit{throughput} para NEORV32 + Mult-BP acoplado mediante XBUS \ref{wave:xbus} , así como la referente al ensayo de latencia para NEORV32 + Mult-B acoplado mediante CFU  \ref{wave:cfu}.
+
+\subsection{Implementación en FPGA}
+
+% captura cutecom de la implementación.
+
+Todos las combinaciones del SoC, reflejadas en la figura \ref{fig:soc}, se han verificado tanto en la placa Arty A7 35T como en la 100T, lo que ha supuesto la generación duplicada de los \textit{bitstreams}.
+Esta generación se ha realizado mediante las dos vías expuestas en la sección \ref{Workf}, herramientas FLOS y Vivado.
+En la imagen \ref{fig:impl-gh} se muestran los procesos de integración continua para generar de forma automatizada los \textit{bitstreams} mediante herramientas FLOS en el repositorio de GitHub. 
+En adición a esto, en el apendice \ref{Codigo} código \ref{ap-cod:23}, se muestra un ejemplo de un archivo bash realizado para generar automáticamente el \textit{bitstream} de la implementación CFU mediante herramientas FLOS.
+En él se observa un matiz destacable, al realizar la síntesis con yosys se añaden los argumentos  \mintinline[breaklines]{bash}{-nodsp} y \mintinline[breaklines]{bash}{-nolutram}.
+Este hecho es debido a que la síntesis para la Arty mediante yosys no está del todo pulida, así como para Lattice si, para Xilinix temas como la gestión de DSPs y de RAM distribuida todavía no están soportados.
+Además, para obtener un correcto funcionamiento de los \textit{bitstreams} generados con herramientas FLOS, se ha tenido que rebajar la capacidad de la IMEM a:
+
+\hspace{30mm} \mintinline[breaklines]{vhdl}{MEM_INT_IMEM_SIZE : natural := 6*1024}
+
+\noindent En adición a la generación, el proceso de integración continua también automatiza la subida de los \textit{bitstreams} como artefactos.
+En consecuencia, se han descargado y testeado todos ellos en ambas placas para comprobar su correcta operatividad.
+En este sentido, se ha obteniendo un resultado satisfactorio.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/impl-gh.png}
+    \caption{Procesos de integración continua para generar los \textit{bitstreams} de los ensayos llevados a cabo mediante herramientas FLOS.}
+    \label{fig:impl-gh}
+\end{figure}
+
+Los ensayos de implementación siguen un esquema similar a los ensayos de simulación.
+No obstante, la finalidad no es realizar la caracterización de rendimiento, sino verificar la correcta operatividad.
+En este sentido, todos los ensayos operan los mismos datos mediante el siguiente procedimiento.
+Un programa de la IMEM, resultado de la compilación de la parte de código C destinada a implementación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12}, lanza 4 datos de entrada\footnote{Los datos de entrada son 1 x 1, 2 x 2, 4 x 4 y 8 x 8; por lo que se debe obtener en hexadecimal 0x1, 0x4, 0x10 (16) y 0x40 (64).} a los multiplicadores mediante cada método de acoplamiento, el acelerador los multiplica y los devuelve al NEORV32 el cual los manda por UART visualizando el resultado en el ordenador.
+De todas las implementaciones, realizadas se muestran cuatro con objeto de ejemplificar la correcta operatividad de los diseños.
+Los resultados que se proceden a mostrar se han visualizado mediante la terminal CuteCom.
+En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado al NEORV32 mediante SLINK, la figura \ref{fig:impl1} refiere al multiplicador Mult-BP acoplado mediante XBUS, la figura \ref{fig:impl1} refiere los tres multiplicadores acoplados mediante CFU y la figura \ref{fig:impl1} refiere al multiplicador Mult-UBP acoplado mediante CFS.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/impl1.png}
+    \caption{Ensayo de implementación de Mult-B acoplado al NEORV32 mediante SLINK.}
+    \label{fig:impl1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/impl2.png}
+    \caption{Ensayo de implementación de Mult-BP acoplado al NEORV32 mediante XBUS.}
+    \label{fig:impl2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/impl3.png}
+    \caption{Ensayo de implementación de Mult-B, Mult-BP y Mult-UBP acoplados al NEORV32 mediante CFU.}
+    \label{fig:impl3}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/impl4.png}
+    \caption{Ensayo de implementación de Mult-UBP acoplado al NEORV32 mediante CFS.}
+    \label{fig:impl4}
+\end{figure}
 
 \section{Integración de coprocesador para aplicaciones de IA}
 

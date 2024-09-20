@@ -57,7 +57,14 @@ headsepline, % Uncomment to get a line under the header
     leftsub = \flq{},% 
     rightsub = \frq{} %
 ]{dirtytalk}
-\usepackage{minted}
+\usepackage{multirow}
+\usepackage{diagbox}
+\usepackage[chapter, newfloat]{minted} % Code listings, with syntax highlighting
+\usepackage[font=small]{caption}
+\usepackage{float}
+
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Código}
 
 %----------------------------------------------------------------------------------------
 %	MARGIN SETTINGS
@@ -276,8 +283,8 @@ Aqui iria el resumen propio en ingles\ldots
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
 
-\include{Anexos/Pliego}
 \include{Anexos/Planos}
+\include{Anexos/Waveform}
 \include{Anexos/Codigo}
 \include{Anexos/Articulo}
 
