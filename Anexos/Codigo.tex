@@ -2077,12 +2077,12 @@ architecture neorv32_cpu_cp_cfu_rtl of neorv32_cpu_cp_cfu is
 
 begin
 
-  -- **************************************************************************************************************************
+  -- ********************************************************************
   -- This controller is required to handle the CFU-CPU interface.
-  -- **************************************************************************************************************************
+  -- ********************************************************************
 
   -- CFU Controller -------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
+  -- ---------------------------------------------------------------------
   -- The <control> record acts as proxy logic that ensures correct communication with the
   -- CPU pipeline. However, this control instance adds one additional cycle of latency.
   -- Advanced users can remove this default control instance to obtain maximum throughput.
@@ -2111,113 +2111,6 @@ begin
   control.rtype  <= ctrl_i.ir_opcode(6 downto 5);
   control.funct3 <= ctrl_i.ir_funct3;
   control.funct7 <= ctrl_i.ir_funct12(11 downto 5);
-
-
-  -- **************************************************************************************************************************
-  -- CFU Hardware Documentation
-  -- **************************************************************************************************************************
-
-  -- ----------------------------------------------------------------------------------------
-  -- CFU Instruction Formats
-  -- ----------------------------------------------------------------------------------------
-  -- The CFU supports three instruction types:
-  --
-  -- Up to 1024 RISC-V R3-Type Instructions (RISC-V standard):
-  -- This format consists of two source registers ('rs1', 'rs2'), a destination register ('rd') and two "immediate" bit-fields
-  -- ('funct7' and 'funct3').
-  --
-  -- Up to 8 RISC-V R4-Type Instructions (RISC-V standard):
-  -- This format consists of three source registers ('rs1', 'rs2', 'rs3'), a destination register ('rd') and one "immediate"
-  -- bit-field ('funct3').
-  --
-  -- Two individual RISC-V R5-Type Instructions (NEORV32-specific):
-  -- This format consists of four source registers ('rs1', 'rs2', 'rs3', 'rs4') and a destination register ('rd'). There are
-  -- no immediate fields.
-
-  -- ----------------------------------------------------------------------------------------
-  -- Input Operands
-  -- ----------------------------------------------------------------------------------------
-  -- > rs1_i          (input, 32-bit): source register 1; selected by 'rs1' bit-field
-  -- > rs2_i          (input, 32-bit): source register 2; selected by 'rs2' bit-field
-  -- > rs3_i          (input, 32-bit): source register 3; selected by 'rs3' bit-field
-  -- > rs4_i          (input, 32-bit): source register 4; selected by 'rs4' bit-field
-  -- > control.rtype  (input,  2-bit): defining the R-type; driven by OPCODE
-  -- > control.funct3 (input,  3-bit): 3-bit function select / immediate value; driven by instruction word's 'funct3' bit-field
-  -- > control.funct7 (input,  7-bit): 7-bit function select / immediate value; driven by instruction word's 'funct7' bit-field
-  --
-  -- [NOTE] The set of usable signals depends on the actual R-type of the instruction.
-  --
-  -- The general instruction type is identified by the <control.rtype>.
-  -- > r3type_c  - R3-type instructions (custom-0 opcode)
-  -- > r4type_c  - R4-type instructions (custom-1 opcode)
-  -- > r5typeA_c - R5-type instruction A (custom-2 opcode)
-  -- > r5typeB_c - R5-type instruction B (custom-3 opcode)
-  --
-  -- The four signals <rs1_i>, <rs2_i>, <rs3_i> and <rs4_i> provide the source operand data read from the CPU's register file.
-  -- The source registers are adressed by the custom instruction word's 'rs1', 'rs2', 'rs3' and 'rs4' bit-fields.
-  --
-  -- The actual CFU operation can be defined by using the <control.funct3> and/or <control.funct7> signals (if available for a
-  -- certain R-type instruction). Both signals are directly driven by the according bit-fields of the custom instruction word.
-  -- These immediates can be used to select the actual function or to provide small literals for certain operations (like shift
-  -- amounts, offsets, multiplication factors, ...).
-  --
-  -- [NOTE] <rs1_i>, <rs2_i>, <rs3_i> and <rs4_i> are directly driven by the register file (e.g. block RAM). For complex CFU
-  --        designs it is recommended to buffer these signals using CFU-internal registers before actually using them.
-  --
-  -- [NOTE] The R4-type instructions and R5-type instruction provide additional source register. When used, this will increase
-  --        the hardware requirements of the register file.
-
-  -- ----------------------------------------------------------------------------------------
-  -- Result Output
-  -- ----------------------------------------------------------------------------------------
-  -- > control.result (output, 32-bit): processing result
-  --
-  -- When the CFU has completed computations, the data send via the <control.result> signal will be written to the CPU's register
-  -- file. The destination register is addressed by the <rd> bit-field in the instruction word. The CFU result output is registered
-  -- in the CFU controller (see above) - so do not worry too much about increasing the CPU's critical path with your custom
-  -- logic.
-
-  -- ----------------------------------------------------------------------------------------
-  -- Processing Control
-  -- ----------------------------------------------------------------------------------------
-  -- > rstn_i       (input,  1-bit): asynchronous reset, low-active
-  -- > clk_i        (input,  1-bit): main clock, triggering on rising edge
-  -- > start_i      (input,  1-bit): operation trigger (start processing, high for one cycle)
-  -- > control.done (output, 1-bit): set high when processing is done
-  --
-  -- For pure-combinatorial instructions (completing within 1 clock cycle) <control.done> can be tied to 1. If the CFU requires
-  -- several clock cycles for internal processing, the <start_i> signal can be used to *start* a new iterative operation. As soon
-  -- as all internal computations have completed, the <control.done> signal has to be set to indicate completion. This will
-  -- complete CFU instruction operation and will also write the processing result <control.result> back to the CPU register file.
-
-  -- ----------------------------------------------------------------------------------------
-  -- CFU Exception
-  -- ----------------------------------------------------------------------------------------
-  -- The CFU does not provide a dedicated exception mechanism. However, if the <control.done> signal is not set within a bound
-  -- time window (default = 512 cycles; see "monitor_mc_tmo_c" constant in the main NEORV32 package file) the CFU operation is
-  -- automatically terminated by the hardware and an **illegal instruction exception** is raised. This default mechanism combined
-  -- with according software handling can be used to "emulate" dedicated CFU exceptions.
-
-  -- ----------------------------------------------------------------------------------------
-  -- CFU-Internal Control and Status Registers (CFU-CSRs)
-  -- ----------------------------------------------------------------------------------------
-  -- > csr_we_i    (input,   1-bit): set to indicate a valid CFU CSR write access
-  -- > csr_addr_i  (input,   2-bit): CSR address
-  -- > csr_wdata_i (input,  32-bit): CSR write data
-  -- > csr_rdata_i (output, 32-bit): CSR read data
-  --
-  -- The NEORV32 provides four directly accessible CSRs for custom use inside the CFU. These registers can be used to pass
-  -- further operands, to check the unit's status or to configure operation modes. For instance, a 128-bit wide key could be
-  -- passed to an encryption system.
-  --
-  -- If more than four CFU-internal CSRs are required the designer can implement an "indirect access mechanism" based on just
-  -- two of the default CSRs: one CSR is used to configure the index while the other is used as an alias to exchange data with
-  -- the indexed CFU-internal CSR - this concept is similar to the RISC-V Indirect CSR Access Extension Specification (Smcsrind).
-
-
-  -- **************************************************************************************************************************
-  -- Actual CFU User Logic Example: XTEA - Extended Tiny Encryption Algorithm (replace this with your custom logic)
-  -- **************************************************************************************************************************
 
   reset <= not(rstn_i);
 
@@ -2329,7 +2222,7 @@ begin
       mpw.rd <= mpw.sreg(2);
 
 -- Output select --------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
+  -- -----------------------------------------------------------------------
     out_select: process(control, rs1_i, rs2_i, mw, mpw, mp)
     begin
       case control.rtype is
@@ -2413,97 +2306,9 @@ architecture neorv32_cfs_rtl of neorv32_cfs is
 
 begin
 
-  -- CFS Generics ---------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- In it's default version the CFS provides three configuration generics:
-  -- > CFS_IN_SIZE  - configures the size (in bits) of the CFS input conduit cfs_in_i
-  -- > CFS_OUT_SIZE - configures the size (in bits) of the CFS output conduit cfs_out_o
-  -- > CFS_CONFIG   - is a blank 32-bit generic. It is intended as a "generic conduit" to propagate
-  --                  custom configuration flags from the top entity down to this module.
-
-  -- CFS IOs --------------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- By default, the CFS provides two IO signals (cfs_in_i and cfs_out_o) that are available at the processor's top entity.
-  -- These are intended as "conduits" to propagate custom signals from this module and the processor top entity.
-
-  -- Reset System ---------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- The CFS can be reset using the global rstn_i signal. This signal should be used as asynchronous reset and is active-low.
-  -- Note that rstn_i can be asserted by a processor-external reset, the on-chip debugger and also by the watchdog.
-  --
-  -- Most default peripheral devices of the NEORV32 do NOT use a dedicated hardware reset at all. Instead, these units are
-  -- reset by writing ZERO to a specific "control register" located right at the beginning of the device's address space
-  -- (so this register is cleared at first). The crt0 start-up code writes ZERO to every single address in the processor's
-  -- IO space - including the CFS. Make sure that this initial clearing does not cause any unintended CFS actions.
-
-
-  -- Clock System ---------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- The processor top unit implements a clock generator providing 8 "derived clocks".
-  -- Actually, these signals should not be used as direct clock signals, but as *clock enable* signals.
-  -- clkgen_i is always synchronous to the main system clock (clk_i).
-  --
-  -- The following clock dividers are available:
-  -- > clkgen_i(clk_div2_c)    -> MAIN_CLK/2
-  -- > clkgen_i(clk_div4_c)    -> MAIN_CLK/4
-  -- > clkgen_i(clk_div8_c)    -> MAIN_CLK/8
-  -- > clkgen_i(clk_div64_c)   -> MAIN_CLK/64
-  -- > clkgen_i(clk_div128_c)  -> MAIN_CLK/128
-  -- > clkgen_i(clk_div1024_c) -> MAIN_CLK/1024
-  -- > clkgen_i(clk_div2048_c) -> MAIN_CLK/2048
-  -- > clkgen_i(clk_div4096_c) -> MAIN_CLK/4096
-  --
-  -- For instance, if you want to drive a clock process at MAIN_CLK/8 clock speed you can use the following construct:
-  --
-  --   if (rstn_i = '0') then -- async and low-active reset (if required at all)
-  --   ...
-  --   elsif rising_edge(clk_i) then -- always use the main clock for all clock processes
-  --     if (clkgen_i(clk_div8_c) = '1') then -- the div8 "clock" is actually a clock enable
-  --       ...
-  --     end if;
-  --   end if;
-  --
-  -- The clkgen_i input clocks are available when at least one IO/peripheral device (for example UART0) requires the clocks
-  -- generated by the clock generator. The CFS can enable the clock generator by itself by setting the clkgen_en_o signal high.
-  -- The CFS cannot ensure to deactivate the clock generator by setting the clkgen_en_o signal low as other peripherals might
-  -- still keep the generator activated. Make sure to deactivate the CFS's clkgen_en_o if no clocks are required in here to
-  -- reduce dynamic power consumption.
-
   clkgen_en_o <= '0'; -- not used for this minimal example
 
-
-  -- Interrupt ------------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- The CFS features a single interrupt signal, which is connected to the CPU's "fast interrupt" channel 1 (FIRQ1).
-  -- The according CPU interrupt becomes pending as long as <irq_o> is high.
-
   irq_o <= '0'; -- not used for this minimal example
-
-
-  -- Read/Write Access ----------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- Here we are reading/writing from/to the interface registers of the module and generate the CPU access handshake (bus response).
-  --
-  -- The CFS provides up to 64 memory-mapped 32-bit interface registers. For instance, these could be used to provide a
-  -- <control register> for global control of the unit, a <data register> for reading/writing from/to a data FIFO, a
-  -- <command register> for issuing commands and a <status register> for status information.
-  --
-  -- Following the interface protocol, each read or write access has to be acknowledged in the following cycle using the ack_o
-  -- signal (or even later if the module needs additional time). If no ACK is generated at all, the bus access will time out
-  -- and cause a bus access fault exception. The current CPU privilege level is available via the 'priv_i' signal (0 = user mode,
-  -- 1 = machine mode), which can be used to constrain access to certain registers or features to privileged software only.
-  --
-  -- This module also provides an optional ERROR signal to indicate a faulty access operation (for example when accessing an
-  -- unused, read-only or "locked" CFS register address). This signal may only be set when the module is actually accessed
-  -- and is set INSTEAD of the ACK signal. Setting the ERR signal will raise a bus access exception with a "Device Error" qualifier
-  -- that can be handled by the application software. Note that the current privilege level should not be exposed to software to
-  -- maintain full virtualization. Hence, CFS-based "privilege escalation" should trigger a bus access exception (e.g. by setting 'err_o').
-  --
-  -- Host access example: Read and write access to the interface registers + bus transfer acknowledge. This example only
-  -- implements four physical r/w register (the four lowest CFS registers). The remaining addresses of the CFS are not associated
-  -- with any physical registers - any access to those is simply ignored but still acknowledged. Only full-word write accesses are
-  -- supported (and acknowledged) by this example. Sub-word write access will not alter any CFS register state and will cause
-  -- a "bus store access" exception (with a "Device Timeout" qualifier as not ACK is generated in that case).
 
   bus_access: process(rstn_i, clk_i)
   begin
@@ -2562,6 +2367,113 @@ end neorv32_cfs_rtl;
 \end{minted}
 \caption{Archivo neorv32\_cfs.vhd modificado para gestionar los multiplicadores \textit{buffered}.}
 \label{ap-cod:17}
+\end{code}
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize,breaklines,linenos]{vhdl}
+-- ================================================================================ --
+-- NEORV32 SoC - Custom Functions Subsystem (CFS)                                   --
+-- -------------------------------------------------------------------------------- --
+-- Intended for tightly-coupled, application-specific custom co-processors. This    --
+-- module provides up to 64x 32-bit memory-mapped interface registers, one CPU      --
+-- interrupt request signal and custom IO conduits for processor-external or chip-  --
+-- external interface.                                                              --
+-- -------------------------------------------------------------------------------- --
+-- The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              --
+-- Copyright (c) NEORV32 contributors.                                              --
+-- Copyright (c) 2020 - 2024 Stephan Nolting. All rights reserved.                  --
+-- Licensed under the BSD-3-Clause license, see LICENSE for details.                --
+-- SPDX-License-Identifier: BSD-3-Clause                                            --
+-- ================================================================================ --
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library neorv32;
+use neorv32.neorv32_package.all;
+
+entity neorv32_cfs is
+  generic (
+    CFS_CONFIG   : std_ulogic_vector(31 downto 0); -- custom CFS configuration generic
+    CFS_IN_SIZE  : natural; -- size of CFS input conduit in bits
+    CFS_OUT_SIZE : natural  -- size of CFS output conduit in bits
+  );
+  port (
+    clk_i       : in  std_ulogic; -- global clock line
+    rstn_i      : in  std_ulogic; -- global reset line, low-active, use as async
+    bus_req_i   : in  bus_req_t; -- bus request
+    bus_rsp_o   : out bus_rsp_t := rsp_terminate_c; -- bus response
+    clkgen_en_o : out std_ulogic := '0'; -- enable clock generator
+    clkgen_i    : in  std_ulogic_vector(7 downto 0); -- "clock" inputs
+    irq_o       : out std_ulogic := '0'; -- interrupt request
+    cfs_in_i    : in  std_ulogic_vector(CFS_IN_SIZE-1 downto 0); -- custom inputs
+    cfs_out_o   : out std_ulogic_vector(CFS_OUT_SIZE-1 downto 0) := (others => '0') -- custom outputs
+  );
+end neorv32_cfs;
+
+architecture neorv32_cfs_rtl of neorv32_cfs is
+
+  -- MULT(P) interface registers --
+  signal cfs_mult_data : std_ulogic_vector(31 downto 0);
+  signal cfs_mult_res : std_ulogic_vector(31 downto 0);
+
+begin
+
+  clkgen_en_o <= '0'; -- not used for this minimal example
+
+  irq_o <= '0'; -- not used for this minimal example
+
+  bus_access: process(rstn_i, clk_i)
+  begin
+    if (rstn_i = '0') then
+      cfs_mult_data <= (others => '0');
+      --
+      bus_rsp_o.ack  <= '0';
+      bus_rsp_o.err  <= '0';
+      bus_rsp_o.data <= (others => '0');
+    elsif rising_edge(clk_i) then -- synchronous interface for read and write accesses
+      -- transfer/access acknowledge --
+      bus_rsp_o.ack <= bus_req_i.stb;
+
+      -- tie to zero if not explicitly used --
+      bus_rsp_o.err <= '0';
+
+      -- defaults --
+      bus_rsp_o.data <= (others => '0'); -- the output HAS TO BE ZERO if there is no actual (read) access
+
+      -- bus access --
+      if (bus_req_i.stb = '1') then -- valid access cycle, STB is high for one cycle
+
+        -- write access --
+        if (bus_req_i.rw = '1') then
+          if (bus_req_i.addr(7 downto 2) = "000000") then -- address size is fixed!
+            cfs_mult_data <= bus_req_i.data; -- write to CFS memory-mapped register 0; MULT(P) inputs
+          end if;
+
+        -- read access --
+        else
+          case bus_req_i.addr(7 downto 2) is -- address size is fixed!
+            when "000000" => bus_rsp_o.data <= cfs_mult_res; -- read from CFS memory-mapped register 0; MULT(P) outputs
+            when others   => bus_rsp_o.data <= (others => '0');
+          end case;
+        end if;
+
+      end if;
+    end if;
+  end process bus_access;
+
+-- Make output
+ cfs_out_o <= cfs_mult_data; 
+
+-- cfs_in_i => 32 bits; MULT(P) output (16 bits x 16 bits)
+
+ cfs_mult_res <= cfs_in_i;
+
+end neorv32_cfs_rtl;
+\end{minted}
+\caption{neorv32\_cfs.vhd}
+\label{ap-cod:18}
 \end{code}
 
 \begin{code}
@@ -2664,21 +2576,21 @@ neorv32_mults_cfu_0 : entity work.neorv32_mults_cfu
 
   -- Capture control bus through external names
 
-  ctrl_bus <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.ctrl_i : ctrl_bus_t >>;
+  ctrl_bus <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.ctrl_i : ctrl_bus_t >>;
 
   -- To display in vcd file 
   funct3 <= ctrl_bus.ir_funct3;
 
-  rs1 <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.rs1_i : std_ulogic_vector(31 downto 0) >>;
-  res_CFU <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.res_o : std_ulogic_vector(31 downto 0) >>;
-  start_CFU <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.start_i : std_logic >>;
+  rs1 <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.rs1_i : std_ulogic_vector(31 downto 0) >>;
+  res_CFU <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.res_o : std_ulogic_vector(31 downto 0) >>;
+  start_CFU <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_alu_inst.neorv32_cpu_cp_cfu_inst_true.neorv32_cpu_cp_cfu_inst.start_i : std_logic >>;
 
   -- Capture CSR signals through external names
-  csr_we <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_control_inst.xcsr_we_o : std_logic >>;
-  csr_addr <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_control_inst.xcsr_addr_o : std_ulogic_vector(11 downto 0) >>;
-  csr_wdata <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_control_inst.xcsr_wdata_o : std_ulogic_vector(31 downto 0) >>;
-  csr_rdata_o <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_control_inst.csr_rdata_o : std_ulogic_vector(31 downto 0) >>;
-  csr_valid <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst.neorv32_cpu_control_inst.csr_reg_valid : std_logic >>;
+  csr_we <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_control_inst.xcsr_we_o : std_logic >>;
+  csr_addr <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_control_inst.xcsr_addr_o : std_ulogic_vector(11 downto 0) >>;
+  csr_wdata <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_control_inst.xcsr_wdata_o : std_ulogic_vector(31 downto 0) >>;
+  csr_rdata_o <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_control_inst.csr_rdata_o : std_ulogic_vector(31 downto 0) >>;
+  csr_valid <= << signal .tb_complex_mults_cfu.neorv32_mults_cfu_0.neorv32_top_inst.core_complex.neorv32_cpu_inst .neorv32_cpu_control_inst.csr_reg_valid : std_logic >>;
 
   main: process
   begin
@@ -3147,4 +3059,793 @@ echo "Implementation completed"
 \end{minted}
 \caption{impl\_mults\_cfu.sh}
 \label{ap-cod:23}
+\end{code}
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize,breaklines,linenos]{vhdl}
+----------------------------------------------------------------------------------
+-- Company: UPV/EHU
+-- Engineer: Koldo Basterretxea & Unai Sainz
+-- 
+-- Create Date: 25.06.2024
+-- Design Name: 
+-- Module Name: top_CRIsig_vunit - RTL
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: Fixed point package -- 
+-- Additional Comments: parameters are WL (word-length) and prec (arithmetic precision)
+-- Programmable slope and saturatio and applied interpolation depth (q) in runtime
+-- Latency: q+2 clock cycles (this version registers inut and outputs). q+1 if the output or input register is avoided
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+       
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.fixed_pkg.all;
+use ieee.fixed_float_types.all;
+    
+        
+entity top_CRIsig_vunit is
+ generic (WL: natural := 16; --input&output WL
+          prec : natural := 8); --internal precision (frcational bits)
+    Port ( clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           ce : in STD_LOGIC;
+           q : in STD_LOGIC_VECTOR (2 downto 0);
+           slope : in STD_LOGIC_VECTOR (2 downto 0);
+           satu : in STD_LOGIC_VECTOR (2 downto 0);
+           in_x : in STD_LOGIC_VECTOR (WL-1 downto 0);
+           out_y : out STD_LOGIC_VECTOR (WL-1 downto 0);
+           done : out STD_LOGIC);
+end top_CRIsig_vunit;
+        
+architecture RTL of top_CRIsig_vunit is
+--constrained std_logic_vector to avoid indexing errors in type conversion of u_fixed to std_logic_vector
+subtype result_type is std_logic_vector (WL-1 downto 0);
+--	Load optimum delta values in a ROM (16 bits (u,2,14))
+type rom_type is array (1 to 6) of ufixed(1 downto -14);
+constant rom_sig : rom_type := (to_ufixed(1.2364,1,-14),to_ufixed(1.1244,1,-14),to_ufixed(1.0636,1,-14) ,to_ufixed(1.0552,1,-14),to_ufixed(1.0512,1,-14),to_ufixed(1.0512,1,-14));
+-- constant rom_tan : rom_type := (to_ufixed(2.4728,1,-14),to_ufixed(2.2488,1,-14),to_ufixed(2.1268,1,-14) ,to_ufixed(2.1108,1,-14),to_ufixed(2.1028,1,-14),to_ufixed(2.1020,1,-14));
+
+--Since we compute not only squashing functions, in this version we consider WL-prec integer bits
+--for inputs and outputs
+SIGNAL counter : unsigned(2 downto 0);
+SIGNAL rl,ssat, sslope : integer range -3 to 7;
+SIGNAL sel_reg, sel: STD_LOGIC;
+SIGNAL rom_out : ufixed (4 downto -prec);--min integer bits depend on allowed sat params
+SIGNAL delta, delta_reg : ufixed (4 downto -prec);--min integer bits depend on allowed sat params
+SIGNAL input_abs, reg_input, reg_out, output : std_logic_vector(WL-1 downto 0);
+SIGNAL input_pos, y21, y22: ufixed (WL-prec-1 downto -prec);
+SIGNAL y2, h, hx, hxp, hxp_reg, hxp_a, hxp_s, g, gx, min_mux: ufixed (6 downto -prec); -- max sat value is 2^7
+SIGNAL outpre, resta : ufixed (WL-prec-1 downto -prec);
+SIGNAL outpre2, resta2 : sfixed (WL-prec-1 downto -prec);
+SIGNAL out_neg, out_CRI : sfixed (WL-prec-1 downto -prec);
+SIGNAL zeroes: std_logic_vector (WL-prec-3 downto 0):= (others => '0');
+ 
+begin
+        rl <= to_integer(unsigned(q));
+        sslope <= to_integer(signed(slope));
+        ssat <= to_integer(signed(satu));
+    
+        -----------------------------------------------------------
+        ---------------------COUNTER(q) and status-----------------	
+        recursion: PROCESS(clk)
+        BEGIN
+            IF(rising_edge(clk)) THEN
+                IF(rst='1') OR (ce='1')THEN --start counting when input is registered
+                    counter <= "000";
+                    sel<='0';
+                    done<='0';
+                ELSIF(counter = rl) THEN
+                        counter <= "000" ;
+                        sel<='0';
+                        done<='1';
+                ELSE
+                    counter<=counter+1;
+                    sel<='1';
+                    done<='0';
+                END IF;
+            END IF;
+        END PROCESS;
+        -----------------------------------------------------------
+        -----------------------DELTA-------------------------------	
+     
+        rom_out <= resize(rom_sig(3),rom_out) sll ssat;  --adjust interpolation depth according to saturation value
+        
+        WITH sel SELECT
+             delta <= resize(rom_out,delta) WHEN '0', --First value of delta
+                                  delta_reg WHEN '1', 
+                              (others=>'0') when others;
+        
+        delta_gen: PROCESS(clk)
+            BEGIN
+                IF(rising_edge(clk)) THEN
+                    IF (rst='1') THEN
+                        delta_reg <= (others=>'0');
+                    ELSE
+                      delta_reg <= shift_right(delta,2); --divide by four (delta/4)
+                    END IF;
+                END IF;
+            END PROCESS;
+        -----------------------------------------------------------
+        -- This version registers input (with ce signal)
+        reg_in: PROCESS(clk)
+            BEGIN
+                IF(rising_edge(clk)) THEN
+                    IF (rst='1') THEN
+                       reg_input <= (others=>'0');
+                    ELSIF (ce='1') THEN
+                       reg_input <= in_x;
+                    END IF;
+                END IF;
+            END PROCESS;
+        -----------------------------------------------------------	
+        -- Convert inputs to positive values u(16,8)
+
+        input_abs <= std_logic_vector(signed(not(reg_input)) + 1);  --2's complement
+        WITH reg_input(WL-1) SELECT
+             input_pos <= to_ufixed(reg_input,input_pos) WHEN '0', 
+                          to_ufixed(input_abs,input_pos) WHEN '1',
+                                           (others=>'0') when others;
+                         
+        ---------------------------------------------------------------------------
+        -------------------------------CRI-----------------------------------------
+        -- Initila affine functions
+        -- y2 = (satu/2)*(1+((slope/2)*x));
+        -- y2 <= resize(resize(resize(input_pos sll sslope-1,input_pos)+1,input_pos) sll ssat-1,y2);
+        y21 <= resize(input_pos sll sslope-1,input_pos);
+        y22 <= resize(y21+1,input_pos);
+        y2 <= resize(y22 sll ssat-1,y2);
+        -- compute g(x) at each iteration
+        WITH sel SELECT
+                  g <= y2 WHEN '0',        --g(x)=y2(x) at first iteration
+                  min_mux WHEN '1',  --g(x)=Min[g(x),h(x)] remainding iterations
+            (others=>'0') when others;
+        
+        reg_gx: PROCESS(clk) --register g(x)
+            BEGIN
+                IF(rising_edge(clk)) THEN
+                    IF (rst='1') THEN
+                        gx <= (others=>'0');
+                    ELSE
+                        gx <= g;
+                    END IF;
+                END IF;
+            END PROCESS;
+        
+        -- control signal 'sel' must be delayed one cycle
+        h_select: PROCESS(clk)
+            BEGIN
+                IF(rising_edge(clk)) THEN
+                    IF (rst='1') THEN
+                        sel_reg <= '1';
+                    ELSE
+                        sel_reg <= sel;
+                    END IF;
+                END IF;
+            END PROCESS;	
+        
+        -- Compute h(x) at each iteration
+
+        h <= resize(to_ufixed(1,h) sll ssat,h);
+
+        WITH sel_reg SELECT 
+                      hx <= h WHEN '0', --h(x)=y3(x)=sat initially
+                      hxp_reg WHEN '1',
+                (others=>'0') when others;
+        
+        --h(x)=1/2(g(x)+h(x)-delta)
+        hxp_a <= resize(gx+hx, hxp_a);
+        hxp_s <= resize(hxp_a - delta_reg, hxp_s);
+        --hxp <= '0' & hxp_s(1 DOWNTO -prec+1);
+        hxp <= hxp_s sra 1;
+        
+        reg_hxp: PROCESS(clk)
+            BEGIN
+                IF(rising_edge(clk)) THEN
+                    IF (rst='1') THEN
+                        hxp_reg <= (others=>'0');
+                    ELSE
+                        hxp_reg <= hxp;
+                    END IF;
+                END IF;
+            END PROCESS;
+
+        -- Min operation
+        min_mux <= gx when gx <= hx else
+                   hx;
+        -----------------------------------------------------------
+        ---------------------OUTPUT--------------------------------	
+    
+        outpre <= resize(min_mux,outpre);
+        resta <= resize(h, resta);
+        
+        -- Transform to signed for substraction
+        resta2  <= to_sfixed(resta (WL-prec-2 downto -prec));
+        outpre2 <= to_sfixed(outpre(WL-prec-2 downto -prec)); 
+
+        out_neg <= resize(resta2-outpre2,out_neg);
+                                
+        WITH reg_input(WL-1) SELECT -- negative inputs
+	       out_CRI <= resize(to_sfixed(outpre),out_CRI) WHEN '0',
+               --out_CRI <= resize(add_sign(outpre),out_CRI) WHEN '0',
+                                                out_neg WHEN '1',
+                                          (others=>'0') when others;	
+                                      
+        -- output casting(WL-prec integer bits and prec frac bits) 
+        output <= result_type(out_CRI);
+        -------------------------------------------------------------
+--        -- This version registers output (with sel signal)
+--        reg_output: PROCESS(clk)
+--            BEGIN
+--                IF(rising_edge(clk)) THEN
+--                    IF (rst='1') THEN
+--                       reg_out <= (others=>'0');
+--                    ELSIF (sel='0') THEN
+--                   reg_out <= output;
+--                END IF;
+--            END IF;
+--        END PROCESS;
+        
+        out_y <= output;
+end RTL;
+\end{minted}
+\caption{top\_CRIsig\_vunit.vhd}
+\label{ap-cod:24}
+\end{code}
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize,breaklines,linenos]{vhdl}
+-- ================================================================================ --
+-- NEORV32 CPU - Co-Processor: Custom (RISC-V Instructions) Functions Unit (CFU)    --
+-- -------------------------------------------------------------------------------- --
+-- For custom/user-defined RISC-V instructions See the  CPU's documentation for     --
+-- more information. Also take a look at the "software-counterpart" this default    --
+-- CFU hardware in 'sw/example/demo_cfu'.                                           --
+-- -------------------------------------------------------------------------------- --
+-- The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              --
+-- Copyright (c) NEORV32 contributors.                                              --
+-- Copyright (c) 2020 - 2024 Stephan Nolting. All rights reserved.                  --
+-- Licensed under the BSD-3-Clause license, see LICENSE for details.                --
+-- SPDX-License-Identifier: BSD-3-Clause                                            --
+-- ================================================================================ --
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity neorv32_cpu_cp_cfu is
+  port (
+    -- global control --
+    clk_i       : in  std_ulogic; -- global clock, rising edge
+    rstn_i      : in  std_ulogic; -- global reset, low-active, async
+    -- operation control --
+    start_i     : in std_ulogic; -- operation trigger/strobe
+    active_i    : in std_ulogic; -- operation in progress, CPU is waiting for CFU
+    -- CSR interface --
+    csr_we_i    : in  std_ulogic; -- write enable
+    csr_addr_i  : in  std_ulogic_vector(1 downto 0); -- address
+    csr_wdata_i : in  std_ulogic_vector(31 downto 0); -- write data
+    csr_rdata_o : out std_ulogic_vector(31 downto 0) := (others => '0'); -- read data
+    -- operands --
+    rtype_i     : in std_ulogic; -- instruction type (R3-type or R4-type)
+    funct3_i    : in std_ulogic_vector(2 downto 0); -- "funct3" bit-field from custom instruction word
+    funct7_i    : in std_ulogic_vector(6 downto 0); -- "funct7" bit-field from custom instruction word
+    rs1_i       : in  std_ulogic_vector(31 downto 0); -- rf source 1
+    rs2_i       : in  std_ulogic_vector(31 downto 0); -- rf source 2
+    rs3_i       : in  std_ulogic_vector(31 downto 0); -- rf source 3
+    -- result and status --
+    result_o    : out std_ulogic_vector(31 downto 0) := (others => '0'); -- operation result
+    valid_o     : out std_ulogic := '0' -- result valid, operation done; set one cycle before result_o is valid
+  );
+end neorv32_cpu_cp_cfu;
+
+architecture neorv32_cpu_cp_cfu_rtl of neorv32_cpu_cp_cfu is
+
+  -- CFU instruction type formats --
+  constant r3type_c : std_ulogic := '0'; -- R3-type CFU instructions (custom-0 opcode)
+  constant r4type_c : std_ulogic := '1'; -- R4-type CFU instructions (custom-1 opcode)
+
+  constant WL   : natural := 16;    -- Input/Output Word Length 
+  constant prec : natural := 8;     -- Internal precision (frcational bits)
+
+  signal reset : std_logic;
+
+  -- processing logic --
+  type sig_t is record
+    ce        : std_logic;
+    done      : std_logic;
+    q         : std_logic_vector(2 downto 0); 
+    slope     : std_logic_vector(2 downto 0); 
+    satu      : std_logic_vector(2 downto 0); 
+    input     : std_logic_vector(WL-1 downto 0);
+    output    : std_logic_vector(WL-1 downto 0);
+    output_u  : std_ulogic_vector(31 downto 0);
+    fill      : std_ulogic_vector(32-WL-1 downto 0);
+  end record;
+  -- Define the signal and initialize it
+  signal sig : sig_t := (ce       => '0',
+                         done     => '0',
+                         q        => "011", -- q=3
+                         slope    => "111", -- slope=0.5 (shift -1)
+                         satu     => "001", -- sat=2 (shift 1)
+                         input    => (others => '0'),
+                         output   => (others => '0'),
+                         output_u => (others => '0'),
+                         fill     => (others => '0'));
+
+begin
+
+  reset <= not(rstn_i) or not(active_i);
+
+  -- top_CRIsig_vunit instantation
+
+  top_CRIsig_vunit_0 : entity work.top_CRIsig_vunit
+                       generic map (WL   => WL,
+                                    prec => prec)
+                       port map (clk     => clk_i,
+                                 rst     => reset,
+                                 ce      => sig.ce,
+                                 q       => sig.q,
+                                 slope   => sig.slope,
+                                 satu    => sig.satu,
+                                 in_x    => sig.input,
+                                 out_y   => sig.output,
+                                 done    => sig.done);
+
+  -- Input
+  sig.input <= To_StdLogicVector(rs1_i(WL-1 downto 0)) when funct3_i = "000" and rtype_i = r3type_c and start_i = '1' else
+              (others => '0');
+
+  -- Output
+  out_reg: process(rstn_i,clk_i)
+  begin
+    if(rstn_i='0') then
+      sig.output_u <= (others => '0');
+    elsif rising_edge(clk_i) then
+        if(sig.done = '1') then
+          sig.output_u <= sig.fill & To_StdULogicVector(sig.output);     
+        else
+          sig.output_u <= (others => '0'); 
+        end if;
+    end if;
+  end process out_reg;
+
+  -- CE signal
+  sig.ce <= '1' when funct3_i = "000" and rtype_i = r3type_c and (start_i = '1' or sig.done = '1') else
+            '0';
+
+  -- Function Result Select -----------------------------------------------------------------
+  -- -----------------------------------------------------------------------
+  result_select: process(rtype_i, funct3_i, sig)
+  begin
+    case rtype_i is -- check instruction type
+
+      when r3type_c => -- R3-type instructions; function select via "funct3" and ""funct7
+      -- ----------------------------------------------------------------------
+        case funct3_i is -- Just check "funct3" here; "funct7" bit-field is ignored
+          when "000" => 
+            result_o <= sig.output_u; 
+            valid_o  <= sig.done; 
+          when others => -- all unspecified operations
+            result_o <= (others => '0'); -- no logic implemented
+            valid_o  <= '0'; -- this will cause an illegal instruction exception after timeout
+        end case;
+      when others => -- undefined
+      -- ----------------------------------------------------------------------
+        result_o <= (others => '0'); -- no logic implemented
+        valid_o  <= '0'; -- this will cause an illegal instruction exception after timeout
+
+    end case;
+  end process result_select;
+
+end neorv32_cpu_cp_cfu_rtl;
+\end{minted}
+\caption{SIGMOIDE(CRI) neorv32\_cpu\_cp\_cfu.vhd}
+\label{ap-cod:25}
+\end{code}
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize,breaklines,linenos]{python}
+#!/usr/bin/env python3
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definir la función original
+def original_function(x):
+    return 2 * (1 / (1 + np.exp(-0.5 * x)))
+
+# Definir el rangos de x
+x_range = np.linspace(-10, 10, 100)
+
+# Calcular los valores de la función original en eso rango
+y_range = original_function(x_range)
+
+# Ajustar polinomios de grado 3, 5 y 7
+poly_3 = np.polyfit(x_range, y_range, 3)
+poly_5 = np.polyfit(x_range, y_range, 5)
+poly_7 = np.polyfit(x_range, y_range, 7)
+
+# Evaluar los polinomios ajustados en el rango respectivo
+y_poly_3 = np.polyval(poly_3, x_range) 
+y_poly_7 = np.polyval(poly_7, x_range)  
+y_poly_5 = np.polyval(poly_5, x_range) 
+
+# Imprimir los coeficientes de los polinomios de aproximación
+print("Polinomio de aproximación de grado 3 para el rango [-10, 10]:")
+print(f"{poly_3[3]:.11f} + {poly_3[2]:.11f}x + {poly_3[1]:.11f}x^2 + {poly_3[0]:.11f}x^3")
+print("Polinomio de aproximación de grado 5 para el rango [-10, 10]:")
+print(f"{poly_5[5]:.11f} + {poly_5[4]:.11f}x + {poly_5[3]:.11f}x^2 + {poly_5[2]:.11f}x^3 + {poly_5[1]:.11f}x^4 + {poly_5[0]:.11f}x^5")
+print("Polinomio de aproximación de grado 7 para el rango [-10, 10]:")
+print(f"{poly_7[7]:.11f} + {poly_7[6]:.11f}x + {poly_7[5]:.11f}x^2 + {poly_7[4]:.11f}x^3 + {poly_7[3]:.11f}x^4 + {poly_7[2]:.11f}x^5 + {poly_7[1]:.11f}x^6 + {poly_7[0]:.11f}x^7")
+
+# Visualizar los resultados para los valores testeados
+
+data=[-10,-7.5,-5,-2.5,0,2.5,5,7.5,10]
+
+#for i in range(0,9):
+#    print("Aproximación Grado 7;   f("+ str(data[i]) +"):", poly_7[7] + poly_7[6]*data[i] + poly_7[5]*data[i]**2 + poly_7[4]*data[i]**3 + poly_7[3]*data[i]**4 + poly_7[2]*data[i]**5 + poly_7[1]*data[i]**6 + poly_7[0]*data[i]**7)
+#    print("Aproximación Grado 5;   f("+ str(data[i]) +"):", poly_5[5] + poly_5[4]*data[i] + poly_5[3]*data[i]**2 + poly_5[2]*data[i]**3 + poly_5[1]*data[i]**4 + poly_5[0]*data[i]**5)
+#    print("Aproximación Grado 3;   f("+ str(data[i]) +"):", poly_3[3] + poly_3[2]*data[i] + poly_3[1]*data[i]**2 + poly_3[0]*data[i]**3)
+#    print("Original coma flotante; f("+ str(data[i]) +"):", 2 * (1 / (1 + np.exp(-0.5 * data[i]))))
+
+for i in range(0,9):
+    print("Aproximación Grado 7;   f("+ str(data[i]) +"):", poly_7[7] + poly_7[6]*data[i] + poly_7[4]*data[i]**3 + poly_7[2]*data[i]**5 + poly_7[0]*data[i]**7)
+    print("Aproximación Grado 5;   f("+ str(data[i]) +"):", poly_5[5] + poly_5[4]*data[i] + poly_5[2]*data[i]**3 + poly_5[0]*data[i]**5)
+    print("Aproximación Grado 3;   f("+ str(data[i]) +"):", poly_3[3] + poly_3[2]*data[i] + poly_3[0]*data[i]**3)
+    print("Original coma flotante; f("+ str(data[i]) +"):", 2 * (1 / (1 + np.exp(-0.5 * data[i]))))
+
+# Crear una nueva figura y mejorar la interpretación de la gráfica
+plt.figure(figsize=(10, 6))
+
+# Gráficar
+plt.plot(x_range, y_range, label="Original", color='blue')
+plt.plot(x_range, y_poly_3, '-.', label="Aproximación de grado 3", color='purple')
+plt.plot(x_range, y_poly_5, '--', label="Aproximación de grado 5", color='green')
+plt.plot(x_range, y_poly_7, ':', label="Aproximación de grado 7", color='red')
+
+# Mejorar la visualización
+plt.legend(loc="best")
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.title('Comparación entre la función original y las aproximaciones polinómicas de grado 3, 5 y 7.')
+
+# Ajustar el rango de los ejes para que sea más claro
+plt.xlim([-12, 12])  # Ajustar los límites del eje x
+plt.ylim([0, 2.5])   # Ajustar los límites del eje y
+
+# Añadir líneas de cuadrícula para facilitar la lectura
+plt.grid(True)
+
+# Mostrar la gráfica
+plt.show()
+\end{minted}
+\caption{aprox\_poli.py}
+\label{ap-cod:26}
+\end{code}
+
+\begin{code}
+\begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize,breaklines,linenos]{c}
+#include <neorv32.h>
+#include <string.h>
+#include <stdio.h>
+#include <math.h>
+#include <float.h>
+#include "neorv32_zfinx_extension_intrinsics.h"
+
+#define BAUD_RATE 19200
+
+// This defines is used to bypass the intermediate print functions between cfu/FPU functions (for simulation)
+// Comment this defines to perform a implementation
+// Uncomment sim to perform a simulation
+//#define sim
+
+//    Floating point operations supported by the NEORV32 FPU
+//    riscv_intrinsic_fadds()
+//    riscv_intrinsic_fsubs()
+//    riscv_intrinsic_fmuls()
+//    The division operation is not supported, so the function is approximated with a polynomial.
+
+float sig_aprox_7 (float x){
+    // f(x)=1 + 0.24190955524x - 0.00369209483x^3 + 0.00003770457x^5 - 0.00000015213x^7; grade 7 approximation; range [-10 to 10]
+    float a1 = 0.24190955524f;
+    float a3 = -0.00369209483f;
+    float a5 = 0.00003770457f;
+    float a7 = -0.00000015213f;
+    float inter1, inter2, inter3, inter4, pow1, pow2, pow3, pow4;
+    float res, res1, res2, res3;
+    
+    inter1 = riscv_intrinsic_fmuls(a1,x);
+    pow1 = riscv_intrinsic_fmuls(x,x);
+    pow2 = riscv_intrinsic_fmuls(pow1,x);
+    inter2 = riscv_intrinsic_fmuls(a3,pow2);
+    pow3 = riscv_intrinsic_fmuls(pow2,pow1);
+    inter3 = riscv_intrinsic_fmuls(a5,pow3);
+    pow4 = riscv_intrinsic_fmuls(pow3,pow1);
+    inter4 = riscv_intrinsic_fmuls(a7,pow4);
+    res1 = riscv_intrinsic_fadds(1,inter1);
+    res2 = riscv_intrinsic_fadds(res1,inter2);
+    res3 = riscv_intrinsic_fadds(res2,inter3);
+    res = riscv_intrinsic_fadds(res3,inter4);
+    
+    return res;
+}
+
+float sig_aprox_5 (float x){
+    // f(x)=1 + 0.22878851178x - 0.00253272801x^3 + 0.00001266682x^5; grade 5 approximation; range [-10 to 10]
+    float a1 = 0.22878851178f;
+    float a3 = -0.00253272801f;
+    float a5 = 0.00001266682f;
+    float inter1, inter2, inter3, pow1, pow2, pow3;
+    float res, res1, res2;
+    
+    inter1 = riscv_intrinsic_fmuls(a1,x);
+    pow1 = riscv_intrinsic_fmuls(x,x);
+    pow2 = riscv_intrinsic_fmuls(pow1,x);
+    inter2 = riscv_intrinsic_fmuls(a3,pow2);
+    pow3 = riscv_intrinsic_fmuls(pow2,pow1);
+    inter3 = riscv_intrinsic_fmuls(a5,pow3);
+    res1 = riscv_intrinsic_fadds(1,inter1);
+    res2 = riscv_intrinsic_fadds(res1,inter2);
+    res = riscv_intrinsic_fadds(res2,inter3);
+    
+    return res;
+}
+
+float sig_aprox_3 (float x){
+    // f(x)=1 + 0.19744040439x - 0.00109773200x^3; grade 3 approximation; range [-10 to 10]
+    float a1 = 0.19744040439f;
+    float a3 = -0.00109773200f;
+    float inter1, inter2, pow1, pow2;
+    float res, res1;
+    
+    inter1 = riscv_intrinsic_fmuls(a1,x);
+    pow1 = riscv_intrinsic_fmuls(x,x);
+    pow2 = riscv_intrinsic_fmuls(pow1,x);
+    inter2 = riscv_intrinsic_fmuls(a3,pow2);
+    res1 = riscv_intrinsic_fadds(1,inter1);
+    res = riscv_intrinsic_fadds(res1,inter2);
+    
+    return res;
+}
+
+int n_sign_decimal(float value) {
+    int parte_entera = (int)value;
+    float decimal = riscv_intrinsic_fsubs(value,(float)parte_entera);
+    float eval_n = riscv_intrinsic_fmuls(decimal,10);
+    float sign = riscv_intrinsic_flts(value,0);
+
+    if(parte_entera == 0 && sign == 1)
+        if((int)eval_n >= 1)
+            return 1; //-0.x
+        else
+            return 2;//-0.0x
+    else 
+        if((int)eval_n >= 1)
+            return 3; // != -0. ; x.y
+        else
+            return 4; // != -0. ; x.0y 
+}
+
+int main() {
+    
+  // Capture all exceptions and give debug info via UART0
+  neorv32_rte_setup();
+
+  // Setup UART at default baud rate, no interrupts
+  neorv32_uart0_setup(BAUD_RATE, 0);
+
+  // Check if UART0 unit is implemented at all
+  if (neorv32_uart0_available() == 0) {
+    return -1; // abort if not implemented
+  }
+
+  // check if Zfinx extension is implemented at all
+  if ((neorv32_cpu_csr_read(CSR_MXISA) & (1<<CSR_MXISA_ZFINX)) == 0) {
+    neorv32_uart0_puts("Error! <Zfinx> extension not synthesized!\n");
+    return 1;
+  }
+
+  // check if the CFU is implemented at all (the CFU is wrapped in the core's "Zxcfu" ISA extension)
+  if (neorv32_cpu_cfu_available() == 0) {
+    neorv32_uart0_printf("ERROR! CFU ('Zxcfu' ISA extensions) not implemented!\n");
+    return 1;
+  }
+
+  // check if the CPU base counters are implemented
+  if ((neorv32_cpu_csr_read(CSR_MXISA) & (1 << CSR_MXISA_ZICNTR)) == 0) {
+    neorv32_uart0_printf("ERROR! Base counters ('Zicntr' ISA extensions) not implemented!\n");
+    return -1;
+  }
+
+  neorv32_cpu_csr_write(CSR_FCSR, 0); // clear exception flags and set "round to nearest"
+
+  // Declaration of variables 
+  //-10
+  const uint32_t fir = 0x0000F600;
+  //-7.5
+  const uint32_t sec = 0x0000F880;
+  //-5
+  const uint32_t thi = 0x0000FB00;
+  //-2.5
+  const uint32_t fou = 0x0000FD80;
+  //0
+  const uint32_t fif = 0x00000000;
+  //2.5
+  const uint32_t six = 0x00000280;
+  //5
+  const uint32_t sev = 0x00000500;
+  //7.5
+  const uint32_t eig = 0x00000780;
+  //10
+  const uint32_t nin = 0x00000A00;
+  //Input vector to hardware accelerator
+  static uint32_t data_hw[9] = {fir,sec,thi,fou,fif,six,sev,eig,nin};
+  //Input vector to software
+  float data_sw[9] = {-10.0,-7.5,-5.0,-2.5,0.0,2.5,5.0,7.5,10.0};
+  //Loop variable
+  int i;
+
+  #ifdef sim
+  // Intro
+  // Sigmoide-Comparation
+  neorv32_uart0_printf("SIG-C");
+
+  // Perform 9 operations through hardware accelerator (funct3=000)
+  for (i=0; i<9; i++){
+    neorv32_cpu_csr_write(CSR_MCYCLE, 0);
+    neorv32_cfu_r3_instr(0b1111111, 0b000, data_hw[i], 0); 
+    neorv32_cpu_csr_read(CSR_MCYCLE); 
+  }
+  // Perform 9 operations through software with FPU (approximation degree 7)
+  for (i=0; i<9; i++){
+    neorv32_cpu_csr_write(CSR_MCYCLE, 0);
+    sig_aprox_7(data_sw[i]);
+    neorv32_cpu_csr_read(CSR_MCYCLE); 
+  }
+  // Perform 9 operations through software with FPU (approximation degree 5)
+  for (i=0; i<9; i++){
+    neorv32_cpu_csr_write(CSR_MCYCLE, 0);
+    sig_aprox_5(data_sw[i]);
+    neorv32_cpu_csr_read(CSR_MCYCLE); 
+  }
+  // Perform 9 operations through software with FPU (approximation degree 5)
+  for (i=0; i<9; i++){
+    neorv32_cpu_csr_write(CSR_MCYCLE, 0);
+    sig_aprox_3(data_sw[i]);
+    neorv32_cpu_csr_read(CSR_MCYCLE); 
+  }
+  // End
+  neorv32_uart0_printf("END");
+  #else
+  uint32_t time_hw, time_sw7, time_sw5, time_sw3;
+  int parte_entera_in, parte_decimal_in, parte_entera_out, parte_decimal_out;
+  float fact_multi = 1000000000;
+  float res;
+  // Intro
+  neorv32_uart0_printf("\n<<< SIGMOID through CFU compare with SIGMOID through software (with polynomial approximation computed by FPU) >>>\n");
+  neorv32_uart0_printf("CFU R3-Type (rs1= 0xINPUT, rs2= DC, rd = OUT)\n");
+  neorv32_uart0_printf("Since the FPU does not support division, a polynomial approximation of degree 3, 5 and 7 is made.\n");
+
+  // Write 9 inputs to sigmoid and read the outputs one by one 
+  neorv32_uart0_printf("\nThrough CFU hardware accelerator (CRI)\n");
+  for (i=0; i<9 ; i++) {
+    neorv32_uart0_printf("%u: neorv32_cfu_r3_instr( funct7=0b1111111, funct3=0b000, [rs1]=0x%x, [rs2]=0x%x ) = ", i, data_hw[i], 0);
+    neorv32_uart0_printf("0x%x\n",neorv32_cfu_r3_instr(0b1111111, 0b000, data_hw[i], 0)); 
+  } 
+  neorv32_uart0_printf("\nApproximation with a degree 7 polynomial:\n\n");
+
+  for (i=0; i<9 ; i++) {
+    //In order to print the float via UART
+    parte_entera_in = (int)data_sw[i];
+    parte_decimal_in = (int)(fabs(riscv_intrinsic_fmuls(riscv_intrinsic_fsubs(data_sw[i], (float)parte_entera_in),fact_multi)));
+    neorv32_uart0_printf("%u: f(%d.%d) = ", i, parte_entera_in, parte_decimal_in);
+    res = sig_aprox_7(data_sw[i]);
+    parte_entera_out = (int)res;
+    parte_decimal_out = (int)(fabs(riscv_intrinsic_fmuls(riscv_intrinsic_fsubs(res, (float)parte_entera_out),fact_multi)));
+    // In particular cases when the integer part is 0, and the number is negative, the sign must be managed
+    if(n_sign_decimal(res) == 1){
+        neorv32_uart0_printf("-%d.%d\n", parte_entera_out, parte_decimal_out);
+    } else if (n_sign_decimal(res) == 2){
+        neorv32_uart0_printf("-%d.0%d\n", parte_entera_out, parte_decimal_out);
+    }else if (n_sign_decimal(res) == 3){
+        neorv32_uart0_printf("%d.%d\n", parte_entera_out, parte_decimal_out);
+    }else{
+        neorv32_uart0_printf("%d.0%d\n", parte_entera_out, parte_decimal_out);
+    }
+  } 
+
+  neorv32_uart0_printf("\nApproximation with a degree 5 polynomial:\n\n");
+
+  for (i=0; i<9 ; i++) {
+    //In order to print the float via UART
+    parte_entera_in = (int)data_sw[i];
+    parte_decimal_in = (int)(fabs(riscv_intrinsic_fmuls(riscv_intrinsic_fsubs(data_sw[i], (float)parte_entera_in),fact_multi)));
+    neorv32_uart0_printf("%u: f(%d.%d) = ", i, parte_entera_in, parte_decimal_in);
+    res = sig_aprox_5(data_sw[i]);
+    parte_entera_out = (int)res;
+    parte_decimal_out = (int)(fabs(riscv_intrinsic_fmuls(riscv_intrinsic_fsubs(res, (float)parte_entera_out),fact_multi)));
+    // In particular cases when the integer part is 0, and the number is negative, the sign must be managed
+    if(n_sign_decimal(res) == 1){
+        neorv32_uart0_printf("-%d.%d\n", parte_entera_out, parte_decimal_out);
+    } else if (n_sign_decimal(res) == 2){
+        neorv32_uart0_printf("-%d.0%d\n", parte_entera_out, parte_decimal_out);
+    }else if (n_sign_decimal(res) == 3){
+        neorv32_uart0_printf("%d.%d\n", parte_entera_out, parte_decimal_out);
+    }else{
+        neorv32_uart0_printf("%d.0%d\n", parte_entera_out, parte_decimal_out);
+    }
+  } 
+
+  neorv32_uart0_printf("\nApproximation with a degree 3 polynomial:\n\n");
+
+  for (i=0; i<9 ; i++) {
+    //In order to print the float via UART
+    parte_entera_in = (int)data_sw[i];
+    parte_decimal_in = (int)(fabs(riscv_intrinsic_fmuls(riscv_intrinsic_fsubs(data_sw[i], (float)parte_entera_in),fact_multi)));
+    neorv32_uart0_printf("%u: f(%d.%d) = ", i, parte_entera_in, parte_decimal_in);
+    res = sig_aprox_3(data_sw[i]);
+    parte_entera_out = (int)res;
+    parte_decimal_out = (int)(fabs(riscv_intrinsic_fmuls(riscv_intrinsic_fsubs(res, (float)parte_entera_out),fact_multi)));
+    // In particular cases when the integer part is 0, and the number is negative, the sign must be managed
+    if(n_sign_decimal(res) == 1){
+        neorv32_uart0_printf("-%d.%d\n", parte_entera_out, parte_decimal_out);
+    } else if (n_sign_decimal(res) == 2){
+        neorv32_uart0_printf("-%d.0%d\n", parte_entera_out, parte_decimal_out);
+    }else if (n_sign_decimal(res) == 3){
+        neorv32_uart0_printf("%d.%d\n", parte_entera_out, parte_decimal_out);
+    }else{
+        neorv32_uart0_printf("%d.0%d\n", parte_entera_out, parte_decimal_out);
+    }
+  }
+
+  neorv32_uart0_printf("\nMeasure the lartency of all methods\n");
+  neorv32_uart0_printf("\nThe test performs the calculation for 9 input data\n\n");
+
+  neorv32_cpu_csr_write(CSR_MCYCLE, 0); // start timing
+  for (i=0; i<9 ; i++) {
+    neorv32_cfu_r3_instr(0b1111111, 0b000, data_hw[i], 0);
+  } 
+  time_hw = neorv32_cpu_csr_read(CSR_MCYCLE); // stop timing
+
+  neorv32_cpu_csr_write(CSR_MCYCLE, 0); // start timing
+  for (i=0; i<9 ; i++) {
+    sig_aprox_7(data_sw[i]);
+  } 
+  time_sw7 = neorv32_cpu_csr_read(CSR_MCYCLE); // stop timing
+
+  neorv32_cpu_csr_write(CSR_MCYCLE, 0); // start timing
+  for (i=0; i<9 ; i++) {
+    sig_aprox_5(data_sw[i]);
+  } 
+  time_sw5 = neorv32_cpu_csr_read(CSR_MCYCLE); // stop timing
+
+  neorv32_cpu_csr_write(CSR_MCYCLE, 0); // start timing
+  for (i=0; i<9 ; i++) {
+    sig_aprox_3(data_sw[i]);
+  } 
+  time_sw3 = neorv32_cpu_csr_read(CSR_MCYCLE); // stop timing
+
+  neorv32_uart0_printf("HW calculated through SIG(CRI) = %u cycles\n", time_hw);
+  neorv32_uart0_printf("SW aprox by polynomial grade 7 via FPU = %u cycles\n", time_sw7);
+  neorv32_uart0_printf("SW aprox by polynomial grade 5 via FPU = %u cycles\n", time_sw5);
+  neorv32_uart0_printf("SW aprox by polynomial grade 3 via FPU = %u cycles\n", time_sw3);
+  // End
+  neorv32_uart0_printf("\nProgram completed.\n");
+  #endif
+
+  return 0;
+}
+\end{minted}
+\caption{Compración cálculo de la sigmoide: CRI vs FPU; main.c}
+\label{ap-cod:27}
 \end{code}

@@ -264,12 +264,12 @@ No obstante, mayoritariamente se ha utilizado el formato .vhd generando una \tex
 %Se han hecho x ensayos relatarlos, x implementaciones. 
 
 Para caracterizar el rendimiento de los diferentes modos de conexión con los que cuenta el NEORV32, se propone acoplarle 3 tipos de multiplicadores con diferentes características.
-Además, se decide realizar dos tipos de ensayos, con objeto de caracterizar los métodos de conexión en términos de latencia y \textit{throughput}.
+Además, se decide realizar dos tipos de ensayos, con objeto de evaluar los métodos de conexión en términos de latencia y \textit{throughput}.
 Cabe destacar que para el caso de los métodos \textit{Stream Link Interface} (SLINK) y \textit{Processor-External Bus Interface} (XBUS), se realiza una caracterización adicional acoplando los 3 multiplicadores a \textit{Verification Components}\footnote{Herramienta de verificación funcional que ofrece el \textit{framework} VUnit.} de AXI-Stream y Wishbone respectivamente.
 De esta manera, se realiza por cada multiplicador acoplado mediante cada método de conexión un ensayo de latencia y si es posible de \textit{throughput}.
-Esto es debido a que para realizar una caracterización de \textit{throughput} el acelerador o el modo de conexión debe disponer de un \textit{buffer} de datos.
-Teniendo en cuenta estas consideraciones, se han llevado a cabo con exito un total de 29 ensayos de simulación, todos ellos realizados mediante el \textit{framework} VUnit.
-Dichos ensayos se resumen en la tabla \ref{tab:3}, en ella, se debe de tener en cuenta que \say{ambos} se refiere a que se han realizado los ensayos tanto de latencia como de \textit{throughput}.
+Esto es debido a que para realizar una caracterización de \textit{throughput}, el acelerador o el modo de conexión debe disponer de un \textit{buffer} de datos.
+Teniendo en cuenta estas consideraciones, se han llevado a cabo un total de 29 ensayos de simulación con exito, todos ellos realizados mediante el \textit{framework} VUnit.
+Dichos ensayos se resumen en la tabla \ref{tab:3}.
 Asimismo, se han implementado en FPGA todos los diseños realizados referentes al conjunto NEORV32 más multiplicador, con objeto de verificar en placa su correcta operatividad.
 
 \begin{table}[h!]
@@ -280,7 +280,7 @@ Asimismo, se han implementado en FPGA todos los diseños realizados referentes a
 \hline
 \multicolumn{2}{|c|}{\multirow{2}{*}{\diagbox[]{\textbf{Tipo}}{\textbf{Modo}}}} & \multicolumn{2}{c|}{\textbf{SLINK}}           & \multicolumn{2}{c|}{\textbf{XBUS}}            & \textbf{CFU} & \textbf{CFS} \\ \cline{3-8} 
 \multicolumn{2}{|c|}{}                                                          & \multicolumn{1}{c|}{\textbf{VC}} & \textbf{C} & \multicolumn{1}{c|}{\textbf{VC}} & \textbf{C} & \textbf{C}   & \textbf{C}   \\ \hline
-\multicolumn{2}{|c|}{\textbf{Mult-B}}                                           & \multicolumn{1}{c|}{Ambos}       & Ambos      & \multicolumn{1}{c|}{Ambos}       & Ambos      & Latencia     & Ambos        \\ \hline
+\multicolumn{2}{|c|}{\textbf{Mult-B}}                                           & \multicolumn{1}{c|}{Ambos\tablefootnote{\say{Ambos} se refiere a que se han realizado los ensayos tanto de latencia como de \textit{throughput}.}}       & Ambos      & \multicolumn{1}{c|}{Ambos}       & Ambos      & Latencia     & Ambos        \\ \hline
 \multicolumn{2}{|c|}{\textbf{Mult-BP}}                                          & \multicolumn{1}{c|}{Ambos}       & Ambos      & \multicolumn{1}{c|}{Ambos}       & Ambos      & Latencia     & Ambos        \\ \hline
 \multicolumn{2}{|c|}{\textbf{Mult-UBP}}                                         & \multicolumn{1}{c|}{Latencia}    & Ambos      & \multicolumn{1}{c|}{Latencia}    & Latencia   & Latencia     & Latencia     \\ \hline
 \end{tabular}
@@ -295,7 +295,7 @@ Asimismo, se han implementado en FPGA todos los diseños realizados referentes a
 \begin{figure}[h!]
     \centering
     \includegraphics[width=14cm]{Figuras/scheme.pdf}
-    \caption{Esquema del diseño SoC personalizado.}
+    \caption{Esquema de las posibles combinaciones del SoC personalizado.}
     \label{fig:soc}
 \end{figure}
 
@@ -359,10 +359,10 @@ Con respecto a la CFU, se realiza una instrucción \textit{custom} para operar c
 En concreto, se utilizan tres instrucciones \textit{R3-Type} de la extensión Zxcfu.
 Se emplea el registro \textit{rs1} para la entrada de la multiplicación, los 16 primeros bits para el primer factor y los 16 últimos para el segundo.
 El segundo registro fuente \textit{rs2} no se utiliza y el resultado de la multiplicación se guarda en el registro de destino \textit{rd}.
-El campo \textit{funct7} no se tiene en cuenta y el campo \textit{funct3} especifica la instrucción para cada multiplicador. 
-En concreto \mintinline[breaklines]{c}{funct3=000} se asocia a Mult-B, \mintinline[breaklines]{c}{funct3=001} a Mult-BP y \mintinline[breaklines]{c}{funct3=010} a Mult-UBP.
+Para especificar la instrucción de cada multiplicador se emplea el campo \textit{funct3}, también se puede emplear el campo \textit{funct7} pero en este caso no se tiene en cuenta.
+En concreto, \mintinline[breaklines]{c}{funct3=000} se asocia a Mult-B, \mintinline[breaklines]{c}{funct3=001} a Mult-BP y \mintinline[breaklines]{c}{funct3=010} a Mult-UBP.
 En el código \ref{ap-cod:16}, se observa como están integrados los multiplicadores en el \textit{core} del NEORV32.
-Además, se aprecia como se evalúa el campo \textit{funct3} para dirigir la información de entrada/salida a uno de los multiplicadores, así como se observan los recursos lógicos empleados para iniciar las operaciones e indicar cuando estas han terminado.
+Además, se aprecia como se evalúa el campo \textit{funct3} para dirigir la información de entrada/salida a cada uno de los multiplicadores, así como se observan los recursos lógicos empleados para iniciar las operaciones e indicar cuando estas han terminado.
 
 Con respecto al subsistema CFS, como se ha mencionado, se distinguen dos casos. 
 Por un lado, para el caso de los multiplicadores \textit{buffered}, se mapean 2 de los 64 registros asociados, el registro REG[0] para los datos de entrada/salida y el registro REG[1] para las señales de control.
@@ -425,18 +425,18 @@ end loop;
 \label{code:5}
 \end{code}
 
-Atendiendo al código \ref{code:5}, se observa que al extraer el valor del registro \textit{mcycle}, se le resta un ciclo.
-Esto es debido aque la ejecución de la instrucción de lectura del CSR (\textit{csrr} en ensamblador), añade un ciclo a la medida.
-Esta situación se discutió con Stephan en una \textit{issue} titulada \href{https://github.com/stnolting/neorv32/issues/897}{\textit{Latency measurement through CSR(MCYCLE) adds one extra cycle \#897}}.
+Atendiendo al código \ref{code:5}, se observa que al extraer el valor del registro \textit{mcycle} se le resta un ciclo.
+Esto es debido a que la ejecución de la instrucción de lectura del CSR (\textit{csrr} en ensamblador), añade un ciclo extra a la medida.
+Esta situación se discutió y verificó con Stephan en una \textit{issue} titulada \href{https://github.com/stnolting/neorv32/issues/897}{\textit{Latency measurement through CSR(MCYCLE) adds one extra cycle \#897}}.
 Además, el hecho de utilizar la función de VUnit \mintinline[breaklines]{vhdl}{info()} permite exportar los resultados en formato csv para su posterior procesamiento.
 Cabe destacar que para emplear esta metodología debe estar activada la extensión Zicntr:
 
 \hspace{32mm} \mintinline[breaklines]{vhdl}{CPU_EXTENSION_RISCV_Zicntr => true} 
 
-Para ejemplificar esta metodología en el apéndice \ref{Codigo} se dispone de un \textit{test bench} codificado para correr en VUnit \ref{ap-cod:19}.
-En él se puede observar como se utiliza el recurso \textit{external names} para acceder a las señales de jerarquía inferior con objeto de realizar su evaluación.
-En concreto, este código esta diseñado para caracterizar en términos de latencia el rendimiento del método de conexión CFU.
-No obstante, todos los \textit{test bench} utilizados siguen este esquema propuesto.
+Para ejemplificar esta explicación se dispone de uno de los \textit{test bench} de VUnit utilizados que aplican este metodología, en el apéndice \ref{Codigo} código \ref{ap-cod:19}.
+En él se puede observar como se utiliza el recurso \textit{external names} para acceder a las señales de jerarquía inferior, entre ellas a las referentes a los registros CSR, con objeto de realizar su evaluación.
+En concreto, este código está diseñado para caracterizar en términos de latencia el rendimiento del método de conexión CFU.
+No obstante, se ha empleado este esquema para caracterizar todos los métodos de acoplamiento.
 
 %Extraer este dato en simulación y visualizarlo en los resultados de la misma.
 %Para ello se añade el codigo VHDL al test bench.
@@ -445,7 +445,7 @@ No obstante, todos los \textit{test bench} utilizados siguen este esquema propue
 %En concreto, para realizar una transmisión cada método de conexión esta asociada a una función en C, como se ha descrito en la subsección \ref{decrip}.
 %En este sentido, se propone medir el tiempo involucrado en computar las instrucciones RISC-V implicadas tras compilar dichas funciones.
 
-\subsubsection{Caracterización de latencia y throughput de los métodos de conexión}
+\subsubsection{Descripción de los ensayos realizados}
 
 El objetivo de esta sección \ref{Carac} es caracterizar el rendimiento de los cuatro métodos principales de conexión que ofrece el NEORV32.
 Todos estos métodos están asociados a una o varias funciones en C para realizar una transmisión, como se ha descrito en la subsección \ref{decrip}.
@@ -456,22 +456,23 @@ El segundo ensayo propuesto es de \textit{throughput}.
 En él se realizan 4 operaciones de envío de datos consecutivas del NEORV32 al multiplicador, después se realizan 4 operaciones de recepción consecutivas desde el multiplicador al NEORV32 y se mide cuantos datos por ciclo de reloj se reciben.
 Con objeto de almacenar los primeros 4 datos enviados, el multiplicador o el método de conexión debe contar con un \textit{buffer} de datos.
 Es por ello que para el multiplicador Mult-UBP solo se puede realizar el ensayo de \textit{throughput} para el método SLINK, debido a que esta interfaz cuenta con FIFOs asociadas.
-Para el caso del método CFU, solo se puede realizar la medición de latencia, ya que según las características internas de la instrucción personalizada, la operación de envío y recepción se realiza en un único paso.
-En la figura \ref{fig:lat-thr} se resume gráficamente lo explicado.
+Para el caso del método CFU, solo se puede realizar la medición de latencia, ya que debido a las características internas de la instrucción personalizada, la operación de envío y recepción se realiza en un único paso.
+En la figura \ref{fig:lat-thr} se aclara gráficamente estos dos tipos de ensayos.
 
+%poner "medida" en las flechas azules
 \begin{figure}[h!]
     \centering
     \includegraphics[width=14cm]{Figuras/wave_process.pdf}
-    \caption{Proceso de medición de latencia y \textit{throughput}.}
+    \caption{Aclaración gráfica de los dos tipos de ensayos: latencia y \textit{throughput}.}
     \label{fig:lat-thr}
 \end{figure}
 
-A este respecto, la parte de código destinada a simulación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12} para SLINK, XBUS, CFU Y CFS respectivamente, así como los respectivos \textit{test bench} de VUnit, emplean la metodología explicada en \ref{met} para realizar la caracterización mediante ensayos de latencia y si es posible de \textit{throughput}.
+A este respecto, la parte de código destinada a simulación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12} para SLINK, XBUS, CFU Y CFS respectivamente, así como los respectivos \textit{test bench} de VUnit, se encargan de llevar a cabo estos ensayos.
 
 Por último, cabe destacar que la evaluación mediante este método solo es posible para los ensayos del SoC completo, NEORV32 más multiplicador.
 Para los ensayos mediante \textit{Verification Componets} se han empleado simulaciones de VUnit en conjunto con programas de Python encargados de gestionar los csv de salida producidos por la función \mintinline[breaklines]{vhdl}{info()} y así hacer los cálculos necesarios para obtener la latencia/\textit{throughput}.
 En concreto, en el apéndice \ref{Codigo} se ejemplifica este proceso para la latencia de Mult-B acoplado mediante AXI-Stream.
-Para ello se muestra el archivo que importa los VCs y extrae la información \ref{ap-cod:20}, el \textit{test bench} de VUnit \ref{ap-cod:21} y el \textit{script} de Python \ref{ap-cod:22}.
+Para ello se muestra el archivo que importa los VCs y extrae la información \ref{ap-cod:20}, el \textit{test bench} de VUnit \ref{ap-cod:21} y el \textit{script} de Python \ref{ap-cod:22} encargado de calcular a latencia.
 
 \subsection{Resultados de los ensayos de simulación}
 
@@ -481,7 +482,7 @@ Para ello se muestra el archivo que importa los VCs y extrae la información \re
 
 Como se ha comentado en el apartado \ref{Workf}, la realización de las simulaciones está automatizada mediante la integración continua del repositorio.
 En este sentido los 29 ensayos de simulación recogidos en la tabla \ref{tab:3} se han realizado con éxito y sus resultados se muestran de la figura \ref{fig:lat1} a la \ref{fig:thr9}.
-Además, con objeto de facilitar la visualización de los resultados de simulación, estos se recogen en la tabla \ref{tab:4}.
+Además, con objeto de facilitar la visualización estos resultados se resumen en la tabla \ref{tab:4}.
 
 \begin{figure}[H]
     \centering
@@ -695,7 +696,7 @@ En este sentido, se ha obteniendo un resultado satisfactorio.
 Los ensayos de implementación siguen un esquema similar a los ensayos de simulación.
 No obstante, la finalidad no es realizar la caracterización de rendimiento, sino verificar la correcta operatividad.
 En este sentido, todos los ensayos operan los mismos datos mediante el siguiente procedimiento.
-Un programa de la IMEM, resultado de la compilación de la parte de código C destinada a implementación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12}, lanza 4 datos de entrada\footnote{Los datos de entrada son 1 x 1, 2 x 2, 4 x 4 y 8 x 8; por lo que se debe obtener en hexadecimal 0x1, 0x4, 0x10 (16) y 0x40 (64).} a los multiplicadores mediante cada método de acoplamiento, el acelerador los multiplica y los devuelve al NEORV32 el cual los manda por UART visualizando el resultado en el ordenador.
+Un programa de la IMEM, resultado de la compilación de la parte de código C destinada a implementación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12}, lanza 4 datos de entrada\footnote{Los datos de entrada son 1 x 1, 2 x 2, 4 x 4 y 8 x 8 (al igual que en simulación); por lo que se debe obtener en hexadecimal 0x1, 0x4, 0x10 (16) y 0x40 (64).} a los multiplicadores mediante cada método de acoplamiento, el acelerador los multiplica y los devuelve al NEORV32 el cual los manda por UART visualizando el resultado en el ordenador.
 De todas las implementaciones, realizadas se muestran cuatro con objeto de ejemplificar la correcta operatividad de los diseños.
 Los resultados que se proceden a mostrar se han visualizado mediante la terminal CuteCom.
 En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado al NEORV32 mediante SLINK, la figura \ref{fig:impl1} refiere al multiplicador Mult-BP acoplado mediante XBUS, la figura \ref{fig:impl1} refiere los tres multiplicadores acoplados mediante CFU y la figura \ref{fig:impl1} refiere al multiplicador Mult-UBP acoplado mediante CFS.
@@ -732,4 +733,236 @@ En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado 
 
 \label{Integ}
 
+Una vez generada la caracterización de todos los métodos de conexión, se cuenta con un criterio objetivo para escoger un modo de acoplamiento y conectar de forma óptima un coprocesador para acelerar aplicaciones de IA.
+Como se ha mencionado, el coprocesador implementado únicamente se encarga de calcular la activación por medio de la función sigmoide.
+%nexo
+El procedimiento seguido para realizar la integración de este coprocesador se ha dividido en tres etapas. 
+En la primera etapa, se realiza un ensayo de simulación del acelerador en solitario, además se acopla al NEORV32 mediante el método CFU con objeto de verificar en placa la correcta operatividad del mismo.
+En la segunda etapa, se busca una manera de calcular la función de activación sigmoide haciendo uso de la unidad de coma flotante que ofrece el NEORV32.
+En la tercera etapa, se realiza un ensayo comparativo, tanto en simulación como en implementación, para verificar las ventajas en términos de latencia de realizar el cálculo de la FA mediante un enfoque distribuido.
+
+\subsection{Verificación de la operatividad del acelerador}
+
+El acelerador ha sido proporcionado por el grupo de investigación.
+Como se ha mencionado en \ref{cri}, este coprocesador acelera los cálculos mediante el método de interpolación recursiva centrada.
+Cabe destacar que de las 7 funciones de activación disponibles solo se ha empleado la lógica de la función sigmoide.
+Además, se han debido de hacer las debidas adaptaciones para conseguir la correcta operatividad del circuito en un entorno de VUnit.
+
+El objetivo de la verificación es sencillo, se deben recrear los resultados obtenidos por Basterretxea para los 9 datos de entrada recogidos en la tabla \ref{tab:5}.
+Para ello se comienza con una simulación del coprocesador en solitario en el entorno de VUnit.
+Después, se acopla al NEORV32 mediante CFU y se realiza una implementación en placa.
+En este sentido, el NEORV32 se encargará de enviar los 9 datos de entrada al coprocesador, asimismo este calculará y devolverá el resultado de la FA de vuelta al microcontrolador.
+Tanto el ensayo en simulación del coprocesador en solitario como la generación del \textit{bitstream} del ensayo en implementación del coprocesador acoplado al NEORV32 mediante CFU, se realizan mediante tareas automatizadas en la integración continua del repositorio de GitLab.
+Estos ensayos no se encuentran disponibles en el repositorio propio de GitHub.
+
+\begin{table}[h!]
+\centering
+\caption{Resultados de la función sigmoide a verificar.}
+\label{tab:5}
+\begin{tabular}{|c|ccc|}
+\hline
+\multirow{3}{*}{\textbf{Dato de entrada}} & \multicolumn{3}{c|}{\textbf{Resultado de la función sigmoide}}                                           \\ \cline{2-4} 
+                                          & \multicolumn{2}{c|}{\textbf{Matlab}}                                                & \textbf{Modelsim}  \\ \cline{2-4} 
+                                          & \multicolumn{1}{c|}{\textbf{Coma fija}} & \multicolumn{1}{c|}{\textbf{Hexadecimal}} & \textbf{Coma fija} \\ \hline
+-10                                       & \multicolumn{1}{c|}{0}                  & \multicolumn{1}{c|}{0000}                 & 0                  \\ \hline
+-7,5                                      & \multicolumn{1}{c|}{0,0078125}          & \multicolumn{1}{c|}{0002}                 & 0,0078125          \\ \hline
+-5                                        & \multicolumn{1}{c|}{0,15625}            & \multicolumn{1}{c|}{0028}                 & 0,15625            \\ \hline
+-2,5                                      & \multicolumn{1}{c|}{0,484375}           & \multicolumn{1}{c|}{007C}                 & 0,484375           \\ \hline
+0                                         & \multicolumn{1}{c|}{1}                  & \multicolumn{1}{c|}{0100}                 & 1                  \\ \hline
+2,5                                       & \multicolumn{1}{c|}{1,515625}           & \multicolumn{1}{c|}{0184}                 & 1,515625           \\ \hline
+5                                         & \multicolumn{1}{c|}{1,84375}            & \multicolumn{1}{c|}{01D8}                 & 1,84375            \\ \hline
+7,5                                       & \multicolumn{1}{c|}{1,9921875}          & \multicolumn{1}{c|}{01FE}                 & 1,9921875          \\ \hline
+10                                        & \multicolumn{1}{c|}{2}                  & \multicolumn{1}{c|}{0200}                 & 2                  \\ \hline
+\end{tabular}
+\end{table}
+
+Los resultados obtenidos en simulación del coprocesador en solitario se muestran en la figura \ref{fig:sim_alone}, así como los obtenidos en implementación para el coprocesador acoplado al NEORV32 vía CFU se muestran en la figura \ref{fig:impl_complex}.
+En adición a esto, el código que describe el acelerador utilizado se encuentra en el apéndice \ref{Codigo} código \ref{ap-cod:24}, así como la integración en CFU se muestra en el código \ref{ap-cod:25}.
+Además, se aclara gráficamente la integración del acelerador mediante CFU en el plano \ref{}. 
+%hacer plano con latex
+Por último, se muestra la forma de onda resultante de la ejecución de un dato por el acelerador sigmoide CRI mediante CFU en el apéndice, \ref{wave} forma de onda \ref{}. 
+En esta forma de onda se observa algo interesante, las señales de la CFU varían con respecto a la forma de onda \ref{wave:cfu} (implementación del multiplicador).
+Esto es debido a que en el transcurso de la elaboración de esta investigación la integración mediante CFU cambió ligeramente, como se ha mencionado en el apartado \ref{neorv32}.
+%hacer forma de onda
+Al igual que para el caso del multiplicador, se emplea una instrucción personalizada \textit{R3-Type} de la extensión Zxcfu.
+Se emplea el registro fuente \textit{rs1} para la entrada del acelerador.
+Ya que los datos a verificar se generaron con una longitud de palabra WL = 16 bits, se ha querido preservar el acelerador a este tamaño de entrada/salida para todos los ensayos realizados en este capítulo, consultar \ref{ap-cod:25} para observar como se ha gestionado este longitud con el tamaño de los registros \textit{rs1} y \textit{rs1} de 32 bits. 
+El registro \textit{rs2} no se utiliza y el resultado del cálculo de la función sigmoide se guarda en el registro de destino \textit{rd}.
+Para especificar la función se ha empleado el campo \textit{funct3}, asociando el coprocesador sigmoide a \mintinline[breaklines]{c}{funct3=000}.
+
+%Añadir la flexibilidad de cli, se puede ajustar a distintos q + x ciclos
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/sim_sig_alone.png}
+    \caption{Verificación en simulación de la correcta operatividad del acelerador sigmoide en un entorno de VUnit.}
+    \label{fig:sim_alone}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/sig_cfu.png}
+    \caption{Verificación en implementación de la correcta operatividad del acelerador sigmoide acoplado al NEORV32 mediante CFU.}
+    \label{fig:impl_complex}
+\end{figure}
+
+Como se puede apreciar en las imágenes los resultados en ambos casos han sido los esperados, cumpliendo de forma óptima la primera etapa de verificación.
+
+\subsection{Realización del cálculo de la FA mediante la FPU}
+
+\label{fpu-fa}
+
+La tarea de calcular la función de activación sigmoide mediante los recursos por defecto del NEORV32, se ha decidido implementar mediante la Unidad de Coma Flotante (FPU).
+%si da tiempo hacer ensayo de mult float sin FPU
+Es decir, al contrario que el acelerador que se usa coma fija, para el enfoque realizado sin coprocesador se emplean datos en coma flotante.
+Normalmente, cuando una red se calcula por software, es decir, sin externalizar los cálculos a coprocesadores embebidos, los datos que se suelen usar son de este tipo, por lo que se ha visto adecuado usarlos.
+En concreto, las instrucciones relativas al manejo de la Unidad de Coma Flotante se encuentran en la extensión Zfinx.
+En este sentido surge un pequeño inconveniente, debido a que la implementación hardware actual de la extensión en el NEORV32 es limitada, esta \href{https://stnolting.github.io/neorv32/#_zfinx_isa_extension}{no soporta operaciones de división}.
+A priori esto puede resultar un problema, ya que la función sigmoide es una fracción \eqref{ec:2}, resolverla sin emplear operaciones de división puede resultar engorroso.
+Es por ello que se ha buscado una alternativa de cálculo.
+En primer lugar, se ha de tener en cuenta que las operaciones de suma y de multiplicación si que están soportadas mediante las funciones \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_fadds()} y \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_fmuls()} respectivamente.
+Este hecho nos abre una ventana de posibilidad y nos permite implementar una aproximación polinomial a la función sigmoide.
+Para ello se ha realizado un programa en python descrito en el código \ref{ap-cod:26}.
+Este programa hace uso de la librería numpy y su funcionamiento es la siguiente: se describe la función a aproximar, en este caso \eqref{ec:3} (sigmoide ajustada a saturación = 2 y pendiente = 0,5), se calculan los coeficientes para tres grados distintos de polinomios y se realiza una gráfica comparativa.
+Cabe destacar que el rango de aproximación definido está condicionado por los valores a testear, es decir, entre -10 y 10.
+Se decide realizar polinomios de grado 3\eqref{ec:4}, 5\eqref{ec:5} y 7\eqref{ec:6} con objeto de testear varías implementaciones y no comprometer ni el tiempo de ejecución ni la precisión, obteniendo varios ejemplos a comparar con el coprocesador. 
+
+\begin{equation}\label{ec:3}
+f(x)= 2 \times \frac{1}{1 + e^{-0,5x}}\tag{***}
+\end{equation}
+
+Los polinomios de aproximación a la función sigmoide obtenidos son los siguientes:
+
+\begin{equation}\label{ec:4}
+f(x)= 1 + 0.19744040439x -0.00109773200x^3\tag{****}
+\end{equation}
+
+
+\begin{equation}\label{ec:5}
+f(x)= 1 +  0.22878851178x - 0.00253272801x^3 + 0.00001266682x^5\tag{*****}
+\end{equation}
+
+\begin{equation}\label{ec:6}
+f(x)= 1 + 0.24190955524x - 0.00369209483x^3 + + 0.00003770457x^5 - 0.00000015213x^7 \tag{******}
+\end{equation}
+
+Como se observa en la figura \ref{fig:comp}, se obtienen un buen resultado de aproximación mediante las funciones polinómicas propuestas en el rango indicado.
+En este sentido, en el código \ref{ap-cod:27} se puede observar como se implementan estas funciones en C.
+En adición a esto, cabe destacar que el NEORV32 no soporta la impresión de flotantes por UART, por lo que se ha tenido que adaptar el resultado a dos enteros que representen la parte entera y la parte decimal.
+Para este propósito, entre otras cosas, se ha utilizado la función \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_flts()} para realizar la comparación \say{menor que} de un flotante con cero y evaluar su signo.
+Para emplear las funciones de la extensión Zfinx, esta se debe activar en el TOP del diseño.
+
+\hspace{32mm} \mintinline[breaklines]{vhdl}{CPU_EXTENSION_RISCV_Zfinx => true} 
+
+\begin{figure}[H]
+    \hspace*{-38mm}
+    \centering
+    \includegraphics[width=22cm]{Figuras/Comp_aprox.pdf}
+    \caption{Comparación entre la función original y las aproximaciones polinómicas de grado 3, 5 y 7.}
+    \label{fig:comp}
+\end{figure}
+
+Cabe destacar un hecho relevante, como se ha mencionado la aproximación polinómica está calculada en función del rango propuesto.
+Es decir, su uso no se puede generalizar para todos los valores de entrada de la recta real.
+Esto es debido a que para valores fuera de rango indicado, el polinomio se puede desviar de la aproximación a la función sigmoide.
+Para evitar esto, si se desea generalizar estos polinomios, se recomienda saturar a 0 los valores inferiores a -10  y saturar a 2 los valores superiores a 10. 
+Para el caso del polinomio de grado 3 se recomendaría saturar algo antes.
+
+\subsection{Comparación de enfoques}
+
+La comparación de ambos enfoques se ha llevado a cabo mediante una simulación de VUnit  y una implementación en placa.
+Tanto la simulación, como la generación del \textit{bitstream} del ensayo en placa, se han automatizo en tareas de integración continua del repositorio de GitLab.
+Estos ensayos no se encuentran disponibles en el repositorio propio de GitHub.
+
+\subsubsection{Simulación}
+
+El ensayo de simulación consiste en lanzar un mismo paquete de 9 datos 4 veces, un vez por cada implementación sigmoide a testear y medir los ciclos que tarda cada una de ellas en calcular el resultado para cada dato de entrada.
+En este sentido, se ha acoplado mediante CFU el coprocesador CRI al NEORV32 con su FPU activada, con la cual se calculan las otras tres implementaciones.
+El orden seguido es el siguiente, en primer lugar se lanza el paquete al acelerador CRI, en segundo lugar a la aproximación polinómica de grado 7, en tercer lugar a la aproximación polinómica de grado 5 y por último a la aproximación polinómica de grado 3, 36 datos en total.
+Para realizar las medidas de latencia, se ha utilizado la metodología expuesta en el apartado \ref{met}.
+El código empleado en esta simulación se encuentra en la parte de código destinada a simulación del programa \ref{ap-cod:27}.
+Los resultados obtenidos se muestran en la figura \ref{fig:sim_comp}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/SIM_RES_CI.png}
+    \caption{Resultados de simulación en ciclos de latencia necesarios para calcular la función sigmoide para cada dato de entrada.}
+    \label{fig:sim_comp}
+\end{figure}
+
+\subsubsection{Implementación}
+
+El ensayo en placa ha consistido en dos partes contenidas en un mismo programa, ver la parte de código destinada a implementación en \ref{ap-cod:27}.
+Por un lado, se ha computado el resultado de la función sigmoide con los dos enfoques, el distribuido mediante el coprocesador acoplado al NEORV32 y el monolítico a través de las tres aproximaciones mediante la FPU.
+Para ello, se han utilizado los mismo 9 datos de entrada que en simulación.
+Por otro lado, se ha repetido cada uno de estos cómputos y mediante el uso del CSR(mcycle) se ha calculado la latencia que tarda cada uno de los enfoques en calcular un paquete completo de datos, dando un punto de vista más global.
+La figura \ref{fig:impl_comp} muestra el resultado del ensayo transmitido por UART y visualizado mediante la terminal CuteCom.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{Figuras/RES_impl_comp.png}
+    \caption{Resultado del ensayo comparativo en placa.}
+    \label{fig:impl_comp}
+\end{figure}
+
+\subsubsection{Resultados}
+
+Se procede a agrupar los resultados obtenidos en dos tablas.
+Una referente al resultado del cálculo de la función sigmoide \ref{tab:6} y otra a la latencia relativa a cada implementación \ref{tab:7}.
+
+Respecto a los resultados de la sigmoide, se observa que para los valores cercanos a los límites del rango relativos a las aproximaciones de grado bajo es necesario realizar una saturación, como ya se ha destacado en la subsección \ref{fpu-fa}.
+No obstante, la aproximación de grado más alto se ajusta con relativa eficacia a los valores esperados.
+Respecto a la latencia, cabe destacar que la latencia mínima para los casos de las aproximaciones mediante FPU coincide siempre con el 5º dato, el cual es f(0) = 1.
+De este hecho se deduce que se requiere poca carga computacional para calcular este dato, es por ello que baja tanto la latencia mínima.
+Si se observa el resto de casos, figura \ref{fig:sim_comp}, la desviación no es tan notable.
+Respecto a los resultados del paquete de datos se observa que no se ajusta de forma directa al total de ciclos entre 9.
+Esto es debido a que en el ensayo de simulación se mide rigurosamente cada ejecución de dato aislada, mientras que la implementación en placa mide, aparte de la ejecución per se, las instrucciones relativas al bucle for que corre la secuencia de introducción del paquete, lo que añade ciclos extra a la computación, ver \ref{ap-cod:27}.
+Es por ello que se ha mencionado que el ensayo en placa da un punto de vista más global, ya que en la práctica no solo se ejecutan los ciclos relativos a las instrucciones propias, siempre van acompañadas de código extra que compone la aplicación.
+Respecto al ahorro computacional en ciclos de latencia obtenidos mediante el acelerador CRI, podemos afirmar que en el caso más ajustado se ahorran 111 - 13 = 98 ciclos, lo cual es una aceleración del 8,53 y en el caso más holgado se ahorran 280 - 13 = 267 ciclos, lo cual es una aceleración del 20,53.
+Si realizamos la media de las tres medias y comparamos obtenemos un ahorro de 198,3 - 13 = 185,3 ciclos, lo cual es una aceleración del 14,25.
+Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido y afianza el argumento de externalizar los cálculos relativos a las redes neuronales a coprocesadores embebidos con la finalidad de llevar a cabo una gestión eficaz y simplificada de IA en el borde.
+
+
+%tabla de resultados
+
+\begin{table}[H]
+\centering
+\caption{Resultados de la función sigmoide obtenidos mediante los cuatro casos ensayados (implementación).}
+\label{tab:6}
+\begin{tabular}{|c|cc|ccc|}
+\hline
+\multirow{3}{*}{\textbf{Entrada}} & \multicolumn{2}{c|}{\multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Coprocesador\\ CRI\end{tabular}}}} & \multicolumn{3}{c|}{\textbf{Aproximación mediante FPU}}                                          \\ \cline{4-6} 
+                                  & \multicolumn{2}{c|}{}                                                                                     & \multicolumn{1}{c|}{\textbf{Grado 7}} & \multicolumn{1}{c|}{\textbf{Grado 5}} & \textbf{Grado 3} \\ \cline{2-6} 
+                                  & \multicolumn{1}{c|}{\textbf{Coma fija}}                       & \textbf{Hexadecimal}                      & \multicolumn{3}{c|}{\textbf{Coma flotante}}                                                      \\ \hline
+-10                               & \multicolumn{1}{c|}{0}                                        & 0000                                      & \multicolumn{1}{c|}{0,023842692}      & \multicolumn{1}{c|}{-0,021839262}     & 0,123327968      \\ \hline
+-7,5                              & \multicolumn{1}{c|}{0,0078125}                                & 0002                                      & \multicolumn{1}{c|}{0,051602840}      & \multicolumn{1}{c|}{0,051991312}      & -0,017697334     \\ \hline
+-5                                & \multicolumn{1}{c|}{0,15625}                                  & 0028                                      & \multicolumn{1}{c|}{0,146022496}      & \multicolumn{1}{c|}{0,133064584}      & 0,150014512      \\ \hline
+-2,5                              & \multicolumn{1}{c|}{0,484375}                                 & 007C                                      & \multicolumn{1}{c|}{0,449325888}      & \multicolumn{1}{c|}{0,466365568}      & 0,523551104      \\ \hline
+0                                 & \multicolumn{1}{c|}{1}                                        & 0100                                      & \multicolumn{1}{c|}{1,00}             & \multicolumn{1}{c|}{1,00}             & 1,00             \\ \hline
+2,5                               & \multicolumn{1}{c|}{1,515625}                                 & 0184                                      & \multicolumn{1}{c|}{1,550674176}      & \multicolumn{1}{c|}{1,533634432}      & 1,476448896      \\ \hline
+5                                 & \multicolumn{1}{c|}{1,84375}                                  & 01D8                                      & \multicolumn{1}{c|}{1,853977536}      & \multicolumn{1}{c|}{1,866935360}      & 1,849985472      \\ \hline
+7,5                               & \multicolumn{1}{c|}{1,9921875}                                & 01FE                                      & \multicolumn{1}{c|}{1,948397184}      & \multicolumn{1}{c|}{1,948008640}      & 2,017697334      \\ \hline
+10                                & \multicolumn{1}{c|}{2}                                        & 0200                                      & \multicolumn{1}{c|}{1,976157312}      & \multicolumn{1}{c|}{2,021839142}      & 1,876671936      \\ \hline
+\end{tabular}
+\end{table}
+
+%tabla latencias
+
+\begin{table}[H]
+\centering
+\caption{Resultados de latencia en ciclos de reloj del sistema obtenidos para los cuatro casos ensayados (simulación/implementación).}
+\label{tab:7}
+\begin{tabular}{|cccccccccccc|}
+\hline
+\multicolumn{12}{|c|}{\textbf{Un dato (simulación)}}                                                                                                                                                                                                                                                                                                                                                                             \\ \hline
+\multicolumn{3}{|c|}{\multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Coprocesador\\ CRI\end{tabular}}}} & \multicolumn{9}{c|}{\textbf{Aproximación mediante FPU}}                                                                                                                                                                                                                                                \\ \cline{4-12} 
+\multicolumn{3}{|c|}{}                                                                                     & \multicolumn{3}{c|}{\textbf{Grado 7}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 5}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 3}}                                              \\ \hline
+\multicolumn{1}{|c|}{\textbf{Max}}  & \multicolumn{1}{c|}{\textbf{M\tablefootnote{\say{M} refiere a la media.}}}  & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{M}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{M}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{M}} & \textbf{Min} \\ \hline
+\multicolumn{1}{|c|}{13}            & \multicolumn{1}{c|}{13}          & \multicolumn{1}{c|}{13}           & \multicolumn{1}{c|}{280}          & \multicolumn{1}{c|}{259,1}      & \multicolumn{1}{c|}{203}          & \multicolumn{1}{c|}{210}          & \multicolumn{1}{c|}{198,5}      & \multicolumn{1}{c|}{157}          & \multicolumn{1}{c|}{146}          & \multicolumn{1}{c|}{137,5}      & 111          \\ \hline
+\multicolumn{12}{|c|}{\textbf{Un paquete de 9 datos (implementación)}}                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
+\multicolumn{3}{|c|}{\multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Coprocesador\\ CRI\end{tabular}}}} & \multicolumn{9}{c|}{\textbf{Aproximación mediante FPU}}                                                                                                                                                                                                                                                \\ \cline{4-12} 
+\multicolumn{3}{|c|}{}                                                                                     & \multicolumn{3}{c|}{\textbf{Grado 7}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 5}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 3}}                                              \\ \hline
+\multicolumn{3}{|c|}{197}                                                                                  & \multicolumn{3}{c|}{2424}                                                                               & \multicolumn{3}{c|}{1875}                                                                               & \multicolumn{3}{c|}{1524}                                                          \\ \hline
+\end{tabular}
+\end{table}
 
