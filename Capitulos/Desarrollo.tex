@@ -780,7 +780,7 @@ Los resultados obtenidos en simulación del coprocesador en solitario se muestra
 En adición a esto, el código que describe el acelerador utilizado se encuentra en el apéndice \ref{Codigo} código \ref{ap-cod:24}, así como la integración en CFU se muestra en el código \ref{ap-cod:25}.
 Además, se aclara gráficamente la integración del acelerador mediante CFU en el plano \ref{}. 
 %hacer plano con latex
-Por último, se muestra la forma de onda resultante de la ejecución de un dato por el acelerador sigmoide CRI mediante CFU en el apéndice, \ref{wave} forma de onda \ref{}. 
+Por último, se muestra la forma de onda resultante del cálculo de dos sigmoides por el acelerador CRI mediante CFU en el apéndice, \ref{wave} forma de onda \ref{wave:sig}. 
 En esta forma de onda se observa algo interesante, las señales de la CFU varían con respecto a la forma de onda \ref{wave:cfu} (implementación del multiplicador).
 Esto es debido a que en el transcurso de la elaboración de esta investigación la integración mediante CFU cambió ligeramente, como se ha mencionado en el apartado \ref{neorv32}.
 %hacer forma de onda
@@ -912,15 +912,15 @@ Una referente al resultado del cálculo de la función sigmoide \ref{tab:6} y ot
 
 Respecto a los resultados de la sigmoide, se observa que para los valores cercanos a los límites del rango relativos a las aproximaciones de grado bajo es necesario realizar una saturación, como ya se ha destacado en la subsección \ref{fpu-fa}.
 No obstante, la aproximación de grado más alto se ajusta con relativa eficacia a los valores esperados.
-Respecto a la latencia, cabe destacar que la latencia mínima para los casos de las aproximaciones mediante FPU coincide siempre con el 5º dato, el cual es f(0) = 1.
-De este hecho se deduce que se requiere poca carga computacional para calcular este dato, es por ello que baja tanto la latencia mínima.
-Si se observa el resto de casos, figura \ref{fig:sim_comp}, la desviación no es tan notable.
-Respecto a los resultados del paquete de datos se observa que no se ajusta de forma directa al total de ciclos entre 9.
+Respecto a la latencia, cabe destacar que la mínima para los casos de las aproximaciones mediante FPU coincide siempre con el 5º dato, el cual es f(0) = 1.
+De este hecho se deduce que se requiere poca carga computacional para calcular esa salida, es por ello que baja tanto su resultado.
+Si se observan el resto de casos, figura \ref{fig:sim_comp}, la desviación no es tan notable.
+Respecto a los resultados del paquete de datos se aprecia que no se ajusta de forma directa al total de ciclos entre 9.
 Esto es debido a que en el ensayo de simulación se mide rigurosamente cada ejecución de dato aislada, mientras que la implementación en placa mide, aparte de la ejecución per se, las instrucciones relativas al bucle for que corre la secuencia de introducción del paquete, lo que añade ciclos extra a la computación, ver \ref{ap-cod:27}.
 Es por ello que se ha mencionado que el ensayo en placa da un punto de vista más global, ya que en la práctica no solo se ejecutan los ciclos relativos a las instrucciones propias, siempre van acompañadas de código extra que compone la aplicación.
-Respecto al ahorro computacional en ciclos de latencia obtenidos mediante el acelerador CRI, podemos afirmar que en el caso más ajustado se ahorran 111 - 13 = 98 ciclos, lo cual es una aceleración del 8,53 y en el caso más holgado se ahorran 280 - 13 = 267 ciclos, lo cual es una aceleración del 20,53.
-Si realizamos la media de las tres medias y comparamos obtenemos un ahorro de 198,3 - 13 = 185,3 ciclos, lo cual es una aceleración del 14,25.
-Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido y afianza el argumento de externalizar los cálculos relativos a las redes neuronales a coprocesadores embebidos con la finalidad de llevar a cabo una gestión eficaz y simplificada de IA en el borde.
+Respecto al ahorro computacional en ciclos de latencia obtenidos mediante el acelerador CRI, se afirma que en el caso más ajustado se ahorran 111 - 13 = 98 ciclos por dato, lo cual es una aceleración de 8,53:1 y en el caso más holgado se ahorran 280 - 13 = 267 ciclos por dato, lo cual es una aceleración de 21,53:1.
+Si se realiza la media de las tres medias y se compara se obtiene un ahorro de 198,3 - 13 = 185,3 ciclos por dato, lo cual es una aceleración de 15,25:1.
+Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido y afianzan el argumento de externalizar los cálculos relativos a las redes neuronales a coprocesadores embebidos con la finalidad de llevar a cabo una gestión computacional eficaz y simplificada de IA en el borde.
 
 
 %tabla de resultados
