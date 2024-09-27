@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{textcomp}
+\usepackage{pgfplots}
+\pgfplotsset{width=15cm,compat=1.9}
+
+\begin{document}
+% We need layers to draw the block diagram
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\begin{tikzpicture}
+\begin{axis}[
+    %title={Resultados ensayo de latencia},
+    ylabel=Ciclos de reloj,
+    xtick=data,
+    symbolic x coords={CRI, APROX. 7, APROX. 5, APROX. 3},
+    enlarge x limits=0.2,
+    ybar=7pt,
+    bar width=0.5cm,
+    nodes near coords,
+    ymin=0,
+    ymax=2580,
+    legend style={at={(0.5,-0.1)},anchor=north,legend columns=-1},
+    legend entries={MEDIA (1 dato), PAQUETE (9 datos)}  % Leyenda de los conjuntos de datos
+]
+
+\addplot+[fill=blue!30] coordinates {(CRI,13) (APROX. 7,259.1) (APROX. 5,198.5) (APROX. 3,137.5)};
+\addplot+[fill=red!30] coordinates {(CRI,197) (APROX. 7,2424) (APROX. 5,1875) (APROX. 3,1324)};
+\end{axis}
+
+\begin{pgfonlayer}{background}
+\path[fill=white!20,rounded corners] (-1.6,-2) rectangle ++(15.2,13.5);
+\end{pgfonlayer}
+    
+\end{tikzpicture}
+\end{document}
+
+

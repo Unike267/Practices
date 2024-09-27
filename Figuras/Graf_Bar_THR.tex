@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage[margin=0.4in]{geometry}
+\usepackage{textcomp}
+\usepackage{pgfplots}
+\usepackage{amsmath}  % Para poder usar \frac
+\pgfplotsset{width=15cm,compat=1.9}
+
+\begin{document}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel=Datos por ciclo de reloj,
+    ytick={0,10,20,30,40,50,60,70,80,90,100}, 
+    yticklabels={0, $\frac{1}{10}$,$\frac{2}{10}$,$\frac{3}{10}$,$\frac{4}{10}$,$\frac{5}{10}$,$\frac{6}{10}$,$\frac{7}{10}$,$\frac{8}{10}$,$\frac{9}{10}$, 1},
+    xtick=data,
+    symbolic x coords={SLINK VC, SLINK C, XBUS VC, XBUS C, CFS C},
+    enlarge x limits=0.2,
+    ybar,
+    bar width=0.5cm,
+    nodes near coords, % Muestra las etiquetas cerca de las coordenadas
+    ymin=0,
+    ymax=105,
+    point meta=explicit symbolic, % Para usar etiquetas personalizadas
+    legend style={at={(0.5,-0.1)},anchor=north,legend columns=-1},
+    legend entries={Mult-B,Mult-BP,Mult-UBP} 
+]
+\addplot+[fill=blue!30] coordinates   {(SLINK VC,25) [{$\frac{1}{4}$}] 
+                                      (SLINK C,5) [{$\frac{1}{20}$}] 
+                                      (XBUS VC,50) [{$\frac{1}{2}$}] 
+                                      (XBUS C,20) [{$\frac{1}{5}$}] 
+                                      (CFS C,6) [{$\frac{1}{15}$}]};
+\addplot+[fill=red!30] coordinates    {(SLINK VC,100) [1] 
+                                      (SLINK C,5) [{$\frac{1}{20}$}] 
+                                      (XBUS VC,50) [{$\frac{1}{2}$}] 
+                                      (XBUS C,20) [{$\frac{1}{5}$}] 
+                                      (CFS C,6) [{$\frac{1}{15}$}]};
+\addplot+[fill=green!30] coordinates  {(SLINK C,5) [{$\frac{1}{20}$}] 
+                                     };
+\end{axis}
+
+\begin{pgfonlayer}{background}
+\path[fill=white!20,rounded corners] (-1.25,-2) rectangle ++(15.2,13.5);
+\end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}
+

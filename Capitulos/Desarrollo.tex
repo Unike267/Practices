@@ -11,13 +11,20 @@ Resulta imprescindible que el microcontrolador seleccionado para este proyecto d
 %cambiar-listo!
 \begin{itemize}
     \item Estar basado en una ISA RISC-V, ya que el contexto del proyecto está orientado a acoplar coprocesadores en núcleos RISC-V.
-    \item Estar descrito en el lenguaje de descripción de hardware VHDL, ya que los coprocesadores embebidos para aplicaciones de IA que se pretenden acoplar están descritos en este lenguaje.
-    \item Contar con extensión de instrucciones para conectar coprocesadores mediante CFU, además de con soporte para comunicaciones \textit{memory-mapped} e interfaces \textit{stream}, ya que se necesita una variedad de métodos de conexión para realizar la caracterización del rendimiento mediante diferentes modos.
+    \item Estar descrito en el lenguaje de descripción de hardware VHDL. 
+En ocasiones, se han de modificar las fuentes del microcontrolador con el fin de acoplarle coprocesadores.
+En este sentido, resulta más oportuno integrar todo en un mismo lenguaje. 
+A pesar de que los sintetizadores soportan varios lenguajes, ciertos elementos pueden suponer incompatibilidades.
+Por ejemplo, los tipos de datos varían dependiendo de cada lenguaje.
+En consecuencia, se tendría que dedicar tiempo extra a realizar las adaptaciones necesarias.
+Debido a que el coprocesador para aplicaciones de IA CRI está descrito en VHDL, se decide buscar un proyecto de microcontrolador descrito en este lenguaje.
+    \item Contar con extensión de instrucciones para conectar coprocesadores mediante CFU, además de con soporte para comunicaciones mapeadas en memoria e interfaces \textit{stream}. 
+Debido a que se necesita una variedad de métodos de conexión para realizar la caracterización del rendimiento, el microcontrolador seleccionado debe contar con al menos los mencionados.
 \end{itemize} 
 
 En este sentido, el NEORV32 \cite{gh:neorv32} cumple con todos estos requerimientos. 
 Además, en la plataforma de desarrollo colaborativo donde está alojado, cuenta con una comunidad muy activa.
-Es por ello que se encuentra bajo una revisión constante de \textit{bugs} (fallos), tanto por parte del autor como de los usuarios.
+Es por ello que se encuentra bajo una revisión constante de fallos, tanto por parte del autor como de los usuarios.
 De esta manera, se asegura en gran medida la correcta operatividad del mismo.
 Además, el autor se dedica a realizar actualizaciones periódicas de sus funcionalidades.
 Por si fuera poco, tanto el autor como la comunidad tienen una gran disponibilidad para responder dudas sobre temas relacionados con el proyecto, lo que resulta de gran ayuda.
@@ -26,12 +33,10 @@ Estas herramientas permiten hacer compilación cruzada de C/C++ a instrucciones 
 Cabe destacar que también se facilita un contenedor para realizar esta tarea \cite{gh:sim-conatiner}. 
 Además, cuenta con un soporte de librerías para compilar funciones software específicas de NEORV32. 
 Asimismo, el repositorio ofrece una variedad de ejemplos de aplicación software de todos los recursos con los que cuenta el micro.
-En adición a todo lo mencionado, este microcontrolador cuenta con un \textit{datasheet} \cite{neorv32-ds} y una \textit{user guide} \cite{neorv32-ug} realizadas por el autor y actualizadas a la par que el código del proyecto, las cuales destacan por su calidad.
+Además de todo lo mencionado, este microcontrolador cuenta con una hoja de características \cite{neorv32-ds} y una guía de usuario \cite{neorv32-ug} realizadas por el autor y actualizadas a la par que el código del proyecto, las cuales destacan por su calidad.
 Teniendo en cuenta todas estas consideraciones, el NEORV32 es el procesador seleccionado para este proyecto.
 
-\hspace{10 mm}
-
-\section{\textit{Workflow}}
+\section{Flujo de trabajo}
 
 \label{Workf}
 
@@ -39,8 +44,8 @@ Las herramientas EDA FLOS y las propietarias/comerciales no son ecosistemas aisl
 Al contrario, en los últimos años se han visto colaboraciones de proyectos \textit{Open Source} con iniciativas privativas.
 En este sentido, se puede destacar la integración de la herramienta RapidWright \cite{gh:rapid} a la \textit{Suite} de diseño Vivado.
 En concreto, este proyeto \textit{Open Source} desarrollado por \textit{AMD Research and Advanced Development} tiene como objetivo permitir a los usuarios avanzados una mayor flexibilidad a la hora de personalizar sus soluciones mediante una metodología de diseño utilizando módulos pre-implementados.
-En adición a esto, se han realizado concursos \cite{contest} patrocinados por AMD con el objetivo de promover y demostrar que el \textit{FPGA Interchange Format} (FPGAIF - Formato de Intercambio de FPGA) \cite{FPGAIF} es una representación intermediaria eficiente y robusta para trabajar en problemas de \textit{backends} de FPGAs, incluso a escala industrial.
-Además, este tipo de iniciativas también tratan de fomentar la innovación de algoritmos de enrutamiento de FPGAs que den prioridad al tiempo de ejecución, con objeto de posibilitar su aplicación en la emulación de ASICs.
+Además, se han realizado concursos \cite{contest} patrocinados por AMD con el objetivo de promover y demostrar que el \textit{FPGA Interchange Format} (FPGAIF - Formato de Intercambio de FPGA) \cite{FPGAIF} es una representación intermediaria eficiente y robusta para trabajar en problemas de \textit{backends} de FPGAs, incluso a escala industrial.
+Asimismo, este tipo de iniciativas también tratan de fomentar la innovación de algoritmos de enrutamiento de FPGAs que den prioridad al tiempo de ejecución, con objeto de posibilitar su aplicación en la emulación de ASICs.
 Cabe destacar que el FPGAIF es un estándar de formato de intercambio diseñado para proporcionar toda la información necesaria mediante la cual realizar el \textit{place and route} en un contexto \textit{Open Source}.
 En la misma línea, Siemens ha observado un crecimiento saludable entorno a la \textit{Open Source VHDL Verification Methodology} (OSVVM - Metodología de Verificación VHDL de Código Abierto) \cite{osvvm} y la \textit{Universal VHDL Verification Methodology} (UVVM -  Metodología de Verificación Universal VHDL) \cite{uvvm} desde 2018, lo que en sus propias palabras \say{es alentador} \cite{wilson-research}.
 Por lo tanto, a la vista de estos ejemplos, podemos afirmar que los comerciales tradicionales de herramientas EDA están empezando a facilitar el uso de herramientas FLOS e incluso a integrar parte o la totalidad de las mismas en sus propuestas comerciales.
@@ -57,19 +62,23 @@ Atendiendo a este nuevo paradigma híbrido de herramientas, en el presente traba
 Como se observa en la figura \ref{fig:workf}, el flujo de trabajo propuesto es el siguiente:
 
 \begin{itemize}
-    \item Compilación: respecto a la compilación de software en C que posteriormente se cargará en la memoria de instrucciones del NEORV32, se emplea exclusivamente la herramienta FLOS GCC.
-    \item Implementación: respecto a las implementaciones en placa de los diseños, se efectúan todas ellas tanto para la Arty A7 35T como para la Arty A7 100T y mediante dos vías paralelas:
+    \item \textbf{Compilación}: respecto a la compilación cruzada de software en C, de x86 (64 bits) a RISC-V (32 bits), se emplea la herramienta FLOS GCC.
+    \item \textbf{Implementación}: respecto a las implementaciones en placa de los diseños, se efectúan mediante dos vías paralelas:
         \begin{itemize}
             \item Haciendo uso del conjunto de herramientas FLOS: GHDL \cite{gh:ghdl}, yosys \cite{gh:yosys}, GHDL yosys plugin \cite{gh:ghdl-plugin}, nextpnr-xilinx \cite{gh:nextpnr} y prjxray \cite{gh:prjxray} para realizar la elaboración, la síntesis y el \textit{place and route} y de la herramienta openFPGALoader \cite{gh:openFPGALoader} para cargar el \textit{bitstream} en la placa.
             \item Haciendo uso de la \textit{Suite} de diseño privativa Vivado.
         \end{itemize}
-    \item Simulación: respecto a las simulaciones realizadas a lo largo de las secciones \ref{Carac} y \ref{Integ} se emplea principalmente el \textit{framework} FLOS VUnit \cite{gh:vunit}, con el cual se realizan todas ellas.
+Esto se debe a que la generación automática de \textit{bitstreams} mediante la integración continua de repositorios públicos está limitada al uso de herramientas FLOS.
+Asimismo, la implementación más eficiente de los diseños, en términos de gestión de recursos de la Arty, está condicionada al uso de herramientas privativas.
+Por ello, se eligen la generación mediante ambas vías.
+Además, para realizar una verificación doblemente redundante, se implementa tanto en la Arty A7 35T como en la 100T.
+    \item \textbf{Simulación}: respecto a las simulaciones realizadas a lo largo de las secciones \ref{Carac} y \ref{Integ} se emplea principalmente el \textit{framework} FLOS VUnit \cite{gh:vunit}, con el cual se realizan todas ellas.
 No obstante, también se utiliza Vivado en ciertas ocasiones.  
 En concreto, en los ensayos en los que se hace uso de la funcionalidad ILA.
 Esta funcionalidad se ha utilizado, por ejemplo, para testear la correcta operatividad de un \textit{wrapper} Wishbone.
 \end{itemize} 
 
-El conjunto de herramientas descritas en la explicación de este flujo de trabajo no solo se utilizan a nivel local, también se utilizan, todas o parte de ellas, en \textbf{integración continua (CI)} en repositorios \textit{online}, tanto en el GitLab del grupo de investigación como en el GitHub propio.
+Las herramientas descritas en la explicación de este flujo de trabajo no solo se utilizan a nivel local, sino que también se emplean, todas o parte de ellas, en la \textbf{integración continua (CI)} de repositorios \textit{online}, tanto en el GitLab del grupo de investigación como en el GitHub propio.
 Para ello, se utilizan varios \textbf{contenedores}.
 Para la generación de \textit{bitstream} mediante herramientas FLOS, se utiliza el contenedor mencionado en la sección \ref{ben}, el cual es generado a su vez en CI.
 Este contenedor se utiliza en la integración continua tanto del repositorio de GitLab como de GitHub.
@@ -78,13 +87,13 @@ Esto es debido a que al ser un programa privativo no se pueden distribuir public
 Para realizar los ensayos en simulación, se utilizan principalmente dos contenedores de VUnit.
 El \href{https://console.cloud.google.com/gcr/images/hdl-containers/global/sim/osvb}{gcr.io/hdl-containers/sim/osvb:latest} con GHDL compilado con llvm como \textit{backend} y el \href{https://hub.docker.com/layers/ghdl/vunit/mcode-master/images/sha256-e32029c5be70a5fa0fc94bffd15d72fa8b84ad8aaf2dc7cfa8ab8324ef733ed0?context=explore}{docker.io/ghdl/vunit:mcode-master} con GHDL compilado con mcode como \textit{backend}.
 Esto se debe a que la funcionalidad \href{https://github.com/stnolting/neorv32/discussions/886}{\textit{external names}}, para capturar señales de jerarquías inferiores, solo es soportada en GHDL si este está compilado con el \textit{backend} mcode.
-En definitiva, haciendo uso de estos recursos mediante la metodología de integración continua, se consigue automatizar todas las simulaciones, visualizando y gestionando sus resultados, así como la generación de todos los \textit{bitstreams}, cada vez que se hace un \textit{push} al repositorio.
+En definitiva, el uso de estos recursos mediante la metodología de integración continua posibilita automatizar todas las simulaciones, visualizando y gestionando sus resultados, así como la generación de todos los \textit{bitstreams}, cada vez que se hace un \textit{push} al repositorio.
 Cabe destacar que la compilación de software solo se realiza en local, aunque también se utiliza un contenedor \cite{gh:sim-conatiner}, no está automatizada en integración continua.
 
 \subsection{Cargar software en el NEORV32}
 
-Antes de entrar en los detalles del acoplamiento de periféricos \textit{custom}, se procede a realizar un repaso de como cargar un software en C al \textit{softcore} NEORV32.
-Como se ha mencionado, el proyecto NEORV32 proporciona herramientas para realizar la compilación cruzada desde Linux a la arquitectura RISC-V.
+Antes de entrar en los detalles del acoplamiento de periféricos \textit{custom}, se procede a realizar un repaso de cómo cargar un software en C al \textit{softcore} NEORV32.
+Como se ha mencionado, el proyecto NEORV32 proporciona \textit{toolchains} de RISC-V para GCC con las que realizar la compilación cruzada desde Linux a la arquitectura RISC-V.
 Estas herramientas están acompañadas de archivos \textit{Makefiles} mediante los cuales se permiten añadir argumentos al comando \textit{Make}, con objeto de, entre otras cosas, proporcionar el programa compilado en diferentes formatos de salida.
 A lo largo de esta sección, nos centraremos en tres de estos formatos:
 
@@ -95,7 +104,7 @@ A lo largo de esta sección, nos centraremos en tres de estos formatos:
 \end{itemize} 
 
 Cada una de estas salidas tiene la misma información, el programa compilado.
-No obstante, cada una de ellas puede utilizarse para cargar el software en la IMEM (memoria de instrucciones) en diferentes puntos del \textit{Workflow}:
+No obstante, cada una de ellas puede utilizarse para cargar el software en la IMEM (memoria de instrucciones) en diferentes puntos del flujo de trabajo:
 
 \begin{itemize}
     \item El \textit{exe} se puede cargar en el NEORV32 una vez que esté ejecutándose en la FPGA. Esta transferencia se realiza a través del \textit{bootloader}.
@@ -251,24 +260,28 @@ IMEM_SIZE/4);
 \end{code}
 
 Este método propone leer desde VHDL un formato hexadecimal, el cual es una salida nativa del compilador, en lugar de autogenerar código HDL con el programa compilado como pasa cuando utilizamos la opción de la app\_image. 
-Ambas opciones cargan la IMEM cuando se sintetiza el diseño, pero la opción de lectura del archivo .hex no modifica el código HDL del diseño. 
-En conclusión, con esta opción conseguimos dos cosas, no autogenerar código HDL tras la compilación y no modificar el código HDL existente cada vez que se actualiza el software a cargar.
+Ambas opciones cargan la IMEM cuando se sintetiza el diseño.
+Sin embargo, con la opción de lectura del archivo .hex conseguimos dos cosas: no autogenerar código HDL tras la compilación y no modificar el código HDL existente cada vez que se actualiza el software a cargar.
 
 Por último, cabe destacar que a lo largo del desarrollo de este proyecto se ha cargado software compilado al NEORV32 mediante los tres formatos expuestos.
 No obstante, mayoritariamente se ha utilizado el formato .vhd generando una \textit{neorv32   \_application\_image.vhd} para cada software empleado.
 
-\section{Caracterización del rendimiento}
+\section{Caracterización del rendimiento de los métodos de conexión}
 
 \label{Carac}
 
 %Se han hecho x ensayos relatarlos, x implementaciones. 
 
 Para caracterizar el rendimiento de los diferentes modos de conexión con los que cuenta el NEORV32, se propone acoplarle 3 tipos de multiplicadores con diferentes características.
+Debido a que el objetivo de esta sección es caracterizar los métodos de acoplamiento, no son relevantes las funciones del coprocesador en sí. 
+En este sentido, se ha pretendido emular en ellos cualidades de rendimiento y tiempo de respuesta propias de coprocesadores de IA.
+Para ello, se han establecido ciertos patrones que comparten los aceleradores que se pretenden integrar en aplicaciones futuras, ver \ref{lin-fut}.
+De esta manera, se ha determinado que las características de almacenamiento a la entrada/salida, así como de segmentación de señales internas, son cualidades a imitar.
 Además, se decide realizar dos tipos de ensayos, con objeto de evaluar los métodos de conexión en términos de latencia y \textit{throughput}.
 Cabe destacar que para el caso de los métodos \textit{Stream Link Interface} (SLINK) y \textit{Processor-External Bus Interface} (XBUS), se realiza una caracterización adicional acoplando los 3 multiplicadores a \textit{Verification Components}\footnote{Herramienta de verificación funcional que ofrece el \textit{framework} VUnit.} de AXI-Stream y Wishbone respectivamente.
 De esta manera, se realiza por cada multiplicador acoplado mediante cada método de conexión un ensayo de latencia y si es posible de \textit{throughput}.
 Esto es debido a que para realizar una caracterización de \textit{throughput}, el acelerador o el modo de conexión debe disponer de un \textit{buffer} de datos.
-Teniendo en cuenta estas consideraciones, se han llevado a cabo un total de 29 ensayos de simulación con exito, todos ellos realizados mediante el \textit{framework} VUnit.
+Teniendo en cuenta estas consideraciones, se han llevado a cabo un total de 29 ensayos de simulación con éxito, todos ellos realizados mediante el \textit{framework} VUnit.
 Dichos ensayos se resumen en la tabla \ref{tab:3}.
 Asimismo, se han implementado en FPGA todos los diseños realizados referentes al conjunto NEORV32 más multiplicador, con objeto de verificar en placa su correcta operatividad.
 
@@ -303,16 +316,17 @@ La figura \ref{fig:soc} ilustra las posibles combinaciones de acoplamiento de lo
 Las características que definen a cada tipo de multiplicador son las siguientes:
 
 \begin{itemize}
-    \item \textbf{Mult-B} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered}), en el código HDL del proyecto referido como \textit{Mult\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida, además las señales internas se gestionan mediante una máquina de estados. 
-Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 bits y 4 bits respectivamente.
+    \item \textbf{Mult-B} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered}), en el código HDL del proyecto referido como \textit{Mult\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida.
+Además, las señales internas se gestionan mediante una máquina de estados. 
+Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 y 4 bits respectivamente.
 Puede recibir hasta tres relojes diferentes, uno en la FIFO de entrada, otro en el multiplicador y otro en la FIFO de salida, aunque comúnmente se han ajustado los tres la misma frecuencia.
 Su topología interna se puede observar en el apéndice \ref{Planos}, plano \ref{fig:mult-b}.
 Además, su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:3}.
-\item \textbf{Mult-BP} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida, pero al contrario que Mult-B, las señales internas se gestionan \textit{pipelaineadas}.
-Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 bits y 4 bits respectivamente.
+\item \textbf{Mult-BP} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida, pero al contrario que Mult-B, las señales internas se gestionan segmentadas.
+Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 y 4 bits respectivamente.
 Puede recibir hasta tres relojes diferentes, uno en la FIFO de entrada, otro en el multiplicador y otro en la FIFO de salida, aunque comúnmente se han ajustado a la misma frecuencia.
 Cabe destacar que su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:7}.
-\item \textbf{Mult-UBP} (\textbf{Mult}iplicador\textit{\textbf{-U}n\textbf{B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp}, es un multiplicador sin \textit{buffers} de entrada/salida, además las señales internas se gestionan \textit{pipelaineadas}.
+\item \textbf{Mult-UBP} (\textbf{Mult}iplicador\textit{\textbf{-U}n\textbf{B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp}, es un multiplicador sin \textit{buffers} de entrada/salida, además las señales internas se gestionan segmentadas.
 Es configurable en número de bits de entrada/salida, aunque normalmente se ha configurado en 32 bits.
 Cabe destacar que su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:6}.
 \end{itemize}
@@ -352,7 +366,7 @@ Se observa que en todos ellos se emplea un \mintinline[breaklines]{c}{#ifdef}.
 El objetivo de esto es separar la compilación de software orientado a ser simulado, con muy pocos \mintinline[breaklines]{c}{printf} para agilizar la simulación y la del software orientado a ser implementado en FPGA.
 En concreto, en el código \ref{ap-cod:11} se muestra el main.c para SLINK, en \ref{ap-cod:12} para XBUS, en \ref{ap-cod:13} para CFU y en \ref{ap-cod:14} y \ref{ap-cod:15} para CFS.
 Respecto a este último, se realiza esta división porque el primer programa está orientado a multiplicadores \textit{buffered} y el segundo al \textit{unbuffered}.
-Esto es debido a que para el primer caso se destina un registro mapeado en memoria para gestionar las señales de lectura/escritura, además de otro registro para las entradas/salidas. No obstante, para el caso del multiplicador \textit{unbuffered} solo se necesita un registro para gestionar las entradas/salidas, por lo que el software varía.
+Esto es debido a que para el primer caso, se destina un registro mapeado en memoria para gestionar las señales de lectura/escritura, además de otro registro para las entradas/salidas. No obstante, para el caso del multiplicador \textit{unbuffered} solo se necesita un registro para gestionar las entradas/salidas, por lo que el software varía.
 Cabe destacar que se genera una app\_image por cada programa compilado, teniendo en cuenta que los \mintinline[breaklines]{c}{#define} se van comentando para obtener un programa destinado a simulación, de latencia o throughput o a implementación.
 
 Con respecto a la CFU, se realiza una instrucción \textit{custom} para operar cada multiplicador.
@@ -361,15 +375,15 @@ Se emplea el registro \textit{rs1} para la entrada de la multiplicación, los 16
 El segundo registro fuente \textit{rs2} no se utiliza y el resultado de la multiplicación se guarda en el registro de destino \textit{rd}.
 Para especificar la instrucción de cada multiplicador se emplea el campo \textit{funct3}, también se puede emplear el campo \textit{funct7} pero en este caso no se tiene en cuenta.
 En concreto, \mintinline[breaklines]{c}{funct3=000} se asocia a Mult-B, \mintinline[breaklines]{c}{funct3=001} a Mult-BP y \mintinline[breaklines]{c}{funct3=010} a Mult-UBP.
-En el código \ref{ap-cod:16}, se observa como están integrados los multiplicadores en el \textit{core} del NEORV32.
-Además, se aprecia como se evalúa el campo \textit{funct3} para dirigir la información de entrada/salida a cada uno de los multiplicadores, así como se observan los recursos lógicos empleados para iniciar las operaciones e indicar cuando estas han terminado.
+En el código \ref{ap-cod:16}, se observa cómo están integrados los multiplicadores en el \textit{core} del NEORV32.
+Además, se aprecia cómo se evalúa el campo \textit{funct3} para dirigir la información de entrada/salida a cada uno de los multiplicadores, así como se observan los recursos lógicos empleados para iniciar las operaciones e indicar cuándo estas han terminado.
 
 Con respecto al subsistema CFS, como se ha mencionado, se distinguen dos casos. 
 Por un lado, para el caso de los multiplicadores \textit{buffered}, se mapean 2 de los 64 registros asociados, el registro REG[0] para los datos de entrada/salida y el registro REG[1] para las señales de control.
 Además, puesto que las señales de entrada/salida del subsistema CFS son ajustables, se emplean 34 bits para su salida.
 En concreto, se utilizan los 2 bits MSB para realizar el control del multiplicador, es decir, gestionar sus señales de lectura/escritura.
 Los otros 32 bits se emplean para representar el dato de entrada al multiplicador.
-En lo que respecta a la entrada al subsistema CFS, se emplean 32 bits, es decir, el tamaño de la salida del multiplicador.
+En lo que respecta a la entrada al subsistema CFS, se emplean 32 bits, lo que equivale al tamaño de la salida del multiplicador.
 En el código \ref{ap-cod:17}, se muestra el subsistema CFS para el caso de los multiplicadores \textit{buffered}.
 Por otro lado, para el multiplicador \textit{unbuffered}, tan solo se mapea el registro REG[0] con objeto de gestionar los datos de entrada/salida.
 En este caso, las señales del subsistema CFS se ajustan a 32 bits tanto para la entrada como para la salida, ya que no es necesario administrar señales de control.
@@ -407,11 +421,11 @@ neorv32_cpu_csr_write(CSR_MCYCLE, 0)
 //Ubicar aquí la función (o funciones) a caracterizar
 neorv32_cpu_csr_read(CSR_MCYCLE)
 \end{minted}
-\caption{Esquema para caracterizar el tiempo de ejecución de una función (o funciones) en C.}
+\caption{Código para caracterizar el tiempo de ejecución de una función (o funciones) en C.}
 \label{code:4}
 \end{code}
 
-De este modo, si tenemos un programa que utilice este esquema, compilado y cargado dentro de la IMEM de un NEORV32 corriendo en una simulación, se puede extraer el valor de la medición (contenido en el registro \textit{mcycle}) y visualizarlo como resultado de la misma.
+De este modo, si tenemos un programa que utilice esta metodología, compilado y cargado dentro de la IMEM de un NEORV32 corriendo en una simulación, se puede extraer el valor de la medición (contenido en el registro CSR \textit{mcycle}) y visualizarlo como resultado de la misma.
 Para ello, se propone añadir el extracto de código VHDL \ref{code:5} en un test bench de VUnit.
 
 \begin{code}
@@ -425,7 +439,7 @@ end loop;
 \label{code:5}
 \end{code}
 
-Atendiendo al código \ref{code:5}, se observa que al extraer el valor del registro \textit{mcycle} se le resta un ciclo.
+Atendiendo al código \ref{code:5}, se observa que al extraer el valor del registro CSR \textit{mcycle} se le resta un ciclo.
 Esto es debido a que la ejecución de la instrucción de lectura del CSR (\textit{csrr} en ensamblador), añade un ciclo extra a la medida.
 Esta situación se discutió y verificó con Stephan en una \textit{issue} titulada \href{https://github.com/stnolting/neorv32/issues/897}{\textit{Latency measurement through CSR(MCYCLE) adds one extra cycle \#897}}.
 Además, el hecho de utilizar la función de VUnit \mintinline[breaklines]{vhdl}{info()} permite exportar los resultados en formato csv para su posterior procesamiento.
@@ -456,7 +470,8 @@ El segundo ensayo propuesto es de \textit{throughput}.
 En él se realizan 4 operaciones de envío de datos consecutivas del NEORV32 al multiplicador, después se realizan 4 operaciones de recepción consecutivas desde el multiplicador al NEORV32 y se mide cuantos datos por ciclo de reloj se reciben.
 Con objeto de almacenar los primeros 4 datos enviados, el multiplicador o el método de conexión debe contar con un \textit{buffer} de datos.
 Es por ello que para el multiplicador Mult-UBP solo se puede realizar el ensayo de \textit{throughput} para el método SLINK, debido a que esta interfaz cuenta con FIFOs asociadas.
-Para el caso del método CFU, solo se puede realizar la medición de latencia, ya que debido a las características internas de la instrucción personalizada, la operación de envío y recepción se realiza en un único paso.
+Para el caso del método CFU, solo se puede realizar la medición de latencia.
+Debido a las características internas de la instrucción personalizada, la operación de envío y recepción se realiza en un único paso.
 En la figura \ref{fig:lat-thr} se aclara gráficamente estos dos tipos de ensayos.
 
 %poner "medida" en las flechas azules
@@ -474,7 +489,7 @@ Para los ensayos mediante \textit{Verification Componets} se han empleado simula
 En concreto, en el apéndice \ref{Codigo} se ejemplifica este proceso para la latencia de Mult-B acoplado mediante AXI-Stream.
 Para ello se muestra el archivo que importa los VCs y extrae la información \ref{ap-cod:20}, el \textit{test bench} de VUnit \ref{ap-cod:21} y el \textit{script} de Python \ref{ap-cod:22} encargado de calcular a latencia.
 
-\subsection{Resultados de los ensayos de simulación}
+\subsection{Ensayos de simulación}
 
 %Tabla & Imagenes de integración continua
 %Codigo de algun test bench de VUnit
@@ -664,25 +679,30 @@ Además, con objeto de facilitar la visualización estos resultados se resumen e
 
 \vspace{3cm}
 
-Cabe destacar que por cada ensayo de simulación se ha producido un archivo .vcd que contiene las \textit{waveforms} producidas.
-En este sentido, la integración continua se encarga de gestionar estos archivos y subirlos como \textit{artifacts}.
+Cabe destacar que por cada ensayo de simulación se ha producido un archivo .vcd que contiene las formas de onda producidas.
+En este sentido, la integración continua se encarga de gestionar estos archivos y subirlos como artefactos.
 En el apéndice \ref{wave}, se expone la forma de onda referente al ensayo de \textit{throughput} para NEORV32 + Mult-BP acoplado mediante XBUS \ref{wave:xbus} , así como la referente al ensayo de latencia para NEORV32 + Mult-B acoplado mediante CFU  \ref{wave:cfu}.
 
 \subsection{Implementación en FPGA}
 
 % captura cutecom de la implementación.
 
-Todos las combinaciones del SoC, reflejadas en la figura \ref{fig:soc}, se han verificado tanto en la placa Arty A7 35T como en la 100T, lo que ha supuesto la generación duplicada de los \textit{bitstreams}.
-Esta generación se ha realizado mediante las dos vías expuestas en la sección \ref{Workf}, herramientas FLOS y Vivado.
-En la imagen \ref{fig:impl-gh} se muestran los procesos de integración continua para generar de forma automatizada los \textit{bitstreams} mediante herramientas FLOS en el repositorio de GitHub. 
-En adición a esto, en el apendice \ref{Codigo} código \ref{ap-cod:23}, se muestra un ejemplo de un archivo bash realizado para generar automáticamente el \textit{bitstream} de la implementación CFU mediante herramientas FLOS.
-En él se observa un matiz destacable, al realizar la síntesis con yosys se añaden los argumentos  \mintinline[breaklines]{bash}{-nodsp} y \mintinline[breaklines]{bash}{-nolutram}.
-Este hecho es debido a que la síntesis para la Arty mediante yosys no está del todo pulida, así como para Lattice si, para Xilinix temas como la gestión de DSPs y de RAM distribuida todavía no están soportados.
+Todas las combinaciones del SoC, reflejadas en la figura \ref{fig:soc}, se han verificado tanto en la placa Arty A7 35T como en la 100T, lo que ha supuesto la generación duplicada de los \textit{bitstreams}.
+Como se ha mencionado, el hecho de duplicar las placas permite asegurar una doble redundancia en la verificación.
+Esta generación se ha realizado mediante las dos vías expuestas en la sección \ref{Workf}: herramientas FLOS y Vivado.
+Con objeto de ilustrar cómo se aprecia la integración continua, en la imagen \ref{fig:impl-gh} se muestran los procesos para generar de forma automatizada los \textit{bitstreams} mediante herramientas FLOS en el repositorio de GitHub. 
+En ella, se observa que se producen 18 artefactos, que contienen los \textit{bitstreams} y estarán almacenados en GitHub durante 90 días.
+También se observa que la ejecución de los procesos es paralela, a diferencia de la relativa a Vivado en el CI de GitLab.
+Debido a las características de gestión de procesos de Orion, el \textit{runner} asignado a Vivado solo permite la generación de \textit{bitstreams} de forma secuencial.
+Este hecho aporta otro argumento que revalida la decisión de utilizar tanto herramientas FLOS como privativas.
+Además, en el apendice \ref{Codigo} código \ref{ap-cod:23}, se muestra un ejemplo de un archivo bash realizado para generar automáticamente el \textit{bitstream} de la implementación CFU mediante herramientas FLOS.
+En él, se observa un matiz destacable, al realizar la síntesis con yosys se añaden los argumentos  \mintinline[breaklines]{bash}{-nodsp} y \mintinline[breaklines]{bash}{-nolutram}.
+Este hecho es debido a que la síntesis para la Arty mediante yosys no está del todo pulida, así como para Lattice sí, para Xilinix temas como la gestión de DSPs y de RAM distribuida todavía no están soportados.
 Además, para obtener un correcto funcionamiento de los \textit{bitstreams} generados con herramientas FLOS, se ha tenido que rebajar la capacidad de la IMEM a:
 
 \hspace{30mm} \mintinline[breaklines]{vhdl}{MEM_INT_IMEM_SIZE : natural := 6*1024}
 
-\noindent En adición a la generación, el proceso de integración continua también automatiza la subida de los \textit{bitstreams} como artefactos.
+\noindent Como se ha mencionado, además de la generación, el proceso de integración continua también automatiza la subida de los \textit{bitstreams} como artefactos.
 En consecuencia, se han descargado y testeado todos ellos en ambas placas para comprobar su correcta operatividad.
 En este sentido, se ha obteniendo un resultado satisfactorio.
 
@@ -694,12 +714,13 @@ En este sentido, se ha obteniendo un resultado satisfactorio.
 \end{figure}
 
 Los ensayos de implementación siguen un esquema similar a los ensayos de simulación.
-No obstante, la finalidad no es realizar la caracterización de rendimiento, sino verificar la correcta operatividad.
+No obstante, la finalidad no es realizar la caracterización del rendimiento, sino verificar la correcta operatividad.
 En este sentido, todos los ensayos operan los mismos datos mediante el siguiente procedimiento.
-Un programa de la IMEM, resultado de la compilación de la parte de código C destinada a implementación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12}, lanza 4 datos de entrada\footnote{Los datos de entrada son 1 x 1, 2 x 2, 4 x 4 y 8 x 8 (al igual que en simulación); por lo que se debe obtener en hexadecimal 0x1, 0x4, 0x10 (16) y 0x40 (64).} a los multiplicadores mediante cada método de acoplamiento, el acelerador los multiplica y los devuelve al NEORV32 el cual los manda por UART visualizando el resultado en el ordenador.
-De todas las implementaciones, realizadas se muestran cuatro con objeto de ejemplificar la correcta operatividad de los diseños.
+Un programa de la IMEM, resultado de la compilación de la parte de código C destinada a implementación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12}, lanza 4 datos de entrada\footnote{Los datos de entrada son 1 x 1, 2 x 2, 4 x 4 y 8 x 8 (al igual que en simulación); por lo que se debe obtener en hexadecimal 0x1, 0x4, 0x10 (16) y 0x40 (64).} a los multiplicadores mediante cada método de acoplamiento, el acelerador los multiplica y los devuelve al NEORV32.
+Además, las implementaciones muestran datos por UART, con objeto de visualizar en el ordenador la entrada y el resultado de cada operación, así como el tipo de ensayo.
+De todos los ensayos en implementación realizados, se muestran cuatro con objeto de ejemplificar la correcta operatividad de los diseños.
 Los resultados que se proceden a mostrar se han visualizado mediante la terminal CuteCom.
-En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado al NEORV32 mediante SLINK, la figura \ref{fig:impl1} refiere al multiplicador Mult-BP acoplado mediante XBUS, la figura \ref{fig:impl1} refiere los tres multiplicadores acoplados mediante CFU y la figura \ref{fig:impl1} refiere al multiplicador Mult-UBP acoplado mediante CFS.
+En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado al NEORV32 mediante SLINK, la figura \ref{fig:impl2} refiere al multiplicador Mult-BP acoplado mediante XBUS, la figura \ref{fig:impl3} refiere los tres multiplicadores acoplados mediante CFU y la figura \ref{fig:impl4} refiere al multiplicador Mult-UBP acoplado mediante CFS.
 
 \begin{figure}[H]
     \centering
@@ -728,6 +749,8 @@ En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado 
     \caption{Ensayo de implementación de Mult-UBP acoplado al NEORV32 mediante CFS.}
     \label{fig:impl4}
 \end{figure}
+
+\subsection{Análisis de los resultados}
 
 \section{Integración de coprocesador para aplicaciones de IA}
 
@@ -777,7 +800,7 @@ Estos ensayos no se encuentran disponibles en el repositorio propio de GitHub.
 \end{table}
 
 Los resultados obtenidos en simulación del coprocesador en solitario se muestran en la figura \ref{fig:sim_alone}, así como los obtenidos en implementación para el coprocesador acoplado al NEORV32 vía CFU se muestran en la figura \ref{fig:impl_complex}.
-En adición a esto, el código que describe el acelerador utilizado se encuentra en el apéndice \ref{Codigo} código \ref{ap-cod:24}, así como la integración en CFU se muestra en el código \ref{ap-cod:25}.
+Asimismo, el código que describe el acelerador utilizado se encuentra en el apéndice \ref{Codigo} código \ref{ap-cod:24}, así como la integración en CFU se muestra en el código \ref{ap-cod:25}.
 Además, se aclara gráficamente la integración del acelerador mediante CFU en el plano \ref{}. 
 %hacer plano con latex
 Por último, se muestra la forma de onda resultante del cálculo de dos sigmoides por el acelerador CRI mediante CFU en el apéndice, \ref{wave} forma de onda \ref{wave:sig}. 
@@ -786,8 +809,9 @@ Esto es debido a que en el transcurso de la elaboración de esta investigación 
 %hacer forma de onda
 Al igual que para el caso del multiplicador, se emplea una instrucción personalizada \textit{R3-Type} de la extensión Zxcfu.
 Se emplea el registro fuente \textit{rs1} para la entrada del acelerador.
-Ya que los datos a verificar se generaron con una longitud de palabra WL = 16 bits, se ha querido preservar el acelerador a este tamaño de entrada/salida para todos los ensayos realizados en este capítulo, consultar \ref{ap-cod:25} para observar como se ha gestionado este longitud con el tamaño de los registros \textit{rs1} y \textit{rs1} de 32 bits. 
-El registro \textit{rs2} no se utiliza y el resultado del cálculo de la función sigmoide se guarda en el registro de destino \textit{rd}.
+Ya que los datos a verificar se generaron con una longitud de palabra WL = 16 bits, se ha querido preservar el acelerador a este tamaño de entrada/salida para todos los ensayos realizados en este capítulo.
+En este sentido, en el código \ref{ap-cod:25} se observa como se ha gestionado este longitud con el tamaño de los registros \textit{rs1} y \textit{rd} de 32 bits. 
+El registro fuente \textit{rs2} no se utiliza y el resultado del cálculo de la función sigmoide se guarda en el registro de destino \textit{rd}.
 Para especificar la función se ha empleado el campo \textit{funct3}, asociando el coprocesador sigmoide a \mintinline[breaklines]{c}{funct3=000}.
 
 %Añadir la flexibilidad de cli, se puede ajustar a distintos q + x ciclos
@@ -815,12 +839,14 @@ Como se puede apreciar en las imágenes los resultados en ambos casos han sido l
 La tarea de calcular la función de activación sigmoide mediante los recursos por defecto del NEORV32, se ha decidido implementar mediante la Unidad de Coma Flotante (FPU).
 %si da tiempo hacer ensayo de mult float sin FPU
 Es decir, al contrario que el acelerador que se usa coma fija, para el enfoque realizado sin coprocesador se emplean datos en coma flotante.
-Normalmente, cuando una red se calcula por software, es decir, sin externalizar los cálculos a coprocesadores embebidos, los datos que se suelen usar son de este tipo, por lo que se ha visto adecuado usarlos.
+Normalmente, cuando una red se calcula por software, es decir, sin externalizar los cálculos a coprocesadores embebidos, los datos que se suelen usar son de este tipo, por lo que se ha visto adecuado emular este hecho.
 En concreto, las instrucciones relativas al manejo de la Unidad de Coma Flotante se encuentran en la extensión Zfinx.
-En este sentido surge un pequeño inconveniente, debido a que la implementación hardware actual de la extensión en el NEORV32 es limitada, esta \href{https://stnolting.github.io/neorv32/#_zfinx_isa_extension}{no soporta operaciones de división}.
-A priori esto puede resultar un problema, ya que la función sigmoide es una fracción \eqref{ec:2}, resolverla sin emplear operaciones de división puede resultar engorroso.
+En este sentido surge un pequeño inconveniente.
+Debido a que la implementación hardware actual de la extensión en el NEORV32 es limitada, esta \href{https://stnolting.github.io/neorv32/#_zfinx_isa_extension}{no soporta operaciones de división}.
+A priori, esto puede resultar un problema.
+Ya que la función sigmoide es una fracción \eqref{ec:2}, resolverla sin emplear operaciones de división puede resultar engorroso.
 Es por ello que se ha buscado una alternativa de cálculo.
-En primer lugar, se ha de tener en cuenta que las operaciones de suma y de multiplicación si que están soportadas mediante las funciones \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_fadds()} y \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_fmuls()} respectivamente.
+En primer lugar, se ha de tener en cuenta que las operaciones de suma y de multiplicación sí que están soportadas mediante las funciones \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_fadds()} y \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_fmuls()} respectivamente.
 Este hecho nos abre una ventana de posibilidad y nos permite implementar una aproximación polinomial a la función sigmoide.
 Para ello se ha realizado un programa en python descrito en el código \ref{ap-cod:26}.
 Este programa hace uso de la librería numpy y su funcionamiento es la siguiente: se describe la función a aproximar, en este caso \eqref{ec:3} (sigmoide ajustada a saturación = 2 y pendiente = 0,5), se calculan los coeficientes para tres grados distintos de polinomios y se realiza una gráfica comparativa.
@@ -846,9 +872,9 @@ f(x)= 1 +  0.22878851178x - 0.00253272801x^3 + 0.00001266682x^5\tag{*****}
 f(x)= 1 + 0.24190955524x - 0.00369209483x^3 + + 0.00003770457x^5 - 0.00000015213x^7 \tag{******}
 \end{equation}
 
-Como se observa en la figura \ref{fig:comp}, se obtienen un buen resultado de aproximación mediante las funciones polinómicas propuestas en el rango indicado.
+En la figura \ref{fig:comp}, se observa el resultado de las aproximaciones polinómicas propuestas para aproximar la función sigmoide en el rango indicado.
 En este sentido, en el código \ref{ap-cod:27} se puede observar como se implementan estas funciones en C.
-En adición a esto, cabe destacar que el NEORV32 no soporta la impresión de flotantes por UART, por lo que se ha tenido que adaptar el resultado a dos enteros que representen la parte entera y la parte decimal.
+Además, cabe destacar que el NEORV32 no soporta la impresión de flotantes por UART, por lo que se ha tenido que adaptar el resultado a dos enteros que representen la parte entera y la parte decimal.
 Para este propósito, entre otras cosas, se ha utilizado la función \mintinline[bgcolor=pink,breaklines]{c}{riscv_intrinsic_flts()} para realizar la comparación \say{menor que} de un flotante con cero y evaluar su signo.
 Para emplear las funciones de la extensión Zfinx, esta se debe activar en el TOP del diseño.
 
@@ -862,11 +888,11 @@ Para emplear las funciones de la extensión Zfinx, esta se debe activar en el TO
     \label{fig:comp}
 \end{figure}
 
-Cabe destacar un hecho relevante, como se ha mencionado la aproximación polinómica está calculada en función del rango propuesto.
+Cabe destacar un hecho relevante, como se ha mencionado las aproximaciones polinómicas están calculadas en función del rango propuesto.
 Es decir, su uso no se puede generalizar para todos los valores de entrada de la recta real.
-Esto es debido a que para valores fuera de rango indicado, el polinomio se puede desviar de la aproximación a la función sigmoide.
-Para evitar esto, si se desea generalizar estos polinomios, se recomienda saturar a 0 los valores inferiores a -10  y saturar a 2 los valores superiores a 10. 
-Para el caso del polinomio de grado 3 se recomendaría saturar algo antes.
+Esto se debe a que, para valores fuera del rango indicado, el polinomio se puede inestabilizar y desviar por completo de la aproximación a la función sigmoide.
+Además, para las aproximaciones de grado 3 y 5, las colas en los extremos no son aceptables.
+En consecuencia, para una aplicación real, el inicio y el final de estas aproximaciones se deben saturar a 0 y a 2, respectivamente.
 
 \subsection{Comparación de enfoques}
 
@@ -917,7 +943,8 @@ De este hecho se deduce que se requiere poca carga computacional para calcular e
 Si se observan el resto de casos, figura \ref{fig:sim_comp}, la desviación no es tan notable.
 Respecto a los resultados del paquete de datos se aprecia que no se ajusta de forma directa al total de ciclos entre 9.
 Esto es debido a que en el ensayo de simulación se mide rigurosamente cada ejecución de dato aislada, mientras que la implementación en placa mide, aparte de la ejecución per se, las instrucciones relativas al bucle for que corre la secuencia de introducción del paquete, lo que añade ciclos extra a la computación, ver \ref{ap-cod:27}.
-Es por ello que se ha mencionado que el ensayo en placa da un punto de vista más global, ya que en la práctica no solo se ejecutan los ciclos relativos a las instrucciones propias, siempre van acompañadas de código extra que compone la aplicación.
+Es por ello que se ha mencionado que el ensayo en placa da un punto de vista más global.
+Debido a que en la práctica no solo se ejecutan los ciclos relativos a las instrucciones propias, es de interés medir la parte del código añadido que compone la aplicación.
 Respecto al ahorro computacional en ciclos de latencia obtenidos mediante el acelerador CRI, se afirma que en el caso más ajustado se ahorran 111 - 13 = 98 ciclos por dato, lo cual es una aceleración de 8,53:1 y en el caso más holgado se ahorran 280 - 13 = 267 ciclos por dato, lo cual es una aceleración de 21,53:1.
 Si se realiza la media de las tres medias y se compara se obtiene un ahorro de 198,3 - 13 = 185,3 ciclos por dato, lo cual es una aceleración de 15,25:1.
 Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido y afianzan el argumento de externalizar los cálculos relativos a las redes neuronales a coprocesadores embebidos con la finalidad de llevar a cabo una gestión computacional eficaz y simplificada de IA en el borde.
@@ -957,12 +984,12 @@ Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido
 \multicolumn{12}{|c|}{\textbf{Un dato (simulación)}}                                                                                                                                                                                                                                                                                                                                                                             \\ \hline
 \multicolumn{3}{|c|}{\multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Coprocesador\\ CRI\end{tabular}}}} & \multicolumn{9}{c|}{\textbf{Aproximación mediante FPU}}                                                                                                                                                                                                                                                \\ \cline{4-12} 
 \multicolumn{3}{|c|}{}                                                                                     & \multicolumn{3}{c|}{\textbf{Grado 7}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 5}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 3}}                                              \\ \hline
-\multicolumn{1}{|c|}{\textbf{Max}}  & \multicolumn{1}{c|}{\textbf{M\tablefootnote{\say{M} refiere a la media.}}}  & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{M}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{M}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{M}} & \textbf{Min} \\ \hline
-\multicolumn{1}{|c|}{13}            & \multicolumn{1}{c|}{13}          & \multicolumn{1}{c|}{13}           & \multicolumn{1}{c|}{280}          & \multicolumn{1}{c|}{259,1}      & \multicolumn{1}{c|}{203}          & \multicolumn{1}{c|}{210}          & \multicolumn{1}{c|}{198,5}      & \multicolumn{1}{c|}{157}          & \multicolumn{1}{c|}{146}          & \multicolumn{1}{c|}{137,5}      & 111          \\ \hline
+\multicolumn{1}{|c|}{\textbf{Min}}  & \multicolumn{1}{c|}{\textbf{M\tablefootnote{\say{M} refiere a la media.}}}  & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{M}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{M}} & \multicolumn{1}{c|}{\textbf{Max}} & \multicolumn{1}{c|}{\textbf{Min}} & \multicolumn{1}{c|}{\textbf{M}} & \textbf{Max} \\ \hline
+\multicolumn{1}{|c|}{13}            & \multicolumn{1}{c|}{13}          & \multicolumn{1}{c|}{13}           & \multicolumn{1}{c|}{203}          & \multicolumn{1}{c|}{259,1}      & \multicolumn{1}{c|}{280}          & \multicolumn{1}{c|}{157}          & \multicolumn{1}{c|}{198,5}      & \multicolumn{1}{c|}{210}          & \multicolumn{1}{c|}{111}          & \multicolumn{1}{c|}{137,5}      & 146          \\ \hline
 \multicolumn{12}{|c|}{\textbf{Un paquete de 9 datos (implementación)}}                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
 \multicolumn{3}{|c|}{\multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Coprocesador\\ CRI\end{tabular}}}} & \multicolumn{9}{c|}{\textbf{Aproximación mediante FPU}}                                                                                                                                                                                                                                                \\ \cline{4-12} 
 \multicolumn{3}{|c|}{}                                                                                     & \multicolumn{3}{c|}{\textbf{Grado 7}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 5}}                                                                   & \multicolumn{3}{c|}{\textbf{Grado 3}}                                              \\ \hline
-\multicolumn{3}{|c|}{197}                                                                                  & \multicolumn{3}{c|}{2424}                                                                               & \multicolumn{3}{c|}{1875}                                                                               & \multicolumn{3}{c|}{1524}                                                          \\ \hline
+\multicolumn{3}{|c|}{197}                                                                                  & \multicolumn{3}{c|}{2424}                                                                               & \multicolumn{3}{c|}{1875}                                                                               & \multicolumn{3}{c|}{1324}                                                          \\ \hline
 \end{tabular}
 \end{table}
 

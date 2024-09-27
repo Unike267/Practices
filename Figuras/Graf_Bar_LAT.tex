@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{textcomp}
+\usepackage{pgfplots}
+\pgfplotsset{width=15cm,compat=1.9}
+
+\begin{document}
+% We need layers to draw the block diagram
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\begin{tikzpicture}
+\begin{axis}[
+    %title={Resultados ensayo de latencia},
+    ylabel=Ciclos de reloj,
+    xtick=data,
+    symbolic x coords={SLINK VC, SLINK C, XBUS VC, XBUS C, CFU C, CFS C},
+    enlarge x limits=0.2,
+    ybar,
+    bar width=0.5cm,
+    nodes near coords,
+    ymin=0,
+    ymax=48,
+    legend style={at={(0.5,-0.1)},anchor=north,legend columns=-1},
+    legend entries={Mult-B , Mult-BP , Mult-UBP }  % Leyenda de los conjuntos de datos
+]
+\addplot+[fill=blue!30] coordinates {(SLINK VC,6) (SLINK C,45) (XBUS VC,5) (XBUS C,16) (CFU C,13) (CFS C,37)};
+\addplot+[fill=red!30] coordinates {(SLINK VC,4) (SLINK C,45) (XBUS VC,3) (XBUS C,16) (CFU C,11) (CFS C,37)};
+\addplot+[fill=green!30] coordinates {(SLINK VC,1) (SLINK C,45) (XBUS VC,2) (XBUS C,16) (CFU C,8) (CFS C,18)};
+\end{axis}
+
+\begin{pgfonlayer}{background}
+\path[fill=white!20,rounded corners] (-1.25,-2) rectangle ++(15,13.5);
+\end{pgfonlayer}
+    
+\end{tikzpicture}
+\end{document}
+

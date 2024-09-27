@@ -9,9 +9,18 @@ Aqui irá las conclusiones alcanzadas.
 
 \section{Líneas futuras}
 
+\label{lin-fut}
+
 Aqui irán las líneas futuras.
 
 %Principal linea futura hacer cfu custom para todo el cri, cada campo selecciona una funcion
 %Externalizar por completo los calculos referentes a las RNAs y tener un un modelo completo de RNA computado por un enfoque distribuido. 
 %Mejorar la gestion de memoria. Hasta ahora hardcodeada. Posibilidad de usar la DDR (controlador ddr de litex) de la Arty, jtag, debug Usb (issue 38). La unica aproximación se ha hecho utilizando la spi (issue 47) relaizada con exito pero no nos vale (comentario de umarcor)
 %Añadir la compilación de software a CI
+
+%GESTIONAR REFERENCIA 2.3
+
+%Como ya te comenté, las aproximaciones polinomiales solo sirven en cierto rango de valores de entrada (ya que se ajustan para minimizar el error en cierto intervalo), pero fuera de ahí, no valen.
+%Una expansión en serie de Taylor hubiera sido más adecuado. Ver por ejemplo:
+%
+%https://ietresearch.onlinelibrary.wiley.com/doi/full/10.1049/el.2013.3098

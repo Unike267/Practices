@@ -1,0 +1,148 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\begin{document}
+\pagestyle{empty}
+
+% We need layers to draw the block diagram
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+%Definicion tamaños rectangulo (ancho,alto)
+\def\BIT{0.45}
+\def\FUNCS{\BIT*7,0.5}
+\def\FUNCT{\BIT*3,0.5}
+\def\R{\BIT*5,0.5}
+\def\RFH{\BIT*2,0.5}
+\def\sep{0}
+\def\s{0.2}
+\def\c{2}
+\def\d{-2+\c}
+\def\e{-4+\c}
+\def\f{-6+\c}
+
+\begin{tikzpicture}
+\node (center) {};
+%R3-Type
+%Fields
+\draw[fill=orange!40,rounded corners] (0,\c) rectangle ++(\FUNCS);
+\path (center)+(7*\BIT/2,0.25+\c) node (name) {funct7};
+\draw[fill=orange!20,rounded corners] (7*\BIT+\sep,\c) rectangle ++(\R);
+\path (center)+(7*\BIT+\sep+5*\BIT/2,0.25+\c) node (name) {rs2};
+\draw[fill=orange!20,rounded corners] (7*\BIT+\sep+5*\BIT+\sep,\c) rectangle ++(\R);
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT/2,0.25+\c) node (name) {rs1};
+\draw[fill=orange!40,rounded corners] (7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep,\c) rectangle ++(\FUNCT);
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT/2,0.25+\c) node (name) {funct3};
+\draw[fill=orange!20,rounded corners] (7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep,\c) rectangle ++(\R);
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT/2,0.25+\c) node (name) {rd};
+\draw[fill=orange!20,rounded corners] (7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep,\c) rectangle ++(\FUNCS);
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,0.25+\c) node (name) {0001011};
+%Bits
+\path (center)+(\BIT/2,0.9+\c) node (name) {\footnotesize31};
+\path (center)+(6*\BIT+\BIT/2,0.9+\c) node (name) {\footnotesize25};
+\path (center)+(7*\BIT+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize24};
+\path (center)+(11*\BIT+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize20};
+\path (center)+(12*\BIT+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize19};
+\path (center)+(16*\BIT+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize15};
+\path (center)+(17*\BIT+\sep+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize14};
+\path (center)+(19*\BIT+\sep+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize12};
+\path (center)+(20*\BIT+\sep+\sep+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize11};
+\path (center)+(24*\BIT+\sep+\sep+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize7};
+\path (center)+(25*\BIT+\sep+\sep+\sep+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize6};
+\path (center)+(31*\BIT+\sep+\sep+\sep+\sep+\sep+\BIT/2,0.9+\c) node (name) {\footnotesize0};
+%Names
+\path (center)+(7*\BIT+\sep+5*\BIT/2,-0.3+\c) node (name) {\emph{Fuente 2}};
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT/2,-0.3+\c) node (name) {\emph{Fuente 1}};
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT/2,-0.3+\c) node (name) {\emph{Destino}};
+\path (center)+(7*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,-0.33+\c) node (name) {\emph{Opcode: Custom-0}};
+\node [rotate=90,fill=green!20] at (-3*\s,\c) {R3-Type};
+
+%R4-Type
+%Fields
+\draw[fill=orange!20,rounded corners] (0,\d) rectangle ++(\R);
+\path (center)+(5*\BIT/2,0.25+\d) node (name) {rs3};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep,\d) rectangle ++(\RFH);
+\path (center)+(5*\BIT+\sep+2*\BIT/2,0.25+\d) node (name) {00};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep,\d) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT/2,0.25+\d) node (name) {rs2};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep,\d) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT/2,0.25+\d) node (name) {rs1};
+\draw[fill=orange!40,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep,\d) rectangle ++(\FUNCT);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT/2,0.25+\d) node (name) {funct3};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep,\d) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT/2,0.25+\d) node (name) {rd};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep,\d) rectangle ++(\FUNCS);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,0.25+\d) node (name) {0101011};
+%Bits
+%\path (center)+(\BIT/2,0.9+\d) node (name) {\footnotesize31};
+\path (center)+(4*\BIT+\BIT/2,0.9+\d) node (name) {\footnotesize27};
+\path (center)+(5*\BIT+\sep+\BIT/2,0.9+\d) node (name) {\footnotesize26};
+%\path (center)+(6*\BIT+\sep+\BIT/2,0.9+\d) node (name) {\footnotesize25};
+
+%Names
+\path (center)+(5*\BIT/2,-0.3+\d) node (name) {\emph{Fuente 3}};
+
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,-0.33+\d) node (name) {\emph{Opcode: Custom-1}};
+\node [rotate=90,fill=red!20] at (-3*\s,\d) {R4-Type};
+
+
+%R5-Type A
+%Fields
+\draw[fill=orange!20,rounded corners] (0,\e) rectangle ++(\R);
+\path (center)+(5*\BIT/2,0.25+\e) node (name) {rs3};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep,\e) rectangle ++(\RFH);
+\path (center)+(5*\BIT+\sep+2*\BIT/2,0.25+\e) node (name) {rs4 h};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep,\e) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT/2,0.25+\e) node (name) {rs2};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep,\e) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT/2,0.25+\e) node (name) {rs1};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep,\e) rectangle ++(\FUNCT);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT/2,0.25+\e) node (name) {rs4 l};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep,\e) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT/2,0.25+\e) node (name) {rd};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep,\e) rectangle ++(\FUNCS);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,0.25+\e) node (name) {1011011};
+%Names
+\path (center)+(5*\BIT+\sep+2*\BIT/2,-0.3+\e) node (name) {\emph{Fuente 4}};
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT/2,-0.3+\e) node (name) {\emph{Fuente 4}};
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,-0.33+\e) node (name) {\emph{Opcode: Custom-2}};
+\node [rotate=90,fill=blue!10] at (-3*\s,\e) {A Format};
+
+%R5-Type B
+%Fields
+\draw[fill=orange!20,rounded corners] (0,\f) rectangle ++(\R);
+\path (center)+(5*\BIT/2,0.25+\f) node (name) {rs3};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep,\f) rectangle ++(\RFH);
+\path (center)+(5*\BIT+\sep+2*\BIT/2,0.25+\f) node (name) {rs4 h};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep,\f) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT/2,0.25+\f) node (name) {rs2};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep,\f) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT/2,0.25+\f) node (name) {rs1};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep,\f) rectangle ++(\FUNCT);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT/2,0.25+\f) node (name) {rs4 l};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep,\f) rectangle ++(\R);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT/2,0.25+\f) node (name) {rd};
+\draw[fill=orange!20,rounded corners] (5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep,\f) rectangle ++(\FUNCS);
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,0.25+\f) node (name) {1111011};
+%Names
+\path (center)+(5*\BIT+\sep+2*\BIT/2,-0.3+\f) node (name) {\emph{Fuente 4}};
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT/2,-0.3+\f) node (name) {\emph{Fuente 4}};
+\path (center)+(5*\BIT+\sep+2*\BIT+\sep+5*\BIT+\sep+5*\BIT+\sep+3*\BIT+\sep+5*\BIT+\sep+7*\BIT/2,-0.33+\f) node (name) {\emph{Opcode: Custom-3}};
+\node [rotate=90,fill=blue!10] at (-3*\s,\f) {B Format};
+\node [rotate=90,fill=blue!10] at (-6.5*\s,-3) {R5-Type};
+
+\begin{pgfonlayer}{background}
+\path[fill=white!20,rounded corners] (-8*\s,-5) rectangle ++(32*\BIT+9.5*\s,8.25);
+
+\path[fill=green!20,rounded corners] (-\s,-3*\s+\c) rectangle ++(2*\s+32*\BIT,0.5+0.75);
+\path[fill=red!20,rounded corners] (-\s,-3*\s+\d) rectangle ++(2*\s+32*\BIT,0.5+0.75);
+\path[fill=blue!10,rounded corners] (-\s,-3*\s+\e) rectangle ++(2*\s+32*\BIT,0.5+0.75);
+\path[fill=blue!10,rounded corners] (-\s,-3*\s+\f) rectangle ++(2*\s+32*\BIT,0.5+0.75);
+
+\end{pgfonlayer}
+    
+\end{tikzpicture}
+\end{document}
+

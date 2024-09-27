@@ -15,34 +15,33 @@ La tendencia general es emplear unidades de procesamiento gráfico en combinaci�
 De este modo, se consigue gestionar grandes volúmenes de datos, lo que conlleva un entrenamiento óptimo y en consecuencia un aprendizaje exitoso.
 No obstante, la infraestructura necesaria para tal fin ocupa un tamaño considerable.
 Además, se requiere de una gran cantidad de energía.
-Hay ocasiones en las que el tamaño y/o la potencia consumida son factores determinantes.
-Por ejemplo, en unidades autónomas con capacidad de operar aisladas como satélites, vehículos autónomos etc.
-En estos casos la IA es necesaria para el desempeño de sus funciones pero su procesamiento debe estar descentralizado en su propio hardware.
-Este procesamiento de algoritmos de \textit{Machine Learning} a nivel local y sin necesidad de estar conectados a internet es lo que se conoce como \textit{AI at the edge} \cite{IA-edge} (IA en el borde) y surge en contraposición a los modelos conectados a la nube.
-Además, cabe destacar que realizar por completo el creciente número de inferencias de IA en la nube no sólo no es deseable, sino que es insostenible \cite{Efficient-Inference}. 
+Hay ocasiones en las que el tamaño y/o la potencia consumida son factores determinantes, por ejemplo, en unidades autónomas con capacidad de operar aisladas como satélites, vehículos autónomos etc.
+En estos casos la IA es necesaria para el desempeño de sus funciones, pero su procesamiento debe estar descentralizado en su propio hardware.
+Este procesamiento de algoritmos de \textit{Machine Learning} a nivel local y sin necesidad de estar conectados a internet es lo que se conoce como IA en el borde \cite{IA-edge} (\textit{AI at the edge}) y surge en contraposición a los modelos conectados a la nube.
+Además, cabe destacar que realizar por completo el creciente número de procesos de IA en la nube no sólo no es deseable, sino que es insostenible \cite{Efficient-Inference}. 
 % Machine Learning -> aprendizaje máquina
 
-Para llevar a cabo la metodología de IA en el borde se sugiere un enfoque de gestión computacional más simplificado.
+Para llevar a cabo la inferencia de IA en el borde, se sugiere un enfoque de gestión computacional distribuido.
 A este respecto, se plantea el uso de FPGAs.
-Se propone implementar en estos dispositivos dos tipos de arquitecturas.
-Por un lado, uno o varios microcontroladores capaces de gestionar los datos de entrada/salida. 
-Por otro lado, coprocesadores embebidos para realizar las operaciones asociadas a las redes neuronales. 
+Se propone implementar en estos dispositivos una arquitectura SoC heterogénea con un microcontrolador acoplado a coprocesadores de aplicación específica.
+De esta manera, se consigue distribuir las tareas con objeto de ganar flexibilidad y lograr una mayor eficiencia.
+Por un lado, el microcontrolador permite programabilidad y capacidad de gestionar los datos de entrada/salida. 
+Por otro lado, los coprocesadores embebidos permiten realizar las operaciones asociadas a las redes neuronales con un alto rendimiento. 
 Existen varios modos de acoplar estos dos tipos de diseños.
-A lo largo del desarrollo de este trabajo se realiza una caracterización del rendimiento de los diferentes modos de conexión que ofrece el microcontrolador seleccionado.
+A lo largo del desarrollo de este trabajo se realiza una caracterización del rendimiento de los diferentes modos de conexión que ofrece el microcontrolador RISC-V seleccionado.
 Mediante esta caracterización se pretende concluir el método de acoplamiento más adecuado en términos de latencia.
-Como se ha mencionado, la sugerencia de simplificación computacional para llevar a cabo IA en el borde conlleva externalizar los cálculos asociados a las redes neuronales del micro a coprocesadores embebidos.
-En lo referente a este trabajo, se comienza por testear un acelerador relativo al cálculo de funciones de activación.
-En concreto a la función sigmoide.
+Como se ha mencionado, la sugerencia de distribución computacional para llevar a cabo IA en el borde conlleva externalizar los cálculos asociados a las redes neuronales del micro a coprocesadores embebidos.
+En lo referente a este trabajo, se comienza por evaluar un acelerador relativo al cálculo de funciones de activación, particularmente la función sigmoide.
 %Se escoge está función ya que al contener exponenciales su cálculo supone numerosos ciclos de reloj si se efectúan íntegramente mediante un microcontrolador. 
 Se escoge está función ya que requiere de operaciones matemáticas que no son directas para la ALU.
 Esto le supone al micro numerosos ciclos de reloj para calcularla. 
 Por lo tanto, emplear un coprocesador embebido para acelerar este proceso resulta en un ahorro significativo del tiempo de computación.
-Dicho acelerador se acopla al microcontrolador seleccionado mediante el método previamente concluido como el más adecuado. 
-Finalmente, se corrobora los beneficios de emplear este tipo de enfoque distribuido.
+Este acelerador se integra al microcontrolador seleccionado mediante el método previamente determinado como el más adecuado. 
+Finalmente, se corroboran los beneficios de emplear este tipo de enfoque distribuido.
 
 La investigación presentada en este trabajo ha sido desarrollada en el Grupo de Investigación de Diseño en Electrónica Digital (GDED) y se ha realizado en el marco de unas practicas remuneradas de 5 meses de duración.
 El grupo está familiarizado con el diseño hardware, así como con su descripción empleando principalmente el lenguaje VHDL. 
-Asimismo, fomenta el uso de la metodología de integración continua (CI) que en conjunción con programas/plataformas de control de versiones han sido esenciales para la gestión eficaz de todo el código empleado.
+Asimismo, fomenta el uso de herramientas FLOS, así como la metodología de integración continua (CI), que en conjunción con programas/plataformas de control de versiones, han sido esenciales para la gestión eficaz de todo el código empleado.
 En definitiva, la colaboración con el grupo ha sido determinante para la correcta realización de este Trabajo Fin de Máster.
 
 \section{Contexto}
@@ -94,7 +93,7 @@ Es por ello que a comienzos del siglo XXI eran pocos los proyectos de hardware l
 Caben mencionar los procesadores OpenRISC \cite{openrisc} basados en su propia ISA y desarrollados por la comunidad OpenCores \cite{opencores} y los procesadores OpenSPARC \cite{opensparc} y LEON \cite{leon} (proyecto referente de la ESA), basados en la ISA SPARC.
 No obstante, entre mediados de los 2000 y de la década de 2010, han aumentado las especificaciones de ISAs libres de derechos que se han puesto a disposición de los usuarios.
 Esto se ha debido principalmente a tres motivos.
-El primero de ellos es porque las patentes han espirado.
+El primero de ellos es porque las patentes han expirado.
 Este es el caso de la ISA SuperH \cite{superh}.
 Durante la crisis económica asiática de 1997 Hitachi se asoció con Mitsubishi y escindió su división de microcontroladores en una nueva compañía llamada Renesas \cite{new-comp}.
 Esta compañía no heredó los ingenieros de Hitachi que habían desarrollado SuperH, por lo que con el tiempo Renesas perdió el interés por ella y expiraron sus patentes.
@@ -157,18 +156,17 @@ Algunos de estos ejemplos son:
 \subsubsection{CFUs/CXUs}
 
 Una de las finalidades de este proyecto de investigación es realizar una caracterización del rendimiento de los métodos de acoplamiento de coprocesadores en núcleos RISC-V.
-A este respecto, un procesador basado en RISC-V no solo se limita a ofrecer la posibilidad de dar soporte para conexiones \textit{memory-mapped} o comunicaciones mediante interfaces \textit{stream}.
-Un concepto destacable que posibilitan los núcleos basados en esta ISA es el de gestionar instrucciones \textit{custom} (personalizadas).
+A este respecto, un procesador basado en RISC-V no solo se limita a ofrecer la posibilidad de dar soporte para conexiones mapeadas en memoria o comunicaciones mediante interfaces \textit{stream}.
+Un concepto destacable que posibilitan los núcleos basados en esta ISA es el de gestionar instrucciones personalizadas (\textit{custom}).
 Haciendo uso de este concepto surge la oportunidad de realizar extensiones de instrucciones personalizadas y asociarlas con aceleradores embebidos.
 %puede que retocar-Hecho!
 Esta vinculación resulta muy ventajosa, ya que permite a la CPU resolver aplicaciones especificas decodificando instrucciones \textit{custom}.
 De esta modo, se deriva la información directamente al acelerador embebido de manera similar a como lo haría una instrucción de suma con la ALU. 
-Es decir, se consigue una integración completa del acelerador dentro del \textit{pipeline} de la CPU.
-Lo que significa una forma muy eficiente de acoplar micro y coprocesador.
+Es decir, se consigue una integración completa del acelerador dentro del \textit{pipeline} de la CPU, lo que significa una forma muy eficiente de acoplar micro y coprocesador.
 A priori, lo que resulta como una ventaja evidente puede conllevar algunos inconvenientes.
 %Comas aqui?-Retocado!
 Esto es debido a que las librerías de software que utilizan estas extensiones y los núcleos que las implementan son creados por diferentes organizaciones.
-Comúnmente estas utilizan herramientas diferentes y sus desarrollos, aunque aislados son operativos, al juntarlos para genera un nuevo sistema podrían no funcionar.
+Comúnmente estas utilizan herramientas diferentes y sus desarrollos, aunque aislados son operativos, al integrarlos para genera un nuevo sistema podrían no funcionar.
 Es por ello que se requiere de cierta estandarización que permita la reutilización robusta de las extensiones y librerías, además de proporcionar un modelo de programación uniforme para todas ellas.
 
 En este sentido, en 2019, Google propuso el concepto \textit{Custom Function Unit} (CFU) \cite{prakash23} y lo integró en la CPU VexRiscv.
@@ -202,7 +200,7 @@ Se procede a hacer un breve descripción de cada uno de ellos.
 En primer lugar, \textit{Stream Link} es una interfaz para realizar transmisiones \textit{stream} compatible con un subconjunto de AXI4-Stream \cite{axi}.
 Esta interfaz proporciona canales RX y TX unidireccionales e independientes para enviar y recibir un flujo de datos.
 Cada canal dispone de una FIFO interna configurable para almacenar los datos provenientes del \textit{stream}.
-En segundo lugar, \textit{Processor-External Bus} es una interfaz de bus general para acoplar aceleradores \textit{memory-mapped} (mapeados en memoria) compatible con Wishbone \cite{wb} y AXI4-Lite \cite{axi-lite}.
+En segundo lugar, \textit{Processor-External Bus} es una interfaz de bus general para acoplar aceleradores mapeados en memoria compatible con Wishbone \cite{wb} y AXI4-Lite \cite{axi-lite}.
 Esta interfaz cuenta con un módulo de caché opcional denominado \textit{X-CACHE}.
 En tercer lugar, \textit{Custom Functions Subsystem} es un \textit{template} vacío que proporciona hasta 64 registros de lectura/escritura de 32 bits mapeados en memoria a los que la CPU puede acceder mediante operaciones normales de carga/almacenamiento.
 En cuarto lugar, \textit{Custom Functions Unit} es una unidad funcional que se integra directamente en el \textit{pipeline} de la CPU.
@@ -210,9 +208,9 @@ Fue añadida al NEORV32 basándose en el borrador de la especificación CFU/CXU.
 Esto permitió implementar instrucciones RISC-V personalizadas. 
 Los formatos de instrucción soportados por el NEORV32 son \textit{R3-Type}, \textit{R4-Type} y \textit{R5-Type} \footnote{Cabe destacar que recientemente Stephan a eliminado el soporte para la instrucción \textit{R5-Type} \href{https://github.com/stnolting/neorv32/pull/971}{\#971}}.
 Los dos primeros formatos son un estándar de RISC-V y el último es exclusivo de NEORV32. 
-En concreto, el primero y el segundo formatos permiten direccionar dos y tres registros de entrada de 32 bits respectivamente. 
+En concreto, el primer y el segundo formato permiten direccionar dos y tres registros de entrada de 32 bits, respectivamente. 
 Además, la función se seleccionada a través de \textit{funct7} y/o \textit{funct3} en el primer caso y a través de \textit{funct3} en el segundo caso. 
-El tercer formatos permite direccionar cuatro registros de entrada de 32 bits. 
+El tercer formato permite direccionar cuatro registros de entrada de 32 bits. 
 Al no disponer del campo \textit{funct3} y/o \textit{funct7} solo se pueden realizar dos funciones personalizadas a través de este formato, \textit{A format} y \textit{B format}.  
 La figura \ref{fig:ins} muestra los tipos de instrucciones personalizadas de 32 bits soportadas por NEORV32 a través de la extensión ISA específica Zxcfu.
 
@@ -238,7 +236,7 @@ En el apartado \ref{Selec} se detallan los argumentos por los que se ha escogido
 
 Desde finales del siglo pasado, investigadores de multitud de universidades, incluyendo la universidad del País Vasco, han indagado sobre la posibilidad de externalizar cálculos, de procesadores de propósito general a aceleradores hardware específicos.
 En 1999, el profesor Koldo Basterretxea, presentó un nuevo método recursivo para la aproximación de funciones basado en el uso de operadores reticulares modificados (MLO) \cite{basterretxea1999pwl} \cite{tarela2002optimised}.
-El objetivo era utilizar este método como un marco general para realizar futuras implementaciones, especialmente enfocadas a los sistemas \textit{fuzzy} (difusos), así como a las redes neuronales artificiales (RNA).
+El objetivo era utilizar este método como un marco general para realizar futuras implementaciones, especialmente enfocadas a los sistemas difusos (\textit{fuzzy}), así como a las redes neuronales artificiales (RNA).
 Este método, denominado Centred Recursive Interpolation (CRI), es un algoritmo que opera nuevas funciones afines de interpolación a cada nivel de recursión.
 Para hacerlo de manera sencilla y tratar de minimizar los parámetros del algoritmo, CRI genera funciones de interpolación centradas.
 
@@ -248,7 +246,7 @@ h_{1} = \frac{1}{2} (y_{1} + y_{2} - \Delta)\tag{*}
 
 Atendiendo a la ecuación \eqref{ec:1} encontramos el parámetro $\Delta$, denominado profundidad de interpolación.
 CRI utiliza valores de $\Delta$ optimizados en cada nivel de recursión, de manera que se minimiza el error máximo de la aproximación.
-En este sentido, para la aproximación mediante CRI de funciones paramétricas (con pendiente y saturación ajustable), se demuestra que el $\Delta$ optimizado es constante cuando variamos la pendiente, además de ser igual a la saturación de la función.
+En este sentido, para la aproximación mediante CRI de funciones paramétricas (con pendiente y saturación ajustable), se demuestra que el $\Delta$ optimizado es constante cuando variamos la pendiente.
 Para el caso de la función paramétrica sigmoide \eqref{ec:2}, el $\Delta$ optimizado toma los siguientes valores para las 3 primeras recursiones:
 
 \begin{table}[h!]
@@ -388,7 +386,7 @@ Respecto al ODS 10, se considera que distribuir contenedores para facilitar el u
 
 Haciendo un repaso por las principales bases de datos de ámbito electrónico, se observan varios proyectos con una filosofía similar a la presentada en este trabajo de investigación.
 Un ejemplo muy interesante es el encontrado en una publicación titulada \textit{Tiny Neuron Network System based on RISC-V Processor: A Decentralized Approach for IoT Applications} \cite{9942990}.
-En dicho \textit{paper}, se presenta una investigación sobre un pequeño acelerador de redes neuronales en un SoC basado en RISC-V para acelerar una IA empleada en aplicaciones de IoT. 
+En dicho artículo, se presenta una investigación sobre un pequeño acelerador de redes neuronales en un SoC basado en RISC-V para acelerar una IA empleada en aplicaciones de IoT. 
 Este coprocesador implementa una MAC (multiplicador y acumulador) de precisión variable en bits o una MAC estocástica para reducir el área de hardware y el consumo de energía. 
 Es curioso el hecho de que se emplea la misma tecnología FPGA que en el presente proyecto, una Arty A7 100T.
 Los resultados presentados en este trabajo son destacables, consiguiendo realizar con precisión de 8 bits redes neuronales convolucionales (CNN) con una precisión del 98,55\%.
@@ -403,7 +401,7 @@ Los resultados obtenidos en este  \textit{paper} demuestran que las extensiones 
 
 Los casos mencionados, así como otros de gran interés, se encuentran recogidos en una publicación titulada \textit{A Review of Edge Intelligence Applications Based on RISC-V} \cite{10336594}.
 En ella se resume el uso de RISC-V en aplicaciones de IA en el borde desde un punto de vista hardware y software. 
-Además, a lo largo de la \textit{review} se analizan varios aceleradores, coprocesadores, compiladores y \textit{toolchains} basados en RISC-V, así como las principales aplicaciones software de la IA en el borde. 
+Además, a lo largo de la revisión se analizan varios aceleradores, coprocesadores, compiladores y \textit{toolchains} basados en RISC-V, así como las principales aplicaciones software de la IA en el borde. 
 
 \section{Análisis de alternativas}
 
@@ -436,7 +434,7 @@ Tras evaluar el rendimiento de este enfoque distribuido en una FPGA Xilinx Virte
 %Solucion propuesta para realizar IA en el borde es externalizar tal. FA sigmoide. El desarrollo descrito en el cap 2.
 
 La principal tesis que defiende este TFM es externalizar la computación referentes a las RNA, del procesador a hardware específico.
-Este hecho tiene como objetivo simplificar la gestión computacional en pos de implementar un primera aproximación de IA en el borde.
+Este hecho tiene como objetivo distribuir la gestión computacional en pos de implementar un primera aproximación de IA en el borde.
 En este sentido, se propone utilizar un coprocesador basado en la método CRI y acoplarlo a un procesador RISC-V.
 Mediante los argumentos descritos en la sección \ref{Selec} se elige el microcontrolador NEORV32. 
 Con objeto de generar un criterio de selección del modo de acoplamiento, se propone realizar una caracterización del rendimiento de los principales métodos de conexión con los que cuenta este microcontrolador.

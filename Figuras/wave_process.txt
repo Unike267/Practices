@@ -1,0 +1,24 @@
+{signal: [
+  ['Latencia',
+  {name: 'clk',         wave: 'p....|...|.........|...|....'},
+  {name: 'CSR(MCYCLE)', wave: '6.x..|x..|7..6..x..|...|7..6',data:['escribir(0)','leer','escribir(0)','leer']},
+  {name: 'Operación',   wave: 'x.3..|4..|x..x..3..|4..|x..x', data: ['enviar','recibir','enviar','recibir']},
+  {name: 'Medida',      wave: '0.1..|...|0.....1..|...|0...'},
+  {											                  node:'..A.......B.....C.......D'},
+  ],
+  {},
+
+  ['Throughput',
+  {name: 'clk',         wave: 'p.|.|...|......|.........|..'},
+  {name: 'CSR(MCYCLE)', wave: 'x.|.|...|6..x..|7..6..x..|7.',data:['escribir(0)','leer','escribir(0)','leer']},
+  {name: 'Operación',   wave: '33|3|4..|x..4..|x.....4..|x.', data: ['  enviar','enviar     ','enviar     ','recibir','recibir','recibir']},
+  {name: 'Medida',      wave: '0.|.|...|...1..|0.....1..|0.' },
+  {											                  node:'............E...F.....G...H'},
+  ]],
+  
+  edge:['A+B','C+D','E+F','G+H'],
+ 
+ head:{
+   tick:1,
+   every:2
+}}

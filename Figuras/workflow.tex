@@ -1,0 +1,159 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\begin{document}
+\pagestyle{empty}
+
+% We need layers to draw the block diagram
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+%Definicion tamaños rectangulo (ancho,alto)
+\def\CUST{4.7,10.9}
+\def\SET{4.3,6.5}
+\def\NEO{3.9,4}
+\def\MED{3.5,1.5}
+\def\MIT{4.3,1}
+\def\PEQUE{1.5,1.5}
+\def\RES{2.5,1.5}
+%Separación 
+\def\sep{0.2}
+
+\begin{tikzpicture}
+\node (center) {};
+%Custom rectangle
+\draw[fill=yellow!20,rounded corners] (0,0) rectangle ++(\CUST);
+\path (center)+(2.35,0.3) node (name) {Diseño personalizado};
+%Custom sim rectangle
+\draw[fill=gray!20] (\sep,0.6) rectangle ++(\MIT);
+\path (center)+(2.35,1.1) node (name) {Programas sim/impl};
+%Custom embedded rectangle
+\draw[fill=red!20] (\sep,0.6+1+\sep) rectangle ++(\MIT);
+\path (center)+(2.35,2.3) node (name) {Software embebido en C};
+%Custom VHDL rectangle
+\draw[fill=blue!20] (\sep,0.6+1+\sep+1+\sep) rectangle ++(\MIT);
+\path (center)+(2.35,3.5) node (name) {Fuentes VHDL propias};
+%Setups rectangle
+\draw[fill=orange!40,rounded corners,opacity=0.4,dotted] (\sep,0.6+1+\sep+1+\sep+1+\sep) rectangle ++(\SET);
+\path (center)+(2.35,4.4) node (name) {NEORV32-Setups};
+%Sim neorv rectangle
+\draw[fill=gray!20] (\sep+\sep+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6) rectangle ++(\MED);
+\path (center)+(2.35,6-0.25) node (name) {Programas};
+\path (center)+(2.35,5.6-0.25) node (name) {sim/impl};
+%Neorv rectangle
+\draw[fill=orange!60,rounded corners,opacity=0.4,dotted] (\sep+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep-0.5) rectangle ++(\NEO);
+\path (center)+(2.35,7.3-0.5) node (name) {NEORV32};
+%VHDL SoC neorv rectangle
+\draw[fill=red!20] (\sep+\sep+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6-0.5) rectangle ++(\MED);
+\path (center)+(2.35,8.8-0.75) node (name) {NEORV32};
+\path (center)+(2.35,8.4-0.75) node (name) {Librerías en C};
+%VHDL neorv rectangle
+\draw[fill=blue!20] (\sep+\sep+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1) rectangle ++(\MED);
+\path (center)+(2.35,11-1.25) node (name) {NEORV32};
+\path (center)+(2.35,10.6-1.25) node (name) {Fuentes VHDL};
+
+%Compilation Recatangle
+%GCC
+\draw[fill=red!40] (4.7+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35+1-1.5) node (name) {GCC};
+%RES COMP
+\draw[fill=red!40] (4.7+1.5+1.5+0.5+1.5+0.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35-1.25) rectangle ++(\RES);
+%RES GCC
+\path (center)+(4.7+1.5+1.5+0.5+1.5+0.5+1.5+0.5+1.1,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35+1+0.3-1.5) node (name) {.bin .hex .exe};
+\path (center)+(4.7+1.5+1.5+0.5+1.5+0.5+1.5+0.5+1.1+0.05,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35+1-0.3-1.5) node (name) {.vhd (app\_img)};
+%Build
+\path (center)+(4.7+0.75,11.95-1.5-0.25) node (name) {C};
+\path (center)+(4.7+0.75,11.55-1.5-0.25) node (name) {O};
+\path (center)+(4.7+0.75,11.15-1.5-0.25) node (name) {M};
+\path (center)+(4.7+0.77,10.75-1.5-0.25) node (name) {P};
+
+
+%GHDL
+\draw[fill=blue!40] (4.7+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.1-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1+0.2-0.1-1.5) node (name) {GHDL};
+\path (center)+(4.7+1.5+0.75,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.2-0.1-1.5) node (name) {synth};
+\draw[fill=blue!40] (4.7+1.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.1-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5) node (name) {Yosys};
+\draw[fill=blue!40] (4.7+1.5+1.5+0.4+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.1-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75+1.5+0.4+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5) node (name) {nextpnr};
+%RES IMPL
+\draw[fill=blue!40] (4.7+1.5+1.5+0.5+1.5+0.5+1.5+0.2+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.1-1.25) rectangle ++(\RES);
+\path (center)+(4.7+1.5+0.75+1.5+0.4+1.5+0.4+0.4+1.95+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5) node (name) {.bit};
+
+%IMPL
+\path (center)+(4.7+0.75,9.15-1.55) node (name) {I};
+\path (center)+(4.7+0.75,8.75-1.55) node (name) {M};
+\path (center)+(4.7+0.75,8.35-1.55) node (name) {P};
+\path (center)+(4.7+0.77,7.95-1.55) node (name) {L};
+
+%Simulation
+\draw[fill=blue!60] (4.7+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2-1.5) node (name) {VUnit};
+\draw[fill=blue!60] (4.7+1.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2+0.2-1.5) node (name) {GHDL};
+\path (center)+(4.7+1.5+0.75+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2-0.2-1.5) node (name) {sim};
+%RES IMPL
+\draw[fill=blue!60] (4.7+1.5+1.5+0.5+1.5+0.5+1.5+2*\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-1.25) rectangle ++(\RES);
+\path (center)+(4.7+1.5+0.75+1.5+0.4+1.5+0.4+0.4+1.95-0.2+2*\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2-1.5) node (name) {log .csv .vcd};
+
+%SIM
+\path (center)+(4.7+0.75,6.35-1.5) node (name) {S};
+\path (center)+(4.7+0.75,5.95-1.5) node (name) {I};
+\path (center)+(4.7+0.75,5.55-1.5) node (name) {M};
+
+%Vivado
+\draw[fill=green!60] (4.7+1.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-0.35-0.35-2+0.1-1.25) rectangle ++(\PEQUE);
+\path (center)+(4.7+1.5+0.75+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2+0.2-0.35-0.35-2+0.4-1.5) node (name) {Vivado};
+\path (center)+(4.7+1.5+0.75+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2-0.2-0.35-0.35-2+0.3-1.5) node (name) {sim/};
+\path (center)+(4.7+1.5+0.75+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2-0.2-0.35-0.35-2+0.1-0.3-1.5) node (name) {synth};
+%RES Vivado
+\draw[fill=green!60] (4.7+1.5+1.5+0.5+1.5+0.5+1.5-0.2+3*\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-0.35-0.35-2+0.1-1.25) rectangle ++(\RES);
+\path (center)+(4.7+1.5+0.75+1.5+0.4+1.5+0.4+0.4+1.95-0.2-0.15+3*\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.35-0.35-2-2+0.1-0.7-1.5) node (name) {log wave / .bit};
+
+%SIM
+\path (center)+(4.7+0.75,3.75-1.5) node (name) {S};
+\path (center)+(4.7+0.75,3.35-1.5) node (name) {I};
+\path (center)+(4.7+0.75,2.95-1.5) node (name) {M};
+
+\path (center)+(4.7+0.75+0.4,3.35-1.5) node (name) {+};
+
+\path (center)+(4.7+0.75+0.9,4-1.55) node (name) {I};
+\path (center)+(4.7+0.75+0.9,3.6-1.55) node (name) {M};
+\path (center)+(4.7+0.75+0.9,3.2-1.55) node (name) {P};
+\path (center)+(4.7+0.77+0.9,2.8-1.55) node (name) {L};
+
+\path (center)+(4.7+3.5,13-1.5) node (name) {HERRAMIENTAS FLOS};
+\path (center)+(4.7+6.2,1.6-1.5) node (name) {HERRAMIENTAS PROPIETARIAS};
+
+%Flechas
+\draw[->] (4.7+1.5+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35+1-1.5) to (4.7+1.5+1.5+0.5+1.5+0.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep+0.35+1-1.5);
+\draw[->] (4.7+1.5+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5) to (4.7+1.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5);
+\draw[->] (4.7+1.5+1.5+0.4+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5) to (4.7+1.5+1.5+0.4+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5);
+\draw[->] (4.7+1.5+1.5+0.4+1.5+0.4+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5) to (4.7+1.5+1.5+0.5+1.5+0.5+1.5+0.2+\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35+1-0.1-1.5);
+\draw[->] (4.7+1.5+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2+1-1.5) to (4.7+1.5+1.5+0.4,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2+1-1.5);
+\draw[->] (4.7+1.5+1.5+0.4+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2+1-1.5) to
+(4.7+1.5+1.5+0.5+1.5+0.5+1.5+2*\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2+1-1.5);
+\draw[->] (4.7+1.5+1.5+0.4+1.5,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-0.35-0.35-2+0.1+1-1.5) to (4.7+1.5+1.5+0.5+1.5+0.5+1.5-0.2+3*\sep,0.6+1+\sep+1+\sep+1+\sep+0.6+2+\sep+0.6+2+\sep-1.5-0.35-0.35-0.35-0.35-2-0.35-0.35-2+0.1+1-1.5);
+
+\begin{pgfonlayer}{background}
+\path[fill=white!20,rounded corners] (-\sep-\sep-\sep-\sep-\sep,-\sep-\sep-\sep-\sep-\sep) rectangle ++(16.3,15-1.9);
+\fill[green!20,rounded corners] (-\sep-\sep-\sep-\sep,-\sep-\sep-\sep-\sep) rectangle ++ (4.7+\sep+\sep,11.8+\sep+\sep-1.5);
+\fill[green!20,rounded corners] (-\sep-\sep-\sep-\sep,2-1.5) rectangle ++ (4.7+\sep+10+4*\sep,2.4+\sep+\sep);
+\fill[blue!40,rounded corners] (-\sep-\sep-\sep,-\sep-\sep-\sep) rectangle ++ (4.7+\sep+\sep,12+\sep+\sep-1.5);
+\fill[blue!40,rounded corners] (-\sep-\sep-\sep,4.6-1.5) rectangle ++ (4.7+\sep+10+3*\sep,2.4+\sep+\sep);
+\fill[blue!20,rounded corners] (-\sep-\sep,-\sep-\sep) rectangle ++ (4.7+\sep+\sep,12.2+\sep+\sep-1.5);
+\fill[blue!20,rounded corners] (-\sep-\sep,7.2-1.5) rectangle ++ (4.7+\sep+10+2*\sep,2.4+\sep+\sep);
+\fill[red!20,rounded corners] (-\sep,-\sep) rectangle ++ (4.7+\sep+\sep,12.4+\sep+\sep-1.5);
+\fill[red!20,rounded corners] (-\sep,9.8-1.5) rectangle ++ (4.7+\sep+10+\sep,2.4+\sep+\sep);
+\draw[rounded corners, dotted] (4.7+1.2,0.5+1+\sep+1+\sep+1+\sep+0.6-1.5) rectangle ++(9.2,8.7);
+\draw[rounded corners, dotted] (4.7+3,1.2-1.5) rectangle ++(7.4,3.25);
+    %\path [fill=white!20,rounded corners, draw=black!50, dashed] (-0.85,-5.25) rectangle ++(12.1,9.8);
+
+\end{pgfonlayer}
+    
+\end{tikzpicture}
+\end{document}
+
+
