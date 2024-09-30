@@ -27,50 +27,39 @@ Se propone implementar en estos dispositivos una arquitectura SoC heterogénea c
 De esta manera, se consigue distribuir las tareas con objeto de ganar flexibilidad y lograr una mayor eficiencia.
 Por un lado, el microcontrolador permite programabilidad y capacidad de gestionar los datos de entrada/salida. 
 Por otro lado, los coprocesadores embebidos permiten realizar las operaciones asociadas a las redes neuronales con un alto rendimiento. 
-Existen varios modos de acoplar estos dos tipos de diseños.
-A lo largo del desarrollo de este trabajo se realiza una caracterización del rendimiento de los diferentes modos de conexión que ofrece el microcontrolador RISC-V seleccionado.
+Existen varios modos de acoplar estos dos elementos.
+A lo largo del desarrollo de este trabajo, se realiza una caracterización del rendimiento de los diferentes modos de conexión que ofrece el microcontrolador RISC-V seleccionado.
 Mediante esta caracterización se pretende concluir el método de acoplamiento más adecuado en términos de latencia.
 Como se ha mencionado, la sugerencia de distribución computacional para llevar a cabo IA en el borde conlleva externalizar los cálculos asociados a las redes neuronales del micro a coprocesadores embebidos.
 En lo referente a este trabajo, se comienza por evaluar un acelerador relativo al cálculo de funciones de activación, particularmente la función sigmoide.
 %Se escoge está función ya que al contener exponenciales su cálculo supone numerosos ciclos de reloj si se efectúan íntegramente mediante un microcontrolador. 
-Se escoge está función ya que requiere de operaciones matemáticas que no son directas para la ALU.
-Esto le supone al micro numerosos ciclos de reloj para calcularla. 
+Se escoge esta función ya que requiere de operaciones matemáticas que no son directas para la ALU.
+Esto le supone al microcontrolador numerosos ciclos de reloj para calcularla. 
 Por lo tanto, emplear un coprocesador embebido para acelerar este proceso resulta en un ahorro significativo del tiempo de computación.
-Este acelerador se integra al microcontrolador seleccionado mediante el método previamente determinado como el más adecuado. 
+Este acelerador, se integra al microcontrolador mediante el método previamente concluido como el más adecuado. 
 Finalmente, se corroboran los beneficios de emplear este tipo de enfoque distribuido.
 
-La investigación presentada en este trabajo ha sido desarrollada en el Grupo de Investigación de Diseño en Electrónica Digital (GDED) y se ha realizado en el marco de unas practicas remuneradas de 5 meses de duración.
+La investigación presentada en este trabajo ha sido desarrollada en el Grupo de Investigación de Diseño en Electrónica Digital (GDED).
 El grupo está familiarizado con el diseño hardware, así como con su descripción empleando principalmente el lenguaje VHDL. 
 Asimismo, fomenta el uso de herramientas FLOS, así como la metodología de integración continua (CI), que en conjunción con programas/plataformas de control de versiones, han sido esenciales para la gestión eficaz de todo el código empleado.
 En definitiva, la colaboración con el grupo ha sido determinante para la correcta realización de este Trabajo Fin de Máster.
 
 \section{Contexto}
 
-%Aquí irá el contexto. ISA libres RISC-V. \textit{} \textbf{} \underline{}
-El primer paso para llevar a cabo este proyecto es realizar la selección del microcontrolador.
-Se requiere de su implementación en FPGA, por lo que se necesita la descripción en HDL de su arquitectura.
-Es interesante destacar que el término empleado para referirse a este formato es \textit{soft-core} (núcleo blando).
-A diferencia de los micros \textit{hard-core} (núcleo duro), es decir, los impresos en silicio, los \textit{soft-cores} están pensados para ser implementados en dispositivos lógicos programables. 
-%puede que retocar
-Además, no solo se precisa de la descripción hardware del micro sino también de las herramientas asociadas para compilar software interpretable por el mismo.
-En este sentido, la búsqueda se ha centrado en un proyecto \textit{royalty-free} (libre de derechos).
-
-%verbos!!!
-
-El siguiente paso es evaluar los diferentes modos de acoplamiento de coprocesadores con los que cuenta el micro seleccionado.
-Con objeto de caracterizar el rendimiento de cada uno de ellos y concretar el más adecuado para nuestro propósito.
-Para ello, se testean varios aceleradores acoplados al micro mediante todos los modos de los que este dispone.
-De esta manera, se obtiene un conjunto de bancos de prueba para ensayar en simulación y así proporcionar las lecturas de latencia y throughput de cada uno de los métodos de conexión.
-En concreto, se han acoplado 3 multiplicadores con diferentes características.
-Además, todos los ensayos se han implementados en FPGA para verificar su correcta operatividad.
-
-El último paso es comenzar a abordar un enfoque distribuido para realizar IA en el borde. 
-A este respecto, se requiere de aceleradores embebidos que realicen los cálculos asociados a las redes neuronales.
-Atendiendo a la caracterización realizada en el paso anterior, se establece un criterio mediante el cual decidir que modo de conexión emplear para acoplar estos diseños embebidos.
-Una vez acoplados, se corrobora el beneficio de utilizar coprocesadores frente a realizar los cálculos íntegramente mediante las funcionalidades del micro.
-Para ello, se realiza un banco de pruebas que compare en simulación los ciclos de ejecución de ambos planteamientos.
-Dado el limitado tiempo de investigación tan solo se ha externalizado el cálculo de la activación a través de la función sigmoide.
-Para lo cual, se ha utilizado un acelerador embebido diseñado por Koldo Basterretxea.
+A la hora de implementar una arquitectura heterogénea, es preciso que los elementos que la componen se caractericen por su flexibilidad.
+Uno de los pilares fundamentales en lo referente a una solución distribuida, es la parte relativa al procesador por instrucciones.
+En este sentido, hay ocasiones en las que se requiere modificar sus fuentes descriptivas, con objeto de personalizar su funcionamiento.
+De este modo, se logra adaptar la CPU a la coyuntura objetivo, por ejemplo, integrando en ella los coprocesadores específicos necesarios.
+En consecuencia, se consigue amoldar en un diseño Sistema-en-Chip (SoC) la resolución relativa al ámbito de aplicabilidad concreto. 
+Para conseguir la plasticidad descrita, se requiere interactuar con los diseños mediante las descripciones conceptuales de los mismos.
+A este respecto, se propone trabajar con las fuentes HDL de procesadores basados en una ISA libre de derechos.
+Esta decisión no es de corte dogmática, sino que está fundamentada en las posibilidades que ella ofrece, tales como: la fabricación en silicio libre de regalías (\textit{royalty-free}) de soluciones SoC basados en estas ISAs, la difusión sin restricciones en plataformas públicas de las descripciones de CPUs y derivados, la publicación de comparativas de rendimiento etc.
+Efectuando un repaso por las principales ISAs abiertas/libres, existe una relativamente moderna que destaca sobre el resto, esta es RISC-V \cite{waterman13}.
+Nativa de Berkeley, esta ISA ha definido, en gran medida, el panorama actual de implementaciones de procesadores de hardware libre. 
+De este modo, numerosos usuarios, así como organizaciones, han distribuido sus propias soluciones de CPUs y microcontroladores basados en esta ISA.
+Como resultado, la oferta de procesadores \textit{soft-core} se ha multiplicado en los últimos años, disponiendo de una accesibilidad de estas descripciones nunca antes vista.
+Además, en lo que respecta a las investigaciones  relativas a la aceleración de aplicaciones de IA mediante coprocesadores acoplados a CPUs RISC-V, se ha observado un aumento considerable en los últimos 3 años.
+Adicionalmente, cabe destacar que la trascendencia del proyecto RISC-V ha sido tan significativa que la industria privada relacionada con el sector se ha visto obligada a ofertar sus propias soluciones basadas en esta ISA o incluso a abrir alguna de sus ISAs cerradas para acomodarse al nuevo paradigma actual.
 
 \subsection{ISAs libres}
 
@@ -88,7 +77,7 @@ Además, este concepto debe estar complementado con un soporte para compilar len
 %Estos tres recursos, arquitectura digital, ISA y herramientas para compilar forman un proyecto de microcontrolador.
 
 En el siglo pasado, el desarrollo de microarquitecturas estaba completamente monopolizado por el ámbito privado.
-Esto se debía a que el esfuerzo de definir una ISA y dar soporte para la compilación de su set de instrucciones, además de verificar todo su ecosistema, era demasiado elevado para afrontarlo desde un punto de vista \textit{Open Source} (código abierto).
+Esto se debía a que el esfuerzo de definir una ISA y dar soporte para la compilación de su set de instrucciones, además de verificar todo su ecosistema, era demasiado elevado para afrontarlo desde un punto de vista \textit{Open Source}.
 Es por ello que a comienzos del siglo XXI eran pocos los proyectos de hardware libre de este tipo.
 Caben mencionar los procesadores OpenRISC \cite{openrisc} basados en su propia ISA y desarrollados por la comunidad OpenCores \cite{opencores} y los procesadores OpenSPARC \cite{opensparc} y LEON \cite{leon} (proyecto referente de la ESA), basados en la ISA SPARC.
 No obstante, entre mediados de los 2000 y de la década de 2010, han aumentado las especificaciones de ISAs libres de derechos que se han puesto a disposición de los usuarios.
@@ -121,7 +110,7 @@ A este respecto, una publicación interesante es la realizada en 2014 por Asanov
 En concreto, RISC-V pasó a ser de dominio público en el momento en el que se publicaron los informes técnicos que definen la ISA, aunque el texto de dichos informes está bajo una licencia de \textit{Creative Commons} para permitir su mejora por colaboradores externos.
 Además, no se ha registrado ninguna patente relativa a RISC-V, puesto que esta ISA per se no representa ninguna tecnología novedosa.
 En 2015, se creó la fundación RISC-V con el objetivo de construir una comunidad abierta e internacionalizar el proyecto.
-En 2018 la fundación RISC-V anunció una colaboración conjunta con la Fundación Linux en términos de cooperación técnica y estratégica, lo que incluye apoyo operativo, gestión de miembros, contabilidad, divulgación comunitaria etc. 
+En 2018, la fundación RISC-V anunció una colaboración conjunta con la Fundación Linux en términos de cooperación técnica y estratégica, lo que incluye apoyo operativo, gestión de miembros, contabilidad, divulgación comunitaria etc. 
 En marzo de 2020, la Asociación Internacional RISC-V se constituyó en Suiza debido a factores geopolíticos externos que defienden la continuidad del modelo de propiedad intelectual.
 El interés de la Asociación Internacional RISC-V es animar a organizaciones, particulares y entusiastas a hacer posible una nueva era de innovación en procesadores a través de la colaboración en estándares abiertos y \textit{Open Source}.
 
@@ -172,7 +161,7 @@ Es por ello que se requiere de cierta estandarización que permita la reutilizac
 En este sentido, en 2019, Google propuso el concepto \textit{Custom Function Unit} (CFU) \cite{prakash23} y lo integró en la CPU VexRiscv.
 A partir de entonces esta extensión ha ganado popularidad y otras microarquitecturas RISC-V han añadido esta funcionalidad.
 Derivado de este trabajo, existe un borrador que especifica la integración hardware-software de estas unidades de funcionalidades personalizadas \cite{CFU-draft}. 
-En este texto se propone el concepto de \textit{Composable eXtension Unit} (CXU), que sería análogo al concepto de CFU. 
+En este texto se propone la idea de \textit{Composable eXtension Unit} (CXU), que plantea una generalización al concepto de CFU. 
 %Y se anima a cualquiera a definir, desarrollar y usar CXUs y sus librerías CX con el objetivo de que coexistan un número ilimitado de ellas desarrolladas de forma independiente dentro de una ISA fija y mediante un método de multiplexación conseguir la funcionalidad del conjunto.
 
 %nexo con neorv32
@@ -237,7 +226,7 @@ En el apartado \ref{Selec} se detallan los argumentos por los que se ha escogido
 Desde finales del siglo pasado, investigadores de multitud de universidades, incluyendo la universidad del País Vasco, han indagado sobre la posibilidad de externalizar cálculos, de procesadores de propósito general a aceleradores hardware específicos.
 En 1999, el profesor Koldo Basterretxea, presentó un nuevo método recursivo para la aproximación de funciones basado en el uso de operadores reticulares modificados (MLO) \cite{basterretxea1999pwl} \cite{tarela2002optimised}.
 El objetivo era utilizar este método como un marco general para realizar futuras implementaciones, especialmente enfocadas a los sistemas difusos (\textit{fuzzy}), así como a las redes neuronales artificiales (RNA).
-Este método, denominado Centred Recursive Interpolation (CRI), es un algoritmo que opera nuevas funciones afines de interpolación a cada nivel de recursión.
+Este método, denominado Interpolación Recursiva Centrada (CRI), es un algoritmo que opera nuevas funciones afines de interpolación a cada nivel de recursión.
 Para hacerlo de manera sencilla y tratar de minimizar los parámetros del algoritmo, CRI genera funciones de interpolación centradas.
 
 \begin{equation}\label{ec:1}
@@ -276,7 +265,7 @@ Para el presente trabajo de investigación, se ha utilizado exclusivamente la l�
 \label{antepro}
 
 %practicas no remuneradas
-Como se ha mencionado, este proyecto se ha desempeñado en el marco de unas prácticas remuneradas tituladas \textit{Desarrollo de Custom Functional Units de IA para RISC-V}.
+Cabe destacar que este proyecto se ha desempeñado en el marco de unas prácticas remuneradas tituladas \textit{Desarrollo de Custom Functional Units de IA para RISC-V}.
 La duración de estas prácticas ha sido de 5 meses (594 horas) y por realizarlas se ha recibido una bolsa de ayuda total de 2000€.
 No obstante, previas a estas prácticas remuneradas, se realizaron otras prácticas obligatorias relativas al \textit{practicum} del Máster.
 Estas también se llevaron a cabo en el grupo de investigación GDED bajo el título \textit{Diseño e integración de CFU para RISC-V en FPGA}.
@@ -384,6 +373,8 @@ Respecto al ODS 10, se considera que distribuir contenedores para facilitar el u
 
 \section{Análisis del estado del arte}
 
+\label{sta-art}
+
 Haciendo un repaso por las principales bases de datos de ámbito electrónico, se observan varios proyectos con una filosofía similar a la presentada en este trabajo de investigación.
 Un ejemplo muy interesante es el encontrado en una publicación titulada \textit{Tiny Neuron Network System based on RISC-V Processor: A Decentralized Approach for IoT Applications} \cite{9942990}.
 En dicho artículo, se presenta una investigación sobre un pequeño acelerador de redes neuronales en un SoC basado en RISC-V para acelerar una IA empleada en aplicaciones de IoT. 
@@ -397,11 +388,23 @@ En ella, se presenta una extensión de instrucciones basada en la ISA RISC-V des
 En su caso emplean el core RISC-V \textit{Open Source} Zero-riscy \cite{8106976} \cite{gh:zero-riscy}.
 Con objeto de evaluar el efecto de la extensión de instrucciones propuesta, se realiza una serie de cargas de trabajo en el núcleo de referencia y en el ampliado. 
 Se obtinen un ratio de aceleración de 1,5× cuando se ejecuta una CNN, y alcanza 2,48×-2,82× cuando sólo se realizan los cálculos de convolución. 
-Los resultados obtenidos en este  \textit{paper} demuestran que las extensiones de ISA propuestas pueden mejorar eficazmente el rendimiento de las CNN.
+Los resultados obtenidos en este artículo demuestran que las extensiones de ISA propuestas pueden mejorar eficazmente el rendimiento de las CNN.
 
 Los casos mencionados, así como otros de gran interés, se encuentran recogidos en una publicación titulada \textit{A Review of Edge Intelligence Applications Based on RISC-V} \cite{10336594}.
 En ella se resume el uso de RISC-V en aplicaciones de IA en el borde desde un punto de vista hardware y software. 
 Además, a lo largo de la revisión se analizan varios aceleradores, coprocesadores, compiladores y \textit{toolchains} basados en RISC-V, así como las principales aplicaciones software de la IA en el borde. 
+
+A lo largo del transcurso de este proyecto se ha preferenciado, en la medida de lo posible, el uso de herramientas libres.
+En este sentido, las herramientas EDA FLOS y las propietarias/comerciales no son ecosistemas aislados.
+Al contrario, en los últimos años se han visto colaboraciones de proyectos \textit{Open Source} con iniciativas privativas.
+Un ejemplo de ello es la integración de la herramienta RapidWright \cite{gh:rapid} a la \textit{Suite} de diseño Vivado.
+En concreto, este proyeto \textit{Open Source} desarrollado por \textit{AMD Research and Advanced Development} tiene como objetivo permitir a los usuarios avanzados una mayor flexibilidad a la hora de personalizar sus soluciones mediante una metodología de diseño utilizando módulos pre-implementados.
+Además, se han realizado concursos \cite{contest} patrocinados por AMD con el objetivo de promover y demostrar que el Formato de Intercambio de FPGA (FPGAIF - \textit{FPGA Interchange Format}) \cite{FPGAIF} es una representación intermediaria eficiente y robusta para trabajar en problemas de \textit{backends} de FPGAs, incluso a escala industrial.
+Asimismo, este tipo de iniciativas también tratan de fomentar la innovación de algoritmos de enrutamiento de FPGAs que den prioridad al tiempo de ejecución, con objeto de posibilitar su aplicación en la emulación de ASICs.
+Cabe destacar que el FPGAIF es un estándar de formato de intercambio diseñado para proporcionar toda la información necesaria mediante la cual realizar el \textit{place and route} en un contexto \textit{Open Source}.
+En la misma línea, Siemens ha observado un crecimiento saludable entorno a la Metodología de Verificación VHDL de Código Abierto (OSVVM - \textit{Open Source VHDL Verification Methodology}) \cite{osvvm} y la Metodología de Verificación Universal VHDL (UVVM - \textit{Universal VHDL Verification Methodology}) \cite{uvvm} desde 2018, lo que en sus propias palabras \say{es alentador} \cite{wilson-research}.
+Por lo tanto, a la vista de estos ejemplos, podemos afirmar que los comerciales tradicionales de herramientas EDA están empezando a facilitar el uso de herramientas FLOS e incluso a integrar parte o la totalidad de las mismas en sus propuestas comerciales.
+Este hecho refleja un futuro híbrido en lo referente al ecosistema de herramientas para FPGAs.
 
 \section{Análisis de alternativas}
 
@@ -434,12 +437,35 @@ Tras evaluar el rendimiento de este enfoque distribuido en una FPGA Xilinx Virte
 %Solucion propuesta para realizar IA en el borde es externalizar tal. FA sigmoide. El desarrollo descrito en el cap 2.
 
 La principal tesis que defiende este TFM es externalizar la computación referentes a las RNA, del procesador a hardware específico.
-Este hecho tiene como objetivo distribuir la gestión computacional en pos de implementar un primera aproximación de IA en el borde.
-En este sentido, se propone utilizar un coprocesador basado en la método CRI y acoplarlo a un procesador RISC-V.
+Este hecho tiene como objetivo distribuir la gestión computacional en pos de implementar una primera aproximación de IA en el borde.
+En este sentido, se propone utilizar un coprocesador basado en el método CRI y acoplarlo a un procesador RISC-V.
 Mediante los argumentos descritos en la sección \ref{Selec} se elige el microcontrolador NEORV32. 
 Con objeto de generar un criterio de selección del modo de acoplamiento, se propone realizar una caracterización del rendimiento de los principales métodos de conexión con los que cuenta este microcontrolador.
 Esta caracterización se detalla en la sección \ref{Carac}.
 Por último, se acopla el coprocesador encargado de acelerar el cálculo de la FA sigmoide basado en CRI al NEORV32. 
-Además, se verifica el beneficio de emplear este tipo de enfoque distribuido comparándolo con realizar los mismos cálculos utilizando únicamente el microcontrolador.
+Asimismo, se verifica el beneficio de emplear este tipo de enfoque distribuido comparándolo con realizar los mismos cálculos utilizando únicamente los recursos predeterminados del microcontrolador.
 Esta integración se detalla en la sección \ref{Integ}.
+Se procede a concretar los pasos seguidos a lo largo del desarrollo \ref{Desarrollo}.
+
+El primer paso para llevar a cabo este proyecto es realizar la selección del microcontrolador.
+Se requiere de su implementación en FPGA, por lo que se necesita la descripción en HDL de su arquitectura.
+Es interesante destacar que el término empleado para referirse a este formato es \textit{soft-core} (núcleo blando).
+A diferencia de los micros \textit{hard-core} (núcleo duro), es decir, los impresos en silicio, los \textit{soft-cores} están pensados para ser implementados en dispositivos lógicos programables. 
+Además, no solo se precisa de la descripción hardware del micro sino también de las herramientas asociadas para compilar software interpretable por el mismo.
+En este sentido, la búsqueda se ha centrado en un proyecto \textit{royalty-free}.
+
+El siguiente paso es evaluar los diferentes modos de acoplamiento de coprocesadores con los que cuenta el micro seleccionado.
+Con objeto de caracterizar el rendimiento de cada uno de ellos y concretar el más adecuado para nuestro propósito.
+Para ello, se testean varios aceleradores acoplados al micro mediante todos los modos de los que este dispone.
+De esta manera, se obtiene un conjunto de bancos de prueba para ensayar en simulación y así proporcionar las lecturas de latencia y throughput de cada uno de los métodos de conexión.
+En concreto, se han acoplado 3 multiplicadores con diferentes características.
+Además, todos los ensayos se han implementados en FPGA para verificar su correcta operatividad.
+
+El último paso es comenzar a abordar un enfoque distribuido para realizar IA en el borde. 
+A este respecto, se requiere de aceleradores embebidos que realicen los cálculos asociados a las redes neuronales.
+Atendiendo a la caracterización realizada en el paso anterior, se establece un criterio mediante el cual decidir que modo de conexión emplear para acoplar estos diseños embebidos.
+Una vez acoplados, se corrobora el beneficio de utilizar coprocesadores frente a realizar los cálculos íntegramente mediante las funcionalidades predeterminadas del micro.
+Para ello, se realiza un banco de pruebas que compare en simulación y en implementación los ciclos de ejecución de ambos planteamientos.
+Dado el limitado tiempo de investigación tan solo se ha externalizado el cálculo de la activación a través de la función sigmoide.
+Para lo cual, se ha utilizado un acelerador embebido CRI diseñado por Koldo Basterretxea.
 

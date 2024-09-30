@@ -5,17 +5,112 @@
 
 \section{Conclusiones alcanzadas}
 
-Aqui irá las conclusiones alcanzadas. 
+El presente trabajo comprende tres vertientes principales: el uso de herramientas FLOS, la caracterización de los métodos de conexión con los que cuenta el NEORV32 y la aceleración de la FA sigmoide mediante un coprocesador CRI para aplicaciones de IA.
+Se procede a extraer de cada una de ellas las debidas conclusiones.
+
+En primer lugar, el empleo de herramientas FLOS ha mostrado diferentes resultados en los tres entornos en los que se han utilizado: compilación, síntesis e implementación y simulación. 
+Para el caso de la compilación cruzada, el resultado mediante GCC ha sido más que satisfactorio, obteniendo sin ningún tipo de inconveniente los programas para la arquitectura RISC-V desde un entorno x86.
+Teniendo en cuenta este hecho, es destacable señalar que el compilador de la herramienta privativa Xilinx SDK (actualmente Vitis) está basado en GCC.
+Esta adaptación tiene una configuración personalizada que optimiza GCC para su uso específico en las arquitecturas ARM (Zynq) y MicroBlaze.
+El hecho de que compañías privadas utilicen este compilador avalan su robustez.
+Para el caso de síntesis e implementación, los resultados obtenidos han sido más limitados.
+A pesar de que la herramienta de síntesis yosys está enormemente optimizada y depurada para el ecosistema de las FPGAs Lattice de bajo coste, para el caso de Xilinx no está bien optimizada.
+Sin embargo, se han podido generar correctamente \textit{bitstreams} funcionales del SoC.
+No obstante, estos están limitados a implementarse sin la posibilidad de emplear DSPs ni RAM distribuida.
+Además, el tamaño de la IMEM que se puede sintetizar mediante estas herramientas está limitada, no por los recursos de la FPGA, sino por el propio sintetizador y/o por la herramienta de P\&R.
+En consecuencia, los programas empleados estaban acotados a un tamaño reducido.
+A pesar de este hecho, todos los programas utilizados en la caracterización de los métodos de conexión han ocupado menos de 1024 x 6 bits, por lo que han sido implementados mediante herramientas FLOS y verificados correctamente en placa. 
+Esta coyuntura es un poco desalentadora.
+Debido a que para la generación automática de \textit{bitstreams} mediante CI en repositorios públicos son necesarias herramientas FLOS, es deseable que la síntesis y el P\&R mediante ellas estén depurados y sean totalmente funcionales.
+Para el caso de simulación, los resultados que ofrecen las herramientas FLOS son extraordinarios y nada tienen que envidiar a las herramientas privativas.
+Al contrario, se han dado casos en los que Vivado se ha \say{tragado} errores de \textit{loops} combinacionales que han podido ser corregidos del diseño porque GHDL sí que los ha detectado.
+Lo que hace pensar que objetivamente esta herramienta FLOS es más rigurosa con el estándar VHDL del IEEE.
+Además, la composición de \textit{test benches} mediante VUnit permite numerosas ventajas.
+Entre ellas, extraer valores de simulación a archivos CSV, permitir el usos de componentes de verificación (\textit{Verifications components}), simplificar la sintaxis del código mediante funciones propias y ejecutar consecutivamente varios test en un mismo ensayo, ayudando a la visualización global de resultados.
+Además, esta herramienta permite que el uso de varios simuladores, tales como Active-HDL, Riviera-PRO, GHDL, NVC y ModelSim/Questa.
+En el caso de este trabajo, se ha empleado para todas las simulaciones GHDL.
+
+En segundo lugar, los resultados de la caracterización de los métodos de conexión han permitido obtener un criterio objetivo en lo relativo a elegir el modo de acoplar coprocesadores al NEORV32.
+A este respecto, se ha ratificado la eficacia de integrar el coprocesador mediante la CFU, adaptando una instrucción personalizada para cada acelerador.
+También se ha observado que los resultados de \textit{throughput} obtenidos con XBUS son los más elevados.
+Un hecho relevante a recalcar es que en la Tabla 1 \textit{Comparison of On-Chip Extension Options} de la guía de usuario del NEORV32 \cite{neorv32-ug}, donde se hace una comparativa cualitativa (sin resultados experimentales) de los métodos de conexión CFU, CFS y XBUS, se afirma que el acceso de latencia para la interfaz CFS es menor que para la interfaz XBUS.
+Esta afirmación choca con los resultados experimentales obtenidos y puede deberse al siguiente motivo: si se examinan el método aislado se puede obtener conclusiones diferentes.
+En el caso de los ensayos de simulación realizados, los métodos están influenciados por la lógica de los aceleradores. 
+En algunos casos los aceleradores cuentan con \textit{buffers}, por lo que se han de gestionar las señales de control correspondientes.
+Como se ha mencionado, para el caso de XBUS estas señales de control las gestiona el \textit{wrapper} con lógica combinacional en función de algunas de las señales propias del estándar, lo que agiliza la transmisión.
+Para el caso de CFS, es necesario añadir un registro asociado al subsistema para gestionar estas señales de control, lo que añade latencia al proceso.
+Para el caso del acelerador sin \textit{buffer} se obtiene un resultado más desconcertante, XBUS realiza la transmisión 2 ciclos más rápido que CFS y en ese caso no hay que manejar las señales de control de forma externa. 
+Se desconoce por qué Stephan ha catalogado a XBUS como un método de transmisión más lento que CFS.
+El código empleado para la caracterización llevada a cabo en este proyecto se puede revisar en \cite{gh:practices}.
+
+En tercer lugar, los resultados obtenidos para el coprocesador de IA han sido bastante interesantes.
+La aceleración obtenida mediante el enfoque distribuido genera una ventaja evidente respecto al cálculo monolítico (empleando solo los recursos del microcontrolador) logrando un ratio de aceleración medio de 15,25 a 1.
+Además, el acelerador CRI es relativamente fácil de configurar en términos de recursiones de interpolación, pendiente y saturación, lo que le da una gran flexibilidad.
+Con respecto a las aproximaciones polinómicas, se consideran mejorables mediante otros métodos.
+No obstante, es la solución que se optó ante la carencia de soporte para divisiones en coma flotante en un contexto de tiempo ajustado. 
+Sin embargo, los resultados del cálculo de la sigmoide obtenidos mediante estas aproximaciones, a través de la FPU, no son significativamente malos dentro del rango propuesto teniendo en cuenta que se han de saturar las colas en los extremos.
+Cabe remarcar que esta comparación se ha realizado en el marco del NEORV32, en consecuencia se ha tenido que lidiar sobre sus limitaciones.
+Es decir, en el contexto de otros microcontroladores, se podría obtener un ratio de aceleración menor.
+%Por otro lado, calcular la división sin utilizar la FPU
+
+Por último, se ha de concluir que el uso de herramientas de control de versiones, así como la aplicación de la metodología de integración continua, han sido esenciales para la gestión del código empleado y la administración de los resultados obtenidos.
+En mi opinión estas herramientas y sus metodologías asociadas se deberían fomentar más en el ámbito académico universitario.
 
 \section{Líneas futuras}
 
 \label{lin-fut}
 
-Aqui irán las líneas futuras.
+Una vez concluido el desarrollo del proyecto, se abren varias líneas de investigación que se podrían abordar en el futuro.
+Principalmente, se van a exponer cuatro de ellas: avanzar en la aplicación de IA propuesta, mejorar la aplicabilidad del proyecto, investigar sobre la gestión de memoria, investigar sobre el uso de RTOS.
+
+En primer lugar, se observa razonable que una vez integrada la lógica relativa al cálculo de la función sigmoide, se debería dar soporte al resto de funciones de activación.
+Para ello, se acoplaría el CRI completo mediante CFU y se diseñaría una función personalizada de la extensión Zxcfu para cada FA, seleccionando entre ellas a través del campo \textit{funct3}.
+Además,  se puede seguir destinando el registro fuente \textit{rs1} para introducir el valor de entrada, pero se podría utilizar el registro fuente \textit{rs2} para ajustar los parámetros de recursión, saturación y pendiente del CRI.
+En este sentido, se podría calcular para un mismo dato de entrada la salida mediante varias FAs empleando varias recursiones, saturaciones y pendientes, lo que daría una gran flexibilidad a la hora de decidir la activación de la neurona.
+Además, con objeto de realizar una comparación más rigurosa, se podría inferir una red sencilla en software y compararla con la misma red pero con los cálculos de las FAs acelerados mediante CRI, lo que daría un punto de vista más global a la comparativa.
+Eventualmente, se podría escalar la aplicación de IA al coprocesamiento de operaciones de convolución y funciones de tipo \textit{spike}.
+A este respecto, la característica de gestión segmentada es típica al gestionar operaciones de convolución.
+Además, una neurona tipo \textit{spike} generalmente utiliza \textit{buffers} en la entrada y la salida para gestionar el flujo de información.
+Dado que los picos o eventos son de carácter discreto, se emplean \textit{buffers} para acumularlos y permitir que la neurona procese la suma de sus entradas.
+Asimismo, se emplean \textit{buffers} a la salida para asegurar la sincronía de la salida con elementos de procesamiento posteriores.
+Por esta razón, se han emulado estas características en los aceleradores empleados para la caracterización de los métodos de conexión, ver sección \ref{Carac}.
+
+En segundo lugar, se puede mejorar la aplicabilidad del proyecto de varias maneras.
+Por un lado, se podría añadir la compilación de software al CI. 
+Este hecho se podría hacer, por ejemplo, generando un contenedor que reúna las herramientas FLOS necesarias para compilar, simular e implementar.
+Después, se añadirían nuevas sentencias a la lista de ejecución YML.
+En este sentido, se haría un \textit{git clone} del repositorio del NEORV32, después se movería el programa en C junto a un \textit{makefile} a una nueva carpeta en la ruta sw/examples, se compilaría, se movería el resultado al core y se procedería a la implementación y/o simulación.
+Por otro lado, se podría hacer una interfaz en linea de comandos (CLI - \textit{Command Line Interface}) mediante python, con el objetivo de gestionar la simulación/implementación de todos los ensayos a través de una sentencia de comandos en la terminal.
+
+En tercer lugar, con objeto de administrar el gran volumen de datos que supone procesar una red neuronal completa, se propone investigar respecto a las posibilidades de gestión de memoria que existen.
+En el trabajo realizado los datos estaban \textit{hardcoded} en los programas en C, este modo de gestión es sencillo y sirve para hacer ensayos orientativos de latencia/\textit{throughput}.
+No obstante, para manejar una gran cantidad de datos es necesario utilizar un soporte de memoria externo.
+Para ello, existen varias posibilidades. 
+Por un lado, se puede utilizar la memoria RAM dinámica DDR con la que cuenta la Arty A7.
+Sin embargo, se necesita un controlador de memoria.
+En este sentido, se podría utilizar el que ofrece LiteX, aunque se tendría que analizar cómo se incrusta el código y cómo se envían/reciben los datos de entrada/salida desde el punto de vista del NEORV32.
+Por otro lado, se podrían transferir los datos desde el ordenador al NEORV32 a través de JTAG mediante el \textit{debugger}.
+A este respecto, tanto GDB como OpenOCD se mencionan en la guía del usuario.
+Además, atendiendo a la \href{https://github.com/stnolting/neorv32/discussions/28}{discusión 28} se podría asimilar cómo realizar esta operación.
+A modo de curiosidad, cabe mencionar que en el transcurso del proyecto se investigó el uso de la memoria SPI de la Arty para este propósito, consiguiendo enviar y recibir datos del NEORV32 a esta.
+A este respecto, se puede cargar mediante el \textit{bootloader} un programa en C con todos los datos \textit{hardcoded} y \textit{flashear} la SPI.
+Después, cargar el programa de la aplicación específica y leer los datos de entrada desde esta memoria.
+Sin embargo, este método se desechó, ya que, debido a las características de la SPI, no es eficiente gestionar grandes volúmenes de datos mediante esta memoria. 
+Además, a diferencia de la Lattice ICE40, la Arty A7 cuenta con memorias mucho más efectivas a la hora de administrar datos, por lo que es más lógico destinar el tiempo a estas opciones.
+
+En cuarto lugar, se podría investigar sobre la integración de un sistema operativo en tiempo real en el NEORV32. 
+En lo referente a este trabajo, se ha planteado la gestión de software por parte del microcontrolador desde un punto de vista \textit{Bare metal}.
+Es decir, ejecutándose únicamente un software en la CPU.
+En este sentido, si se desean gestionar varios programas a la vez en una misma aplicación, existe un sistema operativo \textit{Open Source} en tiempo real llamado Zephyr OS \cite{zephyr}.
+Se destaca este RTOS porque está documentado en la \href{https://github.com/stnolting/neorv32/discussions/172}{discusión 172} un soporte inicial para correrlo en el NEORV32.
+
+Por último, todas estas líneas futuras están pensadas para implementar la arquitectura heterogénea propuesta en un SoC softcore prototipado sobre FPGA.
+No obstante, atendiendo a la iniciativa actual que promueve económicamente la soberanía europea en el ámbito de la microelectrónica, es razonable pensar en la posibilidad de fabricación de un SoC derivado de este estudio a modo de ASIC.
+  
 
 %Principal linea futura hacer cfu custom para todo el cri, cada campo selecciona una funcion
 %Externalizar por completo los calculos referentes a las RNAs y tener un un modelo completo de RNA computado por un enfoque distribuido. 
-%Mejorar la gestion de memoria. Hasta ahora hardcodeada. Posibilidad de usar la DDR (controlador ddr de litex) de la Arty, jtag, debug Usb (issue 38). La unica aproximación se ha hecho utilizando la spi (issue 47) relaizada con exito pero no nos vale (comentario de umarcor)
+%ante una posible inferencia de la red completaMejorar la gestion de memoria. Hasta ahora hardcodeada. Posibilidad de usar la DDR (controlador ddr de litex) de la Arty, jtag, debug Usb (issue 38). La unica aproximación se ha hecho utilizando la spi (issue 47) relaizada con exito pero no nos vale (comentario de umarcor)
 %Añadir la compilación de software a CI
 
 %GESTIONAR REFERENCIA 2.3
@@ -23,4 +118,11 @@ Aqui irán las líneas futuras.
 %Como ya te comenté, las aproximaciones polinomiales solo sirven en cierto rango de valores de entrada (ya que se ajustan para minimizar el error en cierto intervalo), pero fuera de ahí, no valen.
 %Una expansión en serie de Taylor hubiera sido más adecuado. Ver por ejemplo:
 %
+%Quiza a alternativas
 %https://ietresearch.onlinelibrary.wiley.com/doi/full/10.1049/el.2013.3098
+
+%Aunque barmetal posibilidad de Zephir
+
+%Hacer una comand line interface (CLI) para el proyecto
+
+%por útlimo ASCI.

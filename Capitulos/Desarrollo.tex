@@ -40,26 +40,15 @@ Teniendo en cuenta todas estas consideraciones, el NEORV32 es el procesador sele
 
 \label{Workf}
 
-Las herramientas EDA FLOS y las propietarias/comerciales no son ecosistemas aislados.
-Al contrario, en los últimos años se han visto colaboraciones de proyectos \textit{Open Source} con iniciativas privativas.
-En este sentido, se puede destacar la integración de la herramienta RapidWright \cite{gh:rapid} a la \textit{Suite} de diseño Vivado.
-En concreto, este proyeto \textit{Open Source} desarrollado por \textit{AMD Research and Advanced Development} tiene como objetivo permitir a los usuarios avanzados una mayor flexibilidad a la hora de personalizar sus soluciones mediante una metodología de diseño utilizando módulos pre-implementados.
-Además, se han realizado concursos \cite{contest} patrocinados por AMD con el objetivo de promover y demostrar que el \textit{FPGA Interchange Format} (FPGAIF - Formato de Intercambio de FPGA) \cite{FPGAIF} es una representación intermediaria eficiente y robusta para trabajar en problemas de \textit{backends} de FPGAs, incluso a escala industrial.
-Asimismo, este tipo de iniciativas también tratan de fomentar la innovación de algoritmos de enrutamiento de FPGAs que den prioridad al tiempo de ejecución, con objeto de posibilitar su aplicación en la emulación de ASICs.
-Cabe destacar que el FPGAIF es un estándar de formato de intercambio diseñado para proporcionar toda la información necesaria mediante la cual realizar el \textit{place and route} en un contexto \textit{Open Source}.
-En la misma línea, Siemens ha observado un crecimiento saludable entorno a la \textit{Open Source VHDL Verification Methodology} (OSVVM - Metodología de Verificación VHDL de Código Abierto) \cite{osvvm} y la \textit{Universal VHDL Verification Methodology} (UVVM -  Metodología de Verificación Universal VHDL) \cite{uvvm} desde 2018, lo que en sus propias palabras \say{es alentador} \cite{wilson-research}.
-Por lo tanto, a la vista de estos ejemplos, podemos afirmar que los comerciales tradicionales de herramientas EDA están empezando a facilitar el uso de herramientas FLOS e incluso a integrar parte o la totalidad de las mismas en sus propuestas comerciales.
-Este hecho refleja un futuro híbrido en lo referente al ecosistema de herramientas para FPGAs.
+Atendiendo al paradigma híbrido de herramientas expuesto en la sección \ref{sta-art}, en el presente trabajo se propone el uso tanto de herramientas FLOS como privativas.
+El esquema general de flujo de trabajo que se ha aplicado a lo largo de los ensayos realizados en este proyecto se ilustra en la figura \ref{fig:workf}. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=14cm]{Figuras/workflow.pdf}
     \caption{\textit{Workflow} del \textit{Setup} personalizado.}
     \label{fig:workf}
 \end{figure}
-
-Atendiendo a este nuevo paradigma híbrido de herramientas, en el presente trabajo de investigación se propone el uso tanto de herramientas FLOS como privativas.
-Como se observa en la figura \ref{fig:workf}, el flujo de trabajo propuesto es el siguiente:
 
 \begin{itemize}
     \item \textbf{Compilación}: respecto a la compilación cruzada de software en C, de x86 (64 bits) a RISC-V (32 bits), se emplea la herramienta FLOS GCC.
@@ -75,15 +64,15 @@ Además, para realizar una verificación doblemente redundante, se implementa ta
     \item \textbf{Simulación}: respecto a las simulaciones realizadas a lo largo de las secciones \ref{Carac} y \ref{Integ} se emplea principalmente el \textit{framework} FLOS VUnit \cite{gh:vunit}, con el cual se realizan todas ellas.
 No obstante, también se utiliza Vivado en ciertas ocasiones.  
 En concreto, en los ensayos en los que se hace uso de la funcionalidad ILA.
-Esta funcionalidad se ha utilizado, por ejemplo, para testear la correcta operatividad de un \textit{wrapper} Wishbone.
+Esta funcionalidad se ha utilizado, por ejemplo, para testear la correcta operatividad de uno de los \textit{wrappers} de Wishbone.
 \end{itemize} 
 
 Las herramientas descritas en la explicación de este flujo de trabajo no solo se utilizan a nivel local, sino que también se emplean, todas o parte de ellas, en la \textbf{integración continua (CI)} de repositorios \textit{online}, tanto en el GitLab del grupo de investigación como en el GitHub propio.
 Para ello, se utilizan varios \textbf{contenedores}.
 Para la generación de \textit{bitstream} mediante herramientas FLOS, se utiliza el contenedor mencionado en la sección \ref{ben}, el cual es generado a su vez en CI.
 Este contenedor se utiliza en la integración continua tanto del repositorio de GitLab como de GitHub.
-Para la generación de \textit{bitstream} mediante Vivado, se utiliza una contenedor que solamente es accesible por los ordenadores del laboratorio del grupo de investigación, el cual está alojado en nuestro servidor Orion.
-Esto es debido a que al ser un programa privativo no se pueden distribuir publicamente contenedores con este software. A consecuencia de ello, la generación de \textit{bitstream} mediante esta vía solo está disponible en la integración continua del repositorio del grupo (GitLab).
+Para la generación de \textit{bitstream} mediante Vivado, se utiliza un contenedor que solamente es accesible por los ordenadores del laboratorio del grupo de investigación, el cual está alojado en nuestro servidor Orion.
+Esto es debido a que al ser un programa privativo no se pueden distribuir públicamente contenedores con este software. A consecuencia de ello, la generación de \textit{bitstream} mediante esta vía solo está disponible en la integración continua del repositorio del grupo (GitLab).
 Para realizar los ensayos en simulación, se utilizan principalmente dos contenedores de VUnit.
 El \href{https://console.cloud.google.com/gcr/images/hdl-containers/global/sim/osvb}{gcr.io/hdl-containers/sim/osvb:latest} con GHDL compilado con llvm como \textit{backend} y el \href{https://hub.docker.com/layers/ghdl/vunit/mcode-master/images/sha256-e32029c5be70a5fa0fc94bffd15d72fa8b84ad8aaf2dc7cfa8ab8324ef733ed0?context=explore}{docker.io/ghdl/vunit:mcode-master} con GHDL compilado con mcode como \textit{backend}.
 Esto se debe a que la funcionalidad \href{https://github.com/stnolting/neorv32/discussions/886}{\textit{external names}}, para capturar señales de jerarquías inferiores, solo es soportada en GHDL si este está compilado con el \textit{backend} mcode.
@@ -108,7 +97,7 @@ No obstante, cada una de ellas puede utilizarse para cargar el software en la IM
 
 \begin{itemize}
     \item El \textit{exe} se puede cargar en el NEORV32 una vez que esté ejecutándose en la FPGA. Esta transferencia se realiza a través del \textit{bootloader}.
-    \item La app\_image remplaza el contenido por defecto de una de las fuentes RTL del diseño del NEORV32, de modo que su contenido se codifica cuando este se sintetiza.
+    \item La app\_image reemplaza el contenido por defecto de una de las fuentes RTL del diseño del NEORV32, de modo que su contenido se codifica cuando este se sintetiza.
     \item El archivo .hex se lee durante la síntesis, por lo que es equivalente a la solución de la app\_image, pero no requiere modificar las fuentes RTL cada vez que se actualiza el software a cargar.
 \end{itemize} 
 
@@ -172,7 +161,7 @@ Este es el caso de las FPGAs con SPRAM, como la Lattice ICE40 (UP3K, UP5K).
 En la figura \ref{fig:boot} se muestra como cargar/iniciar un programa ejecutable (.exe) al NEORV32 mediante la CMD proporcionada por el \textit{bootloader}. 
 Concretamente, se utiliza la terminal CuteCom \footnote {En CuteCom, el archivo que se carga a la terminal debe ser de tipo \textit{Plain} (como se muestra en la figura \ref{fig:boot}), de lo contrario se dará el error \say{ERR EXE}.}, en ella se emplean sucesivamente los comandos \say{u} (\textit{upload} - cargar) y \say{e} (\textit{execute} - ejecutar).
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=14cm]{Figuras/cutecom_cmd_upload.png}
     \caption{Cargar un \textit{exe} a través del \textit{bootloader} de NEORV32 (terminal CuteCom).}
@@ -216,9 +205,11 @@ INT_BOOTLOADER_EN         => false,
 
 Como se ha mencionado, en vez de cargar un programa compilado desde el archivo \textit{neorv32\_application\_image.vhd}, es posible cargar el programa compilado desde un archivo hexadecimal (.hex).
 Para ello, se necesitan hacer unas pequeñas modificaciones en el código HDL del NEORV32.
-En particular, se debe añadir una nueva función en el paquete \textit{neorve32\_package.vhd}.
+En particular, se debe añadir una nueva función en el paquete \textit{neorv32\_package.vhd}.
 Esta función se encargará de leer el archivo hexadecimal usando la librería \textit{std.textio.all}. \footnote{Esta librería está soportada desde la versión VHDL 2008.}
 La función en cuestión es la descrita en el extracto de código \ref{code:2}.
+
+\vspace{3cm}
 
 \begin{code}
 \begin{minted}[frame=lines,framesep=2mm,baselinestretch=1.2,fontsize=\footnotesize]{vhdl}
@@ -241,7 +232,7 @@ begin
     return temp_rom;
 end function;
 \end{minted}
-\caption{Función a añadir al \textit{neorve32\_package.vhd} para leer un software compilado en formato hexadecimal.}
+\caption{Función a añadir al \textit{neorv32\_package.vhd} para leer un software compilado en formato hexadecimal.}
 \label{code:2}
 \end{code}
 
@@ -287,7 +278,7 @@ Asimismo, se han implementado en FPGA todos los diseños realizados referentes a
 
 \begin{table}[h!]
 \centering
-\caption{Ensayos de latencia y \textit{throughput} realizados: VC, el multiplicador solo acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
+\caption{Ensayos de latencia y \textit{throughput} realizados: VC, el multiplicador individual acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
 \label{tab:3}
 \begin{tabular}{|cl|cc|cc|c|c|}
 \hline
@@ -305,22 +296,22 @@ Asimismo, se han implementado en FPGA todos los diseños realizados referentes a
 
 %descripcion de los multiplicadores las funciones utilizadas
 
-\begin{figure}[h!]
+La figura \ref{fig:soc} ilustra las posibles combinaciones de acoplamiento de los 3 diferentes multiplicadores mediante los modos de conexión SLINK, XBUS, CFU y CFS.
+Las características que definen a cada tipo de multiplicador son las siguientes:
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=14cm]{Figuras/scheme.pdf}
     \caption{Esquema de las posibles combinaciones del SoC personalizado.}
     \label{fig:soc}
 \end{figure}
 
-La figura \ref{fig:soc} ilustra las posibles combinaciones de acoplamiento de los 3 diferentes multiplicadores mediante los modos de conexión SLINK, XBUS, CFU y CFS.
-Las características que definen a cada tipo de multiplicador son las siguientes:
-
 \begin{itemize}
-    \item \textbf{Mult-B} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered}), en el código HDL del proyecto referido como \textit{Mult\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida.
+    \item \textbf{Mult-B} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered}), en el código HDL del proyecto referido como \textit{Mult\_wfifos}, es un multiplicador \ref{ap-cod:1} al que se le han añadido dos FIFOs \ref{ap-cod:2}, una a la entrada y otra a la salida.
 Además, las señales internas se gestionan mediante una máquina de estados. 
 Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 y 4 bits respectivamente.
-Puede recibir hasta tres relojes diferentes, uno en la FIFO de entrada, otro en el multiplicador y otro en la FIFO de salida, aunque comúnmente se han ajustado los tres la misma frecuencia.
-Su topología interna se puede observar en el apéndice \ref{Planos}, plano \ref{fig:mult-b}.
+Puede recibir hasta tres relojes diferentes, uno en la FIFO de entrada, otro en el multiplicador y otro en la FIFO de salida, aunque comúnmente se han ajustado los tres a la misma frecuencia.
+Su topología interna se puede observar en la figura \ref{fig:mult-b}.
 Además, su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:3}.
 \item \textbf{Mult-BP} (\textbf{Mult}iplicador\textit{\textbf{-B}uffered} y \textit{\textbf{P}ipelined}), en el código HDL del proyecto referido como \textit{Multp\_wfifos}, es un multiplicador al que se le han añadido dos FIFOs, una a la entrada y otra a la salida, pero al contrario que Mult-B, las señales internas se gestionan segmentadas.
 Es configurable en número de bits de entrada/salida y en profundidad de la FIFO, aunque normalmente se ha configurado en 32 y 4 bits respectivamente.
@@ -331,11 +322,17 @@ Es configurable en número de bits de entrada/salida, aunque normalmente se ha c
 Cabe destacar que su descripción hardware se encuentra en el apéndice \ref{Codigo}, código \ref{ap-cod:6}.
 \end{itemize}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=15cm]{Figuras/mult_wfifos.pdf}
+    \caption{Plano del multiplicador tipo MULT-B.}
+    \label{fig:mult-b}
+\end{figure}
+
 Para realizar el acoplamiento de los multiplicadores con las interfaces SLINK (AXI-Stream) y XBUS (Wishbone), se han realizado \textit{wrappers} definidos en el apéndice \ref{Codigo}.
 En concreto, para el caso del Mult-B la descripción HDL del \textit{wrapper} se encuentra en el código \ref{ap-cod:4} y \ref{ap-cod:5}, para AXI y Wishbone respectivamente.
 Para el caso del Mult-BP, en el código \ref{ap-cod:8} y \ref{ap-cod:9}, para AXI y Wishbone respectivamente.
-Para el caso del Mult-UBP las señales AXI estan autocontenidas en la descripción de su diseño \ref{ap-cod:6}, así como el \textit{wrapper} para Wishbone está descrito en \ref{ap-cod:10}.
-
+Para el caso del Mult-UBP las señales AXI están autocontenidas en la descripción de su diseño \ref{ap-cod:6}, así como el \textit{wrapper} para Wishbone está descrito en \ref{ap-cod:10}.
 En lo que respecta al software, se han empleado funciones de C propias del NEORV32 para interactuar con cada uno de los modos de conexión.
 Mediante las librerías aportadas por Stephan, tras compilarse, estas funciones se transforman a instrucciones interpretables por RISC-V.
 Dichas funciones son las siguientes:
@@ -442,12 +439,12 @@ end loop;
 Atendiendo al código \ref{code:5}, se observa que al extraer el valor del registro CSR \textit{mcycle} se le resta un ciclo.
 Esto es debido a que la ejecución de la instrucción de lectura del CSR (\textit{csrr} en ensamblador), añade un ciclo extra a la medida.
 Esta situación se discutió y verificó con Stephan en una \textit{issue} titulada \href{https://github.com/stnolting/neorv32/issues/897}{\textit{Latency measurement through CSR(MCYCLE) adds one extra cycle \#897}}.
-Además, el hecho de utilizar la función de VUnit \mintinline[breaklines]{vhdl}{info()} permite exportar los resultados en formato csv para su posterior procesamiento.
+Además, el hecho de utilizar la función de VUnit \mintinline[breaklines]{vhdl}{info()} permite exportar los resultados en formato CSV para su posterior procesamiento.
 Cabe destacar que para emplear esta metodología debe estar activada la extensión Zicntr:
 
 \hspace{32mm} \mintinline[breaklines]{vhdl}{CPU_EXTENSION_RISCV_Zicntr => true} 
 
-Para ejemplificar esta explicación se dispone de uno de los \textit{test bench} de VUnit utilizados que aplican este metodología, en el apéndice \ref{Codigo} código \ref{ap-cod:19}.
+Para ejemplificar esta explicación se dispone de uno de los \textit{test bench} de VUnit utilizados que aplican esta metodología, en el apéndice \ref{Codigo} código \ref{ap-cod:19}.
 En él se puede observar como se utiliza el recurso \textit{external names} para acceder a las señales de jerarquía inferior, entre ellas a las referentes a los registros CSR, con objeto de realizar su evaluación.
 En concreto, este código está diseñado para caracterizar en términos de latencia el rendimiento del método de conexión CFU.
 No obstante, se ha empleado este esquema para caracterizar todos los métodos de acoplamiento.
@@ -467,7 +464,7 @@ Haciendo uso de esta metodología descrita en \ref{met}, se proponen dos tipos d
 El primero de ellos es un ensayo de latencia.
 En él se realizan 4 operaciones consecutivas de envío/recepción de datos entre el NEORV32 y el multiplicador mediante cada método de conexión y se mide el tiempo de ejecución de cada una de estas operaciones en ciclos de reloj del sistema.
 El segundo ensayo propuesto es de \textit{throughput}.
-En él se realizan 4 operaciones de envío de datos consecutivas del NEORV32 al multiplicador, después se realizan 4 operaciones de recepción consecutivas desde el multiplicador al NEORV32 y se mide cuantos datos por ciclo de reloj se reciben.
+En él se realizan 4 operaciones de envío de datos consecutivas del NEORV32 al multiplicador, después se realizan 4 operaciones de recepción consecutivas desde el multiplicador al NEORV32 y se mide cuántos datos por ciclo de reloj se reciben.
 Con objeto de almacenar los primeros 4 datos enviados, el multiplicador o el método de conexión debe contar con un \textit{buffer} de datos.
 Es por ello que para el multiplicador Mult-UBP solo se puede realizar el ensayo de \textit{throughput} para el método SLINK, debido a que esta interfaz cuenta con FIFOs asociadas.
 Para el caso del método CFU, solo se puede realizar la medición de latencia.
@@ -482,187 +479,37 @@ En la figura \ref{fig:lat-thr} se aclara gráficamente estos dos tipos de ensayo
     \label{fig:lat-thr}
 \end{figure}
 
-A este respecto, la parte de código destinada a simulación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:12} para SLINK, XBUS, CFU Y CFS respectivamente, así como los respectivos \textit{test bench} de VUnit, se encargan de llevar a cabo estos ensayos.
+A este respecto, la parte de código destinada a simulación descrita en \ref{ap-cod:11}, \ref{ap-cod:12}, \ref{ap-cod:13} y \ref{ap-cod:14} para SLINK, XBUS, CFU Y CFS respectivamente, así como los respectivos \textit{test bench} de VUnit, se encargan de llevar a cabo estos ensayos.
 
 Por último, cabe destacar que la evaluación mediante este método solo es posible para los ensayos del SoC completo, NEORV32 más multiplicador.
-Para los ensayos mediante \textit{Verification Componets} se han empleado simulaciones de VUnit en conjunto con programas de Python encargados de gestionar los csv de salida producidos por la función \mintinline[breaklines]{vhdl}{info()} y así hacer los cálculos necesarios para obtener la latencia/\textit{throughput}.
+Para los ensayos mediante \textit{Verification Componets} se han empleado simulaciones de VUnit en conjunto con programas de Python encargados de gestionar los CSV de salida producidos por la función \mintinline[breaklines]{vhdl}{info()} y así hacer los cálculos necesarios para obtener la latencia/\textit{throughput}.
 En concreto, en el apéndice \ref{Codigo} se ejemplifica este proceso para la latencia de Mult-B acoplado mediante AXI-Stream.
 Para ello se muestra el archivo que importa los VCs y extrae la información \ref{ap-cod:20}, el \textit{test bench} de VUnit \ref{ap-cod:21} y el \textit{script} de Python \ref{ap-cod:22} encargado de calcular a latencia.
 
-\subsection{Ensayos de simulación}
+\subsection{Resultados de los ensayos de simulación}
 
 %Tabla & Imagenes de integración continua
 %Codigo de algun test bench de VUnit
 %Se muestran los resultados en simulación obtenidos en integración continua en las imágenes.
 
-Como se ha comentado en el apartado \ref{Workf}, la realización de las simulaciones está automatizada mediante la integración continua del repositorio.
-En este sentido los 29 ensayos de simulación recogidos en la tabla \ref{tab:3} se han realizado con éxito y sus resultados se muestran de la figura \ref{fig:lat1} a la \ref{fig:thr9}.
-Además, con objeto de facilitar la visualización estos resultados se resumen en la tabla \ref{tab:4}.
+Tal como se ha comentado en el apartado \ref{Workf}, las simulaciones se han automatizado mediante la integración continua del repositorio.
+En este sentido, los 29 ensayos de simulación recogidos en la tabla \ref{tab:3} se han realizado con éxito y sus resultados se muestran en el apéndice \ref{Resultados-Sim-caract}, desde la figura \ref{fig:lat1} hasta la \ref{fig:thr9}.
+En el apartado \ref{ana-carac}, se procede a hacer un análisis exhaustivo de los resultados obtenidos en estos ensayos.
+Asimismo, cabe destacar que en el caso de los ensayos de latencia \ref{fig:lat6}, \ref{fig:lat7}, \ref{fig:lat8}, \ref{fig:lat12}, \ref{fig:lat13} y \ref{fig:lat14}, se observa que los resultados de los cuatro datos de entrada para XBUS y CFS no son constantes.
+El primer cálculo varía en 2 ciclos para XBUS y en 8 ciclos para CFS con respecto al resto de casos.
+Esto se debe a que el compilador no genera la misma secuencia de instrucciones en todos los casos.
+Como se observa en \ref{ap-cod:12} y \ref{ap-cod:14}, cada transmisión de dato se mide de forma aislada.
+En este contexto, cuando el compilador construye el programa emplea una única vez la instrucción para apuntar al registro inmediato donde se cargará la entrada.
+Para el resto de los cálculos posteriores, debido al nivel de optimización, el compilador omite esta instrucción.
+En el caso de XBUS, el ahorro de esta instrucción se traduce en una ejecución 2 ciclos más rápida.
+En el caso de CFS, suponen más ciclos, ya que se emplean/ahorran más direccionamientos a registros inmediatos.
+Este hecho se discutió con Stephan en la \textit{issue} \href{https://github.com/stnolting/neorv32/issues/888}{\#888}.
+Es relevante destacar que para realizar la caracterización de los métodos de conexión se han empleado las medidas más restrictivas. 
+Con objeto de facilitar la lectura de estos resultados, se agrupan en la tabla \ref{tab:4}, así como se visualizan mediante gráficos de barras en las figuras \ref{fig:graf-lat} y \ref{fig:graf-thr} para los ensayos de latencia y \textit{throughput}, respectivamente.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat1.png}
-    \caption{Resultados del ensayo de latencia para Mult-B, Mult-BP y Mult-UBP acoplados mediante \textit{AXI-Stream Verification Componets}.}
-    \label{fig:lat1}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat2.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante SLINK.}
-    \label{fig:lat2}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat3.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante SLINK.}
-    \label{fig:lat3}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat4.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante SLINK.}
-    \label{fig:lat4}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr1.png}
-    \caption{Resultados del ensayo de \textit{throughput} para Mult-B, Mult-BP acoplados mediante \textit{AXI-Stream Verification Componets}.}
-    \label{fig:thr1}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr2.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-B, acoplado mediante SLINK.}
-    \label{fig:thr2}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr3.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-BP, acoplado mediante SLINK.}
-    \label{fig:thr3}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr4.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-UBP, acoplado mediante SLINK.}
-    \label{fig:thr4}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat5.png}
-    \caption{Resultados del ensayo de latencia para Mult-B, Mult-BP y Mult-UBP acoplados mediante \textit{Wishbone Verification Componets}.}
-    \label{fig:lat5}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat6.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante XBUS.}
-    \label{fig:lat6}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat7.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante XBUS.}
-    \label{fig:lat7}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat8.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante XBUS.}
-    \label{fig:lat8}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr5.png}
-    \caption{Resultados del ensayo de \textit{throughput} para Mult-B, Mult-BP acoplados mediante \textit{Wishbone Verification Componets}.}
-    \label{fig:thr5}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr6.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-B, acoplado mediante XBUS.}
-    \label{fig:thr6}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr7.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-BP, acoplado mediante XBUS.}
-    \label{fig:thr7}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat9.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante CFU.}
-    \label{fig:lat9}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat10.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante CFU.}
-    \label{fig:lat10}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat11.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante CFU.}
-    \label{fig:lat11}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat12.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-B, acoplado mediante CFS.}
-    \label{fig:lat12}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat13.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-BP, acoplado mediante CFS.}
-    \label{fig:lat13}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/lat14.png}
-    \caption{Resultados del ensayo de latencia para NEORV32 + Mult-UBP, acoplado mediante CFS.}
-    \label{fig:lat14}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr8.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-B, acoplado mediante CFS.}
-    \label{fig:thr8}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{Figuras/result/thr9.png}
-    \caption{Resultados del ensayo de \textit{throughput} para NEORV32 + Mult-BP, acoplado mediante CFS.}
-    \label{fig:thr9}
-\end{figure}
-
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{Resultados de los ensayos de latencia y \textit{throughput}: VC, el multiplicador solo acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
+\caption{Resultados de los ensayos de latencia y \textit{throughput}: VC, el multiplicador individual acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
 \label{tab:4}
 \begin{tabular}{|cc|cc|cc|c|c|}
 \hline
@@ -677,11 +524,23 @@ Además, con objeto de facilitar la visualización estos resultados se resumen e
 \end{tabular}
 \end{table}
 
-\vspace{3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=11cm]{Figuras/Graf_Bar_LAT.pdf}
+    \caption{Resultados del ensayo de latencia: VC, el multiplicador individual acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
+    \label{fig:graf-lat}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=11cm]{Figuras/Graf_Bar_THR.pdf}
+    \caption{Resultados del ensayo de \textit{throughput}: VC, el multiplicador individual acoplado a \textit{Verification Components}; C, el SoC completo incluyendo el NEORV32, el multiplicador y la ejecución de software.}
+    \label{fig:graf-thr}
+\end{figure}
 
 Cabe destacar que por cada ensayo de simulación se ha producido un archivo .vcd que contiene las formas de onda producidas.
 En este sentido, la integración continua se encarga de gestionar estos archivos y subirlos como artefactos.
-En el apéndice \ref{wave}, se expone la forma de onda referente al ensayo de \textit{throughput} para NEORV32 + Mult-BP acoplado mediante XBUS \ref{wave:xbus} , así como la referente al ensayo de latencia para NEORV32 + Mult-B acoplado mediante CFU  \ref{wave:cfu}.
+En el apéndice \ref{wave}, se expone la forma de onda referente al ensayo de \textit{throughput} para el NEORV32 más Mult-BP acoplado mediante XBUS \ref{wave:xbus}, así como la referente al ensayo de latencia para el NEORV32 más Mult-B acoplado mediante CFU  \ref{wave:cfu}.
 
 \subsection{Implementación en FPGA}
 
@@ -704,7 +563,7 @@ Además, para obtener un correcto funcionamiento de los \textit{bitstreams} gene
 
 \noindent Como se ha mencionado, además de la generación, el proceso de integración continua también automatiza la subida de los \textit{bitstreams} como artefactos.
 En consecuencia, se han descargado y testeado todos ellos en ambas placas para comprobar su correcta operatividad.
-En este sentido, se ha obteniendo un resultado satisfactorio.
+En este sentido, se ha obtenido un resultado satisfactorio.
 
 \begin{figure}[H]
     \centering
@@ -752,17 +611,52 @@ En concreto, la figura \ref{fig:impl1} refiere al multiplicador Mult-B acoplado 
 
 \subsection{Análisis de los resultados}
 
+\label{ana-carac}
+
+A la vista de estos resultados, podemos concluir que el método de integrar coprocesadores mediante Custom Functions Unit (CFU) es el modo de conexión que ofrece la latencia más baja, entre ocho y trece ciclos de reloj del sistema dependiendo del tipo de acelerador.
+Además, el rendimiento más bajo se obtiene mediante la interfaz External Bus (XBUS), un dato por cada cinco ciclos de reloj del sistema ($\frac{1}{5}$) para ambos aceleradores.
+Es importante señalar que dependiendo del modo de conexión, la arquitectura interna del acelerador puede o no afectar a la medición de latencia/\textit{throughput}.
+Este hecho puede ser decisivo a la hora de seleccionar el modo de conexión, ya que según las características internas del acelerador personalizado el rendimiento de la transmisión puede verse afectado.
+Por lo tanto, en el caso de coprocesadores con baja latencia interna, se mejora la eficiencia mediante el modo de conexión CFU.
+No obstante, una vez que aumenta la latencia interna del coprocesador, el rendimiento del modo de conexión CFU se acerca más al de otros modos.
+Además, si el coprocesador a acoplar cuenta con \textit{buffer} y nos interesa recibir el mayor \textit{throughput} de datos posible, el modo de conexión óptimo sería a través de XBUS.
+Por otra parte, la interfaz \textit{stream} destaca por la alta latencia que conlleva realizar una transmisión mediante este método de conexión.
+Este hecho es bastante significativo, ya que esta interfaz suele estar asociada a grandes velocidades de transmisión de datos.
+Sin embargo, la implementación \textit{stream} (SLINK) que ofrece el NEORV32 no muestra resultados que destaquen por su baja latencia.
+Este comportamiento puede deberse a diversos factores.
+Por un lado, al tipo de optimización llevada a cabo por el compilador.
+Ya que las funciones en C asociadas a este modo se deben de convertir a instrucciones específicas de RISC-V, el compilador puede realizar diferentes programas dependiendo del nivel de optimización ajustado.
+En este caso, el nivel ajustado es el predeterminado \say{EFFORT=-0s}, pero se podría ajustar a \say{EFFORT=-03} (máximo nivel de optimización).
+Dado que todos los ensayos se han realizado con el nivel de optimización predeterminado, se ha decidido mantener esta coherencia para permitir una comparativa justa entre todos ellos.
+Por otro lado, a la gestión del movimiento de datos que realiza internamente este modo de conexión con sus \textit{buffers}.
+Debido a que la interfaz SLINK cuenta con memorias FIFO (TX/RX) asociadas a las líneas de envío y recepción, la gestión del movimiento de los datos de entrada/salida con estas memorias puede aumentar la latencia general del método.
+Por último, respecto a la transmisión mediante Custom Functions Subsystem (CFS), se observa una diferencia clara entre las implementaciones de aceleradores con y sin \textit{buffers}.
+Esto se debe a que para el caso de los aceleradores con \textit{buffer} las señales de control de las memorias se deben gestionar mediante un registro extra, lo que implica añadir latencia al método.
+Por otra parte, sorprende que el \textit{throughput} de datos del método general de implementación mediante registros mapeados en memoria sea significativamente mayor que CFS, que se supone un subsistema específico más eficiente.
+Esto es debido a que, en el caso de XBUS, la gestión de las señales de control de las memorias asociadas a los aceleradores con \textit{buffers} se realiza mediante el \textit{wrapper}.
+En este sentido, dicho \textit{wrapper} escribe y lee de la FIFO utilizando las señales de control asociadas al propio estándar de conexión.
+
+Cabe destacar que los resultados previamente analizados son los referentes al conjunto microprocesador más NEORV32.
+Los resultados relativos a los \textit{Verification Components} sirven para caracterizar la latencia/\textit{throughput} interna de cada acelerador aislado para el caso de los métodos AXI-Stream y Wishbone.
+En este sentido, se observa en ambos métodos un mayor rendimiento para los aceleradores que manejan las señales internas segmentadas.
+Además, para el caso de Wishbone, se observa una latencia de un ciclo menor para los aceleradores que incluyen memoria.
+Esto se debe a que para este modo de conexión, la medida se realiza entre el \textit{acknowledge} de envío y el \textit{acknowledge} de recibo.
+Normalmente, la interfaz Wishbone y también su implementación XBUS, tarda dos ciclos entre el establecimiento de la señal \textit{strobe} y la recepción del \textit{acknowledge}.
+En este contexto, el acelerador comienza a funcionar cuando se recibe el \textit{strobe}, enmascarando un ciclo en la medida en comparación con el test de AXI-Stream \textit{Verification Component}.
+
 \section{Integración de coprocesador para aplicaciones de IA}
 
 \label{Integ}
 
 Una vez generada la caracterización de todos los métodos de conexión, se cuenta con un criterio objetivo para escoger un modo de acoplamiento y conectar de forma óptima un coprocesador para acelerar aplicaciones de IA.
+Atendiendo al análisis realizado en \ref{ana-carac}, así como a las características internas del acelerador CRI que destacan por su baja latencia, se decide realizar su integración en el NEORV32 mediante el método de conexión Custom Functions Unit (CFU).
 Como se ha mencionado, el coprocesador implementado únicamente se encarga de calcular la activación por medio de la función sigmoide.
 %nexo
-El procedimiento seguido para realizar la integración de este coprocesador se ha dividido en tres etapas. 
-En la primera etapa, se realiza un ensayo de simulación del acelerador en solitario, además se acopla al NEORV32 mediante el método CFU con objeto de verificar en placa la correcta operatividad del mismo.
+El procedimiento seguido para realizar la verificación, integración y comparación de este coprocesador se ha dividido en tres etapas. 
+En la primera etapa, se realiza un ensayo de simulación del acelerador en solitario.
+Además, se acopla al NEORV32 mediante el método CFU con objeto de verificar en placa la correcta operatividad del mismo.
 En la segunda etapa, se busca una manera de calcular la función de activación sigmoide haciendo uso de la unidad de coma flotante que ofrece el NEORV32.
-En la tercera etapa, se realiza un ensayo comparativo, tanto en simulación como en implementación, para verificar las ventajas en términos de latencia de realizar el cálculo de la FA mediante un enfoque distribuido.
+En la tercera etapa, se realiza un ensayo comparativo, tanto en simulación como en implementación, para verificar las ventajas de realizar el cálculo de la FA mediante un enfoque distribuido en términos de latencia.
 
 \subsection{Verificación de la operatividad del acelerador}
 
@@ -801,12 +695,18 @@ Estos ensayos no se encuentran disponibles en el repositorio propio de GitHub.
 
 Los resultados obtenidos en simulación del coprocesador en solitario se muestran en la figura \ref{fig:sim_alone}, así como los obtenidos en implementación para el coprocesador acoplado al NEORV32 vía CFU se muestran en la figura \ref{fig:impl_complex}.
 Asimismo, el código que describe el acelerador utilizado se encuentra en el apéndice \ref{Codigo} código \ref{ap-cod:24}, así como la integración en CFU se muestra en el código \ref{ap-cod:25}.
-Además, se aclara gráficamente la integración del acelerador mediante CFU en el plano \ref{}. 
+%Además, se aclara gráficamente la integración del acelerador mediante CFU en el plano \ref{}. 
 %hacer plano con latex
-Por último, se muestra la forma de onda resultante del cálculo de dos sigmoides por el acelerador CRI mediante CFU en el apéndice, \ref{wave} forma de onda \ref{wave:sig}. 
+Además, se muestra la forma de onda resultante del cálculo de dos sigmoides por el acelerador CRI mediante CFU en el apéndice, \ref{wave} forma de onda \ref{wave:sig}. 
 En esta forma de onda se observa algo interesante, las señales de la CFU varían con respecto a la forma de onda \ref{wave:cfu} (implementación del multiplicador).
 Esto es debido a que en el transcurso de la elaboración de esta investigación la integración mediante CFU cambió ligeramente, como se ha mencionado en el apartado \ref{neorv32}.
 %hacer forma de onda
+Además, se observa que la latencia propia de la ejecución de la lógica del CRI es de 6 ciclos.
+Esta latencia es variable según el nivel de recursión escogido.
+Para este caso y en lo referente al resto de ensayos, se ha ajustado el parámetro de recursión \say{q} a 3.
+Este parámetro permite al acelerador CRI una gran flexibilidad, por ejemplo si se ajusta a 0, se obtiene una única interpolación, lo que resulta en una sigmoide dura (\textit{hard-sigmoid}).
+Adicionalmente, el CRI cuenta con parámetros de saturación y pendiente ajustables.
+En lo referente a todos los ensayos llevados a cabo, estos parámetros se han ajustado a 2 y 0,5, respectivamente.
 Al igual que para el caso del multiplicador, se emplea una instrucción personalizada \textit{R3-Type} de la extensión Zxcfu.
 Se emplea el registro fuente \textit{rs1} para la entrada del acelerador.
 Ya que los datos a verificar se generaron con una longitud de palabra WL = 16 bits, se ha querido preservar el acelerador a este tamaño de entrada/salida para todos los ensayos realizados en este capítulo.
@@ -933,9 +833,7 @@ La figura \ref{fig:impl_comp} muestra el resultado del ensayo transmitido por UA
 
 \subsubsection{Resultados}
 
-Se procede a agrupar los resultados obtenidos en dos tablas.
-Una referente al resultado del cálculo de la función sigmoide \ref{tab:6} y otra a la latencia relativa a cada implementación \ref{tab:7}.
-
+Se distinguen dos tipos de resultados para cada planteamiento, la respuesta de la función sigmoide y la latencia en calcularla.
 Respecto a los resultados de la sigmoide, se observa que para los valores cercanos a los límites del rango relativos a las aproximaciones de grado bajo es necesario realizar una saturación, como ya se ha destacado en la subsección \ref{fpu-fa}.
 No obstante, la aproximación de grado más alto se ajusta con relativa eficacia a los valores esperados.
 Respecto a la latencia, cabe destacar que la mínima para los casos de las aproximaciones mediante FPU coincide siempre con el 5º dato, el cual es f(0) = 1.
@@ -948,7 +846,8 @@ Debido a que en la práctica no solo se ejecutan los ciclos relativos a las inst
 Respecto al ahorro computacional en ciclos de latencia obtenidos mediante el acelerador CRI, se afirma que en el caso más ajustado se ahorran 111 - 13 = 98 ciclos por dato, lo cual es una aceleración de 8,53:1 y en el caso más holgado se ahorran 280 - 13 = 267 ciclos por dato, lo cual es una aceleración de 21,53:1.
 Si se realiza la media de las tres medias y se compara se obtiene un ahorro de 198,3 - 13 = 185,3 ciclos por dato, lo cual es una aceleración de 15,25:1.
 Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido y afianzan el argumento de externalizar los cálculos relativos a las redes neuronales a coprocesadores embebidos con la finalidad de llevar a cabo una gestión computacional eficaz y simplificada de IA en el borde.
-
+Se procede a agrupar los resultados obtenidos en dos tablas, una referente al resultado del cálculo de la función sigmoide \ref{tab:6} y otra a la latencia relativa a cada ensayo \ref{tab:7}.
+Además, se visualizan mediante gráficos de barras dichas latencias obtenidas en las figuras \ref{fig:graf-uno} y \ref{fig:graf-pack}.
 
 %tabla de resultados
 
@@ -992,4 +891,18 @@ Estos hechos corroboran el beneficio de emplear este tipo de enfoque distribuido
 \multicolumn{3}{|c|}{197}                                                                                  & \multicolumn{3}{c|}{2424}                                                                               & \multicolumn{3}{c|}{1875}                                                                               & \multicolumn{3}{c|}{1324}                                                          \\ \hline
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=11cm]{Figuras/Graf_Bar_CRI.pdf}
+    \caption{Resultado de las latencias mínimas, medias y máximas para un dato.}
+    \label{fig:graf-uno}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=11cm]{Figuras/Graf_Bar_CRI_Paquete.pdf}
+    \caption{Resultado de las latencias medias para un dato comparadas con las latencias para un paquete (9 datos).}
+    \label{fig:graf-pack}
+\end{figure}
 

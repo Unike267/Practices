@@ -190,7 +190,7 @@ La generación de los \textit{bitstreams} se realiza mediante Vivado, así como 
 
 \textbf{Descripción:} con objeto de hacer los ensayos de caracterización del rendimiento, se debe contar con un método generalizado para realizar las mediciones en simulación.
 Se concluye que la medida mediante el CSR(mcycle) y la posterior extracción de su valor mediante \textit{external names} para plasmar su resultado a través de la función de VUnit \textit{info()}, es la opción más interesante.
-En este sentido, también se planteó evaluar la señal \textit{valid} y \textit{ack} para los métodos AXI y Wishbone respectivamente, extrayendo en un csv los \textit{time stamps} de los momentos en los que se daban estas señales y procesar estos valores mediante un programa en python.
+En este sentido, también se planteó evaluar la señal \textit{valid} y \textit{ack} para los métodos AXI y Wishbone respectivamente, extrayendo en un CSV los \textit{time stamps} de los momentos en los que se daban estas señales y procesar estos valores mediante un programa en python.
 No obstante, esta metodología era poco generalizable y se desechó la idea.
 Sin embargo, para los ensayos del multiplicador aislado con \textit{Verification Components}, se ha utilizado este concepto.
 

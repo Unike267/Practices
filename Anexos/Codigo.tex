@@ -4,7 +4,7 @@
 \label{Codigo} % Etiqueta \ref{Planos}
 
 El código empleado a lo largo de este trabajo es bastante extenso.
-Comprende desde la descripción hardware en VHDL de los diseños y los \textit{test benches}, pasando por la codificación de software en C, archivos en Python para lanzar las simulaciones de VUnit, así como para gestionar sus archivos de salida en formato csv, además de archivos Yml para gestionar la integración continua, archivos Bash para gestionar la generación de \textit{bitstream} mediante herramientas FLOS y archivos Tcl para gestionar la generación de \textit{bitstream} mediante Vivado. 
+Comprende desde la descripción hardware en VHDL de los diseños y los \textit{test benches}, pasando por la codificación de software en C, archivos en Python para lanzar las simulaciones de VUnit, así como para gestionar sus archivos de salida en formato CSV, además de archivos YML para gestionar la integración continua, archivos Bash para gestionar la generación de \textit{bitstream} mediante herramientas FLOS y archivos TCL para gestionar la generación de \textit{bitstream} mediante Vivado. 
 El total del código empleado está en el repositorio de GitLab del grupo de investigación y gran parte de él, sobre todo el referente a la sección \ref{Carac}, está en el siguiente repositorio público de GitHub \cite{gh:practices}.
 Este apéndice comprende parte del código desarrollado como ejemplificación del trabajo realizado a lo largo de este proyecto de investigación.
 
@@ -2472,7 +2472,7 @@ begin
 
 end neorv32_cfs_rtl;
 \end{minted}
-\caption{neorv32\_cfs.vhd}
+\caption{Archivo neorv32\_cfs.vhd modificado para gestionar el multiplicador \textit{unbuffered}.}
 \label{ap-cod:18}
 \end{code}
 
@@ -3449,7 +3449,7 @@ begin
 
 end neorv32_cpu_cp_cfu_rtl;
 \end{minted}
-\caption{SIGMOIDE(CRI) neorv32\_cpu\_cp\_cfu.vhd}
+\caption{Archivo neorv32\_cpu\_cp\_cfu.vhd modificado para integrar el coprocesador sigmoide CRI.}
 \label{ap-cod:25}
 \end{code}
 

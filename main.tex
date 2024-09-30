@@ -107,6 +107,15 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{document}
 
+% Ajustar temporalmente los márgenes a cero
+\newgeometry{top=0cm, bottom=0cm, left=0cm, right=0cm, noheadfoot}
+
+% Incluir el archivo PDF de la portada ocupando toda la página sin márgenes
+\includepdf[pages=-,pagecommand={}]{Portada.pdf}
+
+% Restaurar la configuración de márgenes original
+\restoregeometry
+
 \renewcommand{\listtablename}{Índice de Tablas}
 \renewcommand{\tablename}{Tabla}
 
@@ -175,7 +184,15 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{Resumen}
 \addchaptertocentry{\resumenname} % Add the abstract to the table of contents
-Aqui iria el resumen propio en castellano\ldots
+Para llevar a cabo la inferencia de IA de manera generalizada, se requieren dispositivos de procesamiento que sean energéticamente eficientes, compactos y altamente fiables. 
+En este sentido, las arquitecturas de procesamiento heterogéneo, que combinan CPUs personalizadas con coprocesadores de aplicación específica, proporcionan un buen equilibrio entre eficiencia computacional y flexibilidad, resultando adecuadas para desplegar en ellas IA en el borde. 
+Además, estas arquitecturas permiten reducir los tiempos de desarrollo en comparación con los procesadores completamente personalizados.
+Siguiendo la iniciativa de promover la soberanía europea en el ámbito de la microelectrónica, en este trabajo se propone el uso de una plataforma hardware de código abierto basada en RISC-V, así como de herramientas de Automatización del Diseño Electrónico (EDA) Free/Libres y/o de Código Abierto (FLOS) para evaluar el rendimiento de diferentes opciones de integración de coprocesadores en un Sistema-en-Chip (SoC) prototipado sobre FPGA. 
+Se evalúan cuatro opciones de integración (Stream, XBUS, CFS y CFU) con objeto de obtener datos que permitan tomar decisiones de diseño precisas para el desarrollo futuro de dispositivos integrados destinados al procesamiento de alto rendimiento de IA en el borde.
+Adicionalmente, se verifica el beneficio de este enfoque comparando, en términos de latencia computacional, el cálculo de la función de activación sigmoide mediante la arquitectura heterogénea propuesta frente al uso exclusivo de la CPU.
+Para este propósito, se ha integrado un acelerador basado en el método de Interpolación Recursiva Centrada (CRI) a través de una instrucción personalizada de la extensión ISA Zxcfu, logrando un ratio de aceleración promedio y máximo de 15,25:1 y 21,53:1, respectivamente. 
+Estos resultados confirman que la arquitectura distribuida propuesta es capaz de mejorar significativamente el rendimiento en el cálculo de las funciones de activación dentro del contexto de las redes neuronales artificiales (RNAs).
+\vspace{2cm}
 \end{Resumen}
 
 %----------------------------------------------------------------------------------------
@@ -184,7 +201,14 @@ Aqui iria el resumen propio en castellano\ldots
 
 \begin{Laburpena}
 \addchaptertocentry{\resumennameeus} % Add the abstract to the table of contents
-Aqui iria el resumen propio en euskera\ldots
+AAren inferentzia modu orokorrean aurrera eramateko, energetikoki eraginkorrak, estrukutralki trinkoak eta erabat fidagarriak diren gailuak ezinbestekoak dira. 
+Ildo horretatik, prozesamendu heterogeneoko arkitekturek, PUZ pertsonalizatuak aplikazio espezifikoko koprozesadoreekin konbinatzen dituztenek, oreka egokia lortzen dute eraginkortasun konputazionalaren eta malgutasunaren artean, hortaz, egokiak izanez bertan AA ertzean zabaltzeko. 
+Halaber, arkitektura horiek garapen-denborak murriztea ahalbidetzen dute, prozesadore erabat pertsonalizatuekin alderatuta. 
+Mikroelektronikaren esparruan Europaren subiranotasuna sustatzeko ekimenari jarraituz, lan honetan RISC-V-an oinarritutako kode irekiko hardware plataforma baten erabilera proposatzen da, baita Diseinu Elektronikoa Automatizatzeko (EDA) tresna Free/Libre eta/edo Kode Irekikoa (FLOS) ere, FPGA-an prototipatutako Txip bidezko Sistema (SoC) batean, koprozesadoreak integratzeko aukera ezberdinen errendimendua ebaluatzeko. 
+Lau integrazio aukera (Stream, XBUS, CFS y CFU) ebaluatzen dira datuak eskuratzeko asmoz, AAertzean-aren errendimendu handiko prozesamendurako zuzenduta dauden gailu integratuen etorkizuneko garapenerako diseinu-erabaki zehatzak hartzea ahalbidetzen dituztenak. 
+Horrez gain, ikuspegi horren onura egiaztatzen da, proposatutako arkitektura heterogeneoaren bidezko sigmoide akti- bazio-funtzioaren kalkuluaren, eta PUZ-aren erabilera esklusiboaren latentzia konputazionala konparatuz. 
+Helburu honetarako, Interpolazio Errekurtsibo Zentratua (CRI) metodoan oinarritutako azeleratzailea integratu da, ISA Zxcfu hedapenaren agindu pertsonalizatu baten bidez, 15,25:1 eta 21,53:1 -ko batazbesteko azelerazio  ratioa eta ratio maximoa lortuz hurrenez hurren. 
+Emaitza horiek berresten dute proposatutako arkitektura banatua gai dela neurona-sare artifizialen (RNA) testuinguruan aktibazio-funtzioen kalkuloetan errendimendua nabarmen hobetzeko.
 \end{Laburpena}
 
 %----------------------------------------------------------------------------------------
@@ -197,6 +221,10 @@ Performing AI inference ubiquitously requires energy-efficient, small footprint 
 Heterogeneous processing architectures combining customized CPUs with domain specific coprocessors can provide a good trade-off between computational efficiency and application flexibility for edge AI deployments while shortening development times compared to full custom application-specific processor designs. 
 Following the impulse for the European sovereignty in the microelectronics field, in this work we propose the use of a RISC-V based open-source hardware platform and Free/Libre and/or Open Source (FLOS) Electronic Design Automation (EDA) tools to evaluate the performance of different coprocessor integration options in a System-on-Chip (SoC) prototyped on FPGA. 
 We tested four integration options (XBUS, Stream, CFS and CFU) to obtain precise data that will allow making the correct design decisions for the future development of integrated devices for high-performance AI at the edge.
+Additionally, the benefit of this approach was verified by comparing the computational latency of the sigmoid activation function calculation using the proposed heterogeneous architecture versus the exclusive use of the CPU.
+For this purpose, an accelerator based on the Centered Recursive Interpolation (CRI) method was integrated through a custom instruction of the Zxcfu ISA extension, achieving an average and maximum acceleration ratio of 15.25:1 and 21.53:1, respectively.
+These results confirmed that the proposed distributed architecture can significantly improve the performance of activation function calculations within the context of artificial neural networks (ANNs).
+\vspace{2cm}
 \end{Abstract}
 
 %----------------------------------------------------------------------------------------
@@ -215,54 +243,75 @@ We tested four integration options (XBUS, Stream, CFS and CFU) to obtain precise
 
 \begin{abbreviations}{ll} % Include a list of abbreviations (a table of two columns)
 \addchaptertocentry{\abbrevname} % Add the list of abbreviations to the table of contents
-\textbf{IA} & \textbf{I}nteligencia \textbf{A}rtificial\\
 \textbf{AI} & \textbf{A}rtificial \textbf{I}ntelligence\\
-\textbf{FPGA} & \textbf{F}ield \textbf{P}rogrammable \textbf{G}ate \textbf{A}rrays\\
 \textbf{ALU} & \textbf{A}rithmetic \textbf{L}ogic \textbf{U}nit\\
-\textbf{VHDL} & \textbf{VHSIC} \textbf{H}ardware \textbf{D}escription \textbf{L}anguage\\
-\textbf{VHSIC} & \textbf{V}ery \textbf{H}igh \textbf{S}peed \textbf{I}ntegrated \textbf{C}ircuit\\
-\textbf{CI} & \textbf{C}ontinuous \textbf{I}ntegration\\
-\textbf{HDL} & \textbf{H}ardware  \textbf{D}escription \textbf{L}anguage\\
-\textbf{ISA} & \textbf{I}nstruction  \textbf{S}et \textbf{A}rchitecture\\
-\textbf{CPU} & \textbf{C}entral  \textbf{P}rocessing \textbf{U}nit\\ 
-\textbf{ESA} & \textbf{E}uropean  \textbf{S}pace \textbf{A}gency\\ 
-\textbf{SPARC} & \textbf{S}calable  \textbf{P}rocessor \textbf{ARC}hitecture\\ 
-\textbf{POWER} & \textbf{P}erformance \textbf{O}ptimization \textbf{W}ith \textbf{E}nhanced \textbf{R}ISC\\   
-\textbf{SoC} & \textbf{S}ystem  \textbf{o}n a \textbf{C}hip\\ 
-\textbf{CFU} & \textbf{C}ustom  \textbf{F}unction \textbf{U}nit\\ 
-\textbf{CXU} & \textbf{C}omposable  e\textbf{X}tension \textbf{U}nit\\ 
-\textbf{AXI} & \textbf{A}dvanced  e\textbf{X}tensible \textbf{I}nterface\\ 
-\textbf{SLINK} & \textbf{S}tream   \textbf{LINK}  Interface\\ 
-\textbf{XBUS} & Processor-E\textbf{X}ternal  \textbf{BUS}  Interface\\ 
-\textbf{CFS} & \textbf{C}ustom  \textbf{F}unction \textbf{S}ubsystem\\ 
-\textbf{FIFO} & \textbf{F}irst  \textbf{I}n \textbf{F}irst \textbf{O}ut\\ 
-\textbf{CRI} & \textbf{C}entered \textbf{R}ecursive \textbf{I}nterpolation\\ 
-\textbf{MLO} & \textbf{M}odified \textbf{L}attice \textbf{O}perators\\ 
-\textbf{RNA} & \textbf{R}edes \textbf{N}euronales \textbf{A}rtificiales\\ 
-\textbf{FA} & \textbf{F}unción de \textbf{A}ctivación\\ 
-\textbf{ReLU} & \textbf{Re}ctified \textbf{L}inear \textbf{U}nit\\ 
-\textbf{FOSS} & \textbf{F}ree and \textbf{O}pen \textbf{S}ource \textbf{S}oftware\\
-\textbf{ODS} & \textbf{O}bjetivos de \textbf{D}esarrollo \textbf{S}ostenible\\ 
-\textbf{MAC} & \textbf{M}ultiply–\textbf{AC}cumulate\\ 
-\textbf{CNN} & \textbf{C}onvolutional \textbf{N}eural \textbf{N}etwork\\ 
-\textbf{DRAM} & \textbf{D}ynamic \textbf{R}andom \textbf{A}ccess \textbf{M}emory\\ 
-\textbf{PCI} & \textbf{P}eripheral \textbf{C}omponent \textbf{I}nterconnect\\ 
-\textbf{SATA} & \textbf{S}erial \textbf{A}dvanced \textbf{T}echnology \textbf{A}ttachment\\ 
-\textbf{EDA} & \textbf{E}lectronic \textbf{D}esign \textbf{A}utomation\\
-\textbf{FLOS} & \textbf{F}ree/\textbf{L}ibre and/or \textbf{O}pen \textbf{S}ource\\
-\textbf{FPGAIF} & \textbf{FPGA} \textbf{I}nterchange \textbf{F}ormat\\
 \textbf{ASIC} & \textbf{A}pplication-\textbf{S}pecific \textbf{I}ntegrated \textbf{C}ircuit\\
+\textbf{AXI} & \textbf{A}dvanced  e\textbf{X}tensible \textbf{I}nterface\\
+\textbf{CFU} & \textbf{C}ustom  \textbf{F}unction \textbf{U}nit\\
+\textbf{CFS} & \textbf{C}ustom  \textbf{F}unction \textbf{S}ubsystem\\
+\textbf{CI} & \textbf{C}ontinuous \textbf{I}ntegration\\
+\textbf{CLI} & \textbf{C}ommand-\textbf{L}ine \textbf{I}nterface\\
+\textbf{CNN} & \textbf{C}onvolutional \textbf{N}eural \textbf{N}etwork\\
+\textbf{CPU} & \textbf{C}entral  \textbf{P}rocessing \textbf{U}nit\\
+\textbf{CRI} & \textbf{C}entered \textbf{R}ecursive \textbf{I}nterpolation\\
+\textbf{CSR} & \textbf{C}ontrol and \textbf{S}tatus \textbf{R}egisters\\
+\textbf{CSV} & \textbf{C}omma-\textbf{S}eparated \textbf{V}alues\\
+\textbf{CXU} & \textbf{C}omposable  e\textbf{X}tension \textbf{U}nit\\
+\textbf{DDR} & \textbf{D}ouble \textbf{D}ata \textbf{R}ate\\
+\textbf{DRAM} & \textbf{D}ynamic \textbf{R}andom \textbf{A}ccess \textbf{M}emory\\
+\textbf{DSP} & \textbf{D}igital \textbf{S}ignal \textbf{P}rocessor\\
+\textbf{EDA} & \textbf{E}lectronic \textbf{D}esign \textbf{A}utomation\\
+\textbf{ESA} & \textbf{E}uropean  \textbf{S}pace \textbf{A}gency\\
+\textbf{FA} & \textbf{F}unción de \textbf{A}ctivación\\
+\textbf{FIFO} & \textbf{F}irst  \textbf{I}n \textbf{F}irst \textbf{O}ut\\
+\textbf{FLOS} & \textbf{F}ree/\textbf{L}ibre and/or \textbf{O}pen \textbf{S}ource\\
+\textbf{FOSS} & \textbf{F}ree and \textbf{O}pen \textbf{S}ource \textbf{S}oftware\\
+\textbf{FPGA} & \textbf{F}ield \textbf{P}rogrammable \textbf{G}ate \textbf{A}rrays\\
+\textbf{FPGAIF} & \textbf{FPGA} \textbf{I}nterchange \textbf{F}ormat\\
+\textbf{FPU} & \textbf{F}loating \textbf{P}oint \textbf{U}nit\\
 \textbf{GCC} & \textbf{G}NU \textbf{C}ompiler \textbf{C}ollection\\
+\textbf{GDB} & \textbf{G}NU \textbf{D}e\textbf{B}ugger\\
+\textbf{HDL} & \textbf{H}ardware  \textbf{D}escription \textbf{L}anguage\\
 \textbf{ILA} & \textbf{I}ntegrated \textbf{L}ogic \textbf{A}nalyzer\\
 \textbf{IMEM} & \textbf{I}nstruction \textbf{MEM}ory\\
-  
+\textbf{ISA} & \textbf{I}nstruction  \textbf{S}et \textbf{A}rchitecture\\
+\textbf{IEEE} & \textbf{I}nstitute of \textbf{E}lectrical and \textbf{E}lectronics \textbf{E}ngineers\\    
+\textbf{JTAG} & \textbf{J}oint \textbf{T}est \textbf{A}ction \textbf{G}roup\\
+\textbf{IA} & \textbf{I}nteligencia \textbf{A}rtificial\\
+\textbf{MAC} & \textbf{M}ultiply–\textbf{AC}cumulate\\
+\textbf{MLO} & \textbf{M}odified \textbf{L}attice \textbf{O}perators\\
+\textbf{MSB} & \textbf{M}ost \textbf{S}ignificant \textbf{B}it\\
+\textbf{ODS} & \textbf{O}bjetivos de \textbf{D}esarrollo \textbf{S}ostenible\\
+\textbf{OSVVM} & \textbf{O}pen \textbf{S}ource \textbf{V}HDL \textbf{V}erification \textbf{M}ethodology\\
+\textbf{PCI} & \textbf{P}eripheral \textbf{C}omponent \textbf{I}nterconnect\\
+\textbf{POWER} & \textbf{P}erformance \textbf{O}ptimization \textbf{W}ith \textbf{E}nhanced \textbf{R}ISC\\
+\textbf{RAM} & \textbf{R}andom \textbf{A}ccess \textbf{M}emory\\
+\textbf{ReLU} & \textbf{Re}ctified \textbf{L}inear \textbf{U}nit\\
+\textbf{RNA} & \textbf{R}edes \textbf{N}euronales \textbf{A}rtificiales\\
+\textbf{ROM} & \textbf{R}ead \textbf{O}nly \textbf{M}emory\\
+\textbf{RTOS} & \textbf{R}eal \textbf{T}ime \textbf{O}perating \textbf{S}ystem\\
+\textbf{SATA} & \textbf{S}erial \textbf{A}dvanced \textbf{T}echnology \textbf{A}ttachment\\
+\textbf{SDK} & \textbf{S}oftware \textbf{D}evelopment \textbf{K}it\\
+\textbf{SLINK} & \textbf{S}tream   \textbf{LINK}  Interface\\
+\textbf{SoC} & \textbf{S}ystem  \textbf{o}n a \textbf{C}hip\\ 
+\textbf{SPARC} & \textbf{S}calable  \textbf{P}rocessor \textbf{ARC}hitecture\\
+\textbf{SPI} & \textbf{S}erial \textbf{P}eripheral \textbf{I}nterface\\
+\textbf{TCL} & \textbf{T}ool \textbf{C}ommand \textbf{L}anguage\\
+\textbf{UART} & \textbf{U}niversal \textbf{A}synchronous \textbf{R}eceiver-\textbf{T}ransmitter\\
+\textbf{UVVM} & \textbf{U}niversal \textbf{V}HDL \textbf{V}erification \textbf{M}ethodology\\
+\textbf{VHDL} & \textbf{VHSIC} \textbf{H}ardware \textbf{D}escription \textbf{L}anguage\\
+\textbf{VHSIC} & \textbf{V}ery \textbf{H}igh \textbf{S}peed \textbf{I}ntegrated \textbf{C}ircuit\\
+\textbf{XBUS} & Processor-E\textbf{X}ternal  \textbf{BUS}  Interface\\
+\textbf{XIP} & e\textbf{X}ecute \textbf{I}n-\textbf{P}lace\\
+\textbf{YML} & \textbf{Y}AML Ain't \textbf{M}arkup \textbf{L}anguage\\
+
 \end{abbreviations}
 
 %----------------------------------------------------------------------------------------
 %	DEDICATION
 %----------------------------------------------------------------------------------------
 
-\dedicatory{For/Dedicated to/To my\ldots} 
+\dedicatory{En agradecimiento a Jon, Koldo, Oscar y Unai miembros de GDED y a Stephan Nolting por su contribución al hardware libre.} 
 
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - CHAPTERS
@@ -286,10 +335,10 @@ We tested four integration options (XBUS, Stream, CFS and CFU) to obtain precise
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
 
-\include{Anexos/Planos}
-\include{Anexos/Waveform}
-\include{Anexos/Codigo}
 \include{Anexos/Articulo}
+\include{Anexos/Waveform}
+\include{Anexos/Res-Sim}
+\include{Anexos/Codigo}
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
