@@ -1,0 +1,3 @@
+[submodule "neorv32-setups"]
+	path = neorv32-setups
+	url = git@github.com:stnolting/neorv32-setups

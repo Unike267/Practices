@@ -4,13 +4,7 @@ set -ex
 
 cd $(dirname "$0")
 
-apt update -qq
-
-apt install -y git
-
 cd ../..
-
-git clone --recursive https://github.com/stnolting/neorv32-setups
 
 if [[ -z "${Design}" ]]; then
     mv rtl/mult/CFU/SIM/LATENCY/neorv32_application_image.vhd neorv32-setups/neorv32/rtl/core

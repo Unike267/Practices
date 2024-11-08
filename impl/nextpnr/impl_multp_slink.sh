@@ -16,13 +16,7 @@ else
 fi
 echo "Selected board is" $Arty
 
-apt update -qq
-
-apt install -y git
-
 cd ../..
-
-git clone --recursive https://github.com/stnolting/neorv32-setups
 
 mv rtl/mult/slink/neorv32_application_image.vhd neorv32-setups/neorv32/rtl/core
 

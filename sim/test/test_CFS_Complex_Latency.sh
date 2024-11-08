@@ -4,13 +4,7 @@ set -ex
 
 cd $(dirname "$0")
 
-apt update -qq
-
-apt install -y git
-
 cd ../..
-
-git clone --recursive https://github.com/stnolting/neorv32-setups
 
 if [[ -z "${Fifos}" ]]; then
     echo "Start test"

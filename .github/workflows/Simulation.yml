@@ -41,6 +41,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run slink Complex Latency test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -63,6 +66,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run slink Complex Throughput test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -98,6 +104,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run wishbone Complex Latency test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -120,6 +129,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run wishbone Complex Throughput test'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -143,6 +155,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run CFU Complex Latency test for mult_wfifos'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -164,6 +179,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run CFU Complex Latency test for multp_wfifos'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -185,6 +203,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run CFU Complex Latency test for multp'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -206,6 +227,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run CFS Complex Latency test for buffering multipliers'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -229,6 +253,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run CFS Complex Latency test for not buffering multipliers'
         uses: docker://docker.io/ghdl/vunit:mcode-master
@@ -248,6 +275,9 @@ jobs:
 
       - name: '🧰 Checkout'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: 'Run CFS Complex Throughput test for buffering multipliers'
         uses: docker://docker.io/ghdl/vunit:mcode-master
