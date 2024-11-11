@@ -1,9 +1,9 @@
 # [Unike267](https://github.com/Unike267) PRACTICES
 
-- **University**: UPV-EHU.
+- **University**: UPV/EHU.
 - **Master**: Advanced Electronic Systems, [SIEAV](https://github.com/umarcor/SIEAV).
-- **Group**: GDED.
-- **Student**: Unai S.
+- **Group**: Digital Electronics Design Group, GDED (GIU21/007).
+- **Student**: Unai Sainz-Estebanez.
 
 ---
 
