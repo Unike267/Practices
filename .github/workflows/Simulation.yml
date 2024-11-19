@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 'Run Mult_wfifos vunit test benchs'
-        uses: docker://gcr.io/hdl-containers/sim/osvb
+        uses: docker://ghcr.io/hdl/sim/osvb:latest
         with:
           args: ./sim/run.py -v
 
@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 'Run slink Verification Components test'
-        uses: docker://gcr.io/hdl-containers/sim/osvb
+        uses: docker://ghcr.io/hdl/sim/osvb:latest
         with:
           args: ./sim/test/test_slink_VC.sh
 
@@ -93,7 +93,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 'Run wishbone Verification Components test'
-        uses: docker://gcr.io/hdl-containers/sim/osvb
+        uses: docker://ghcr.io/hdl/sim/osvb:latest
         with:
           args: ./sim/test/test_wishbone_VC.sh
 
