@@ -4,6 +4,12 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
 
 jobs:
 
@@ -31,6 +37,13 @@ jobs:
           name: mult_wfifos_slink_35t
           path: ./neorv32_mult_wfifos_slink_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mult_wfifos_slink_35t.bit
+
   impl_mult_wfifos_slink_100t:
     runs-on: ubuntu-latest
     env:
@@ -53,6 +66,13 @@ jobs:
         with:
           name: mult_wfifos_slink_100t
           path: ./neorv32_mult_wfifos_slink_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mult_wfifos_slink_100t.bit
 
   impl_multp_wfifos_slink_35t:
     runs-on: ubuntu-latest
@@ -77,6 +97,13 @@ jobs:
           name: multp_wfifos_slink_35t
           path: ./neorv32_multp_wfifos_slink_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_wfifos_slink_35t.bit
+
   impl_multp_wfifos_slink_100t:
     runs-on: ubuntu-latest
     env:
@@ -99,6 +126,13 @@ jobs:
         with:
           name: multp_wfifos_slink_100t
           path: ./neorv32_multp_wfifos_slink_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_wfifos_slink_100t.bit
 
   impl_multp_slink_35t:
     runs-on: ubuntu-latest
@@ -123,6 +157,13 @@ jobs:
           name: multp_slink_35t
           path: ./neorv32_multp_slink_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_slink_35t.bit
+
   impl_multp_slink_100t:
     runs-on: ubuntu-latest
     env:
@@ -145,6 +186,13 @@ jobs:
         with:
           name: multp_slink_100t
           path: ./neorv32_multp_slink_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_slink_100t.bit
 
   impl_mult_wfifos_wishbone_35t:
     runs-on: ubuntu-latest
@@ -169,6 +217,13 @@ jobs:
           name: mult_wfifos_wishbone_35t
           path: ./neorv32_mult_wfifos_wishbone_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mult_wfifos_wishbone_35t.bit
+
   impl_mult_wfifos_wishbone_100t:
     runs-on: ubuntu-latest
     env:
@@ -191,6 +246,13 @@ jobs:
         with:
           name: mult_wfifos_wishbone_100t
           path: ./neorv32_mult_wfifos_wishbone_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mult_wfifos_wishbone_100t.bit
 
   impl_multp_wfifos_wishbone_35t:
     runs-on: ubuntu-latest
@@ -215,6 +277,13 @@ jobs:
           name: multp_wfifos_wishbone_35t
           path: ./neorv32_multp_wfifos_wishbone_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_wfifos_wishbone_35t.bit
+
   impl_multp_wfifos_wishbone_100t:
     runs-on: ubuntu-latest
     env:
@@ -237,6 +306,13 @@ jobs:
         with:
           name: multp_wfifos_wishbone_100t
           path: ./neorv32_multp_wfifos_wishbone_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_wfifos_wishbone_100t.bit
 
   impl_mults_cfu_35t:
     runs-on: ubuntu-latest
@@ -261,6 +337,13 @@ jobs:
           name: mults_cfu_35t
           path: ./neorv32_mults_cfu_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mults_cfu_35t.bit
+
   impl_mults_cfu_100t:
     runs-on: ubuntu-latest
     env:
@@ -283,6 +366,13 @@ jobs:
         with:
           name: mults_cfu_100t
           path: ./neorv32_mults_cfu_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mults_cfu_100t.bit
 
   impl_mult_wfifos_cfs_35t:
     runs-on: ubuntu-latest
@@ -307,6 +397,13 @@ jobs:
           name: mult_wfifos_cfs_35t
           path: ./neorv32_mult_wfifos_cfs_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mult_wfifos_cfs_35t.bit
+
   impl_mult_wfifos_cfs_100t:
     runs-on: ubuntu-latest
     env:
@@ -329,6 +426,13 @@ jobs:
         with:
           name: mult_wfifos_cfs_100t
           path: ./neorv32_mult_wfifos_cfs_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_mult_wfifos_cfs_100t.bit
 
   impl_multp_wfifos_cfs_35t:
     runs-on: ubuntu-latest
@@ -353,6 +457,13 @@ jobs:
           name: multp_wfifos_cfs_35t
           path: ./neorv32_multp_wfifos_cfs_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_wfifos_cfs_35t.bit
+
   impl_multp_wfifos_cfs_100t:
     runs-on: ubuntu-latest
     env:
@@ -375,6 +486,13 @@ jobs:
         with:
           name: multp_wfifos_cfs_100t
           path: ./neorv32_multp_wfifos_cfs_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_wfifos_cfs_100t.bit
 
   impl_multp_cfs_35t:
     runs-on: ubuntu-latest
@@ -399,6 +517,13 @@ jobs:
           name: multp_cfs_35t
           path: ./neorv32_multp_cfs_35t.bit
 
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_cfs_35t.bit
+
   impl_multp_cfs_100t:
     runs-on: ubuntu-latest
     env:
@@ -421,4 +546,11 @@ jobs:
         with:
           name: multp_cfs_100t
           path: ./neorv32_multp_cfs_100t.bit
+
+      - name: '📤 Upload Release Assets'
+        run: gh release upload --repo Unike267/Practices --clobber $TAG $FILES
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: DEF
+          FILES: ./neorv32_multp_cfs_100t.bit
 
