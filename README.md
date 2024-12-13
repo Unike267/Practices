@@ -7,6 +7,25 @@
 
 ---
 
+### Conference Paper
+
+This research has led to the publication of the following conference paper:
+
+- [DOI: 10.1109/DCIS62603.2024.10769177](https://ieeexplore.ieee.org/document/10769177)
+
+- Published in: *2024 39th Conference on Design of Circuits and Integrated Systems (DCIS)*.
+
+- Date of Conference: 13-15 November 2024. 
+
+- Conference Location: Catania, Italy.
+
+- Publisher: IEEE.
+
+- Co-authors:
+
+  - Unai Martinez-Corral ([umarcor](https://github.com/umarcor))
+  - Koldo Basterretxea 
+
 ### Abstract
 
 The aim of this repository is to perform a Characterization of hardware coprocessors integration with [NEORV32](https://github.com/stnolting/neorv32/tree/main) for the efficient implementation of SoCs based on RISC-V cores.
