@@ -26,6 +26,10 @@ This research has led to the publication of the following conference paper:
   - Unai Martinez-Corral ([umarcor](https://github.com/umarcor))
   - Koldo Basterretxea 
 
+### TFM 
+
+The TFM (Trabajo de Fin de Máster in Spanish, MSc thesis) document is available at [TFM_SAINZ_ESTEBANEZ](https://drive.google.com/file/d/1H2WHdmYO08ceH8eQ-wEM0xREDynXfiov/view?usp=drive_link) and in the `TFM` branch of this repository.
+
 ### Abstract
 
 The aim of this repository is to perform a Characterization of hardware coprocessors integration with [NEORV32](https://github.com/stnolting/neorv32/tree/main) for the efficient implementation of SoCs based on RISC-V cores.
